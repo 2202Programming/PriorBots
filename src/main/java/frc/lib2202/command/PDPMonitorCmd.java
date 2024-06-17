@@ -3,8 +3,7 @@ package frc.lib2202.command;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.PowerDistribution;
-import frc.base.RobotContainerOrig;
-import frc.lib2202.command.WatcherCmd;
+import frc.lib2202.builder.RobotContainer;
 
 public class PDPMonitorCmd extends WatcherCmd {
   private PowerDistribution pdp;
@@ -15,7 +14,7 @@ public class PDPMonitorCmd extends WatcherCmd {
   NetworkTableEntry nt_angle_I;
 
   public PDPMonitorCmd() {
-    pdp = RobotContainerOrig.getObjectOrNull("PDP");
+    pdp = RobotContainer.getObjectOrNull("PDP");
   }
 
   @Override

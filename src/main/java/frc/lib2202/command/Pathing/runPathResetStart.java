@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.lib2202.command.Pathing;
+package frc.lib2202.command.pathing;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathPlannerPath;
@@ -13,8 +13,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import frc.base.RobotContainerOrig;
-import frc.lib2202.subsystem.Swerve.SwerveDrivetrain;
+import frc.lib2202.builder.RobotContainer;
+import frc.lib2202.subsystem.swerve.SwerveDrivetrain;
 
 
 //This command is a hack to reset our current pose to path start pose
@@ -25,7 +25,7 @@ public class runPathResetStart extends Command {
   final private SwerveDrivetrain drivetrain;
 
   public runPathResetStart() {
-    drivetrain = RobotContainerOrig.getSubsystem(SwerveDrivetrain.class);
+    drivetrain = RobotContainer.getSubsystem(SwerveDrivetrain.class);
   }
 
   @Override

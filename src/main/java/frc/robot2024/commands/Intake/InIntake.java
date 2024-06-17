@@ -5,8 +5,8 @@
 package frc.robot2024.commands.Intake;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.base.RobotContainerOrig;
-import frc.robot2023.subsystems.Intake;
+import frc.lib2202.builder.RobotContainer;
+import frc.robot2024.subsystems.Intake;
 
 /**
  * Driver presses button
@@ -39,7 +39,7 @@ public class InIntake extends Command {
    */
   public InIntake(boolean stay_down) {
     this.stay_down = stay_down;
-    this.intake = RobotContainerOrig.getSubsystem(Intake.class);
+    this.intake = RobotContainer.getSubsystem(Intake.class);
     addRequirements(intake);
   }
 

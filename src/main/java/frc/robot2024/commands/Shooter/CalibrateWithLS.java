@@ -5,8 +5,8 @@
 package frc.robot2024.commands.Shooter;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.base.RobotContainerOrig;
-import frc.robot2023.subsystems.ShooterServo;
+import frc.lib2202.builder.RobotContainer;
+import frc.robot2024.subsystems.ShooterServo;
 
 /*
  * Moves shooter up outside the calibration switch then slowly brings down
@@ -35,7 +35,7 @@ public class CalibrateWithLS extends Command {
     Phase phase;
 
     public CalibrateWithLS() {
-        this.shooter = RobotContainerOrig.getSubsystem(ShooterServo.class);
+        this.shooter = RobotContainer.getSubsystem(ShooterServo.class);
 
     }
 

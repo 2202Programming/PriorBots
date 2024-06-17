@@ -5,12 +5,12 @@
 package frc.robot2024.commands.Shooter;
 
 import edu.wpi.first.wpilibj.util.Color8Bit;
-import frc.base.Constants;
-import frc.base.RobotContainerOrig;
-import frc.robot2023.subsystems.BlinkyLights;
-import frc.robot2023.subsystems.BlinkyLights.BlinkyLightUser;
-import frc.robot2023.subsystems.ShooterServo;
-import frc.robot2023.subsystems.Transfer;
+import frc.lib2202.Constants;
+import frc.lib2202.builder.RobotContainer;
+import frc.lib2202.subsystem.BlinkyLights;
+import frc.lib2202.subsystem.BlinkyLights.BlinkyLightUser;
+import frc.robot2024.subsystems.ShooterServo;
+import frc.robot2024.subsystems.Transfer;
 
 /**
  * Button pressed starts command
@@ -53,8 +53,8 @@ public class ShooterServoSequence extends BlinkyLightUser {
     this.angle = angle;
     this.speed = speed;
     this.auto = auto;
-    this.shooter = RobotContainerOrig.getSubsystem(ShooterServo.class);
-    this.transfer = RobotContainerOrig.getSubsystem(Transfer.class);
+    this.shooter = RobotContainer.getSubsystem(ShooterServo.class);
+    this.transfer = RobotContainer.getSubsystem(Transfer.class);
     interp = DistanceInterpretor.getSingleton();
     addRequirements(shooter, transfer);
   }

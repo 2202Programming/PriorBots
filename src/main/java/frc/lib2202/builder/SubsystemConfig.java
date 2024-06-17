@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 import edu.wpi.first.wpilibj2.command.Subsystem;
-import frc.base.RobotContainerOrig;
+//import frc.lib2202.builder.RobotContainer;
 
 /*
 * SubsystemConfig - handle different flavors of robot  sub-system building.
@@ -200,7 +200,7 @@ public class SubsystemConfig {
     public void constructAll() {
         
         // robot being built is?
-        robot_name = RobotContainerOrig.getRobotSpecs().getRobotNameString();
+        robot_name = RobotContainer.getRobotName();
 
         //wait for Phoenix library initialization on other threads to complete
         System.out.println("Waiting 5 seconds for other threads to initialize, then constructing: " + robot_name);

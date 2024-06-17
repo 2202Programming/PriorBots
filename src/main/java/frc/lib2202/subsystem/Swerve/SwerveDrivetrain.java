@@ -2,12 +2,12 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.lib2202.subsystem.Swerve;
+package frc.lib2202.subsystem.swerve;
 
-import com.pathplanner.lib.path.auto.AutoBuilder;
-import com.pathplanner.lib.path.util.HolonomicPathFollowerConfig;
-import com.pathplanner.lib.path.util.PIDConstants;
-import com.pathplanner.lib.path.util.ReplanningConfig;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.util.PIDConstants;
+import com.pathplanner.lib.util.ReplanningConfig;
 import com.revrobotics.CANSparkMax;
 
 import edu.wpi.first.math.VecBuilder;
@@ -28,27 +28,35 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.base.Constants;
-import frc.base.RobotContainerOrig;
-import frc.robot2023.subsystems.Sensors.Limelight_Subsystem;
-import frc.robot2023.subsystems.Sensors.Sensors_Subsystem;
-import frc.robot2023.subsystems.Sensors.Sensors_Subsystem.EncoderID;
-import frc.robot2023.subsystems.Swerve.Config.CANConfig;
-import frc.robot2023.subsystems.Swerve.Config.ChassisConfig;
-import frc.robot2023.subsystems.Swerve.Config.ChassisInversionSpecs;
-import frc.robot2023.subsystems.Swerve.Config.WheelOffsets;
-import frc.robot.util.ModMath;
-import frc.robot.util.VisionWatchdog;
+import frc.lib2202.builder.RobotContainer;
+import frc.lib2202.builder.RobotLimits;
+import frc.lib2202.subsystem.Limelight;
+import frc.lib2202.subsystem.swerve.config.CANConfig;
+import frc.lib2202.subsystem.swerve.config.ChassisConfig;
+import frc.lib2202.subsystem.swerve.config.ChassisInversionSpecs;
+import frc.lib2202.subsystem.swerve.config.WheelOffsets;
+import frc.lib2202.util.ModMath;
+import frc.lib2202.util.VisionWatchdog;
+
+//import frc.robot2024.subsystems.Sensors.Sensors_Subsystem;
+//import frc.robot2024.subsystems.Sensors.Sensors_Subsystem;
+//import frc.robot2024.subsystems.Sensors.Sensors_Subsystem.EncoderID;
 
 public class SwerveDrivetrain extends SubsystemBase {
 
-  static final double Bearing_Tol = Math.toRadians(0.5); // limit bearing
+// Serve Encoder names
+public enum EncoderID { BackLeft, BackRight, FrontLeft, FrontRight  }
+
+
+static final double Bearing_Tol = Math.toRadians(0.5); // limit bearing
 
   // cc is the chassis config for all our pathing math
-  private final ChassisConfig cc = RobotContainerOrig.getRobotSpecs().getChassisConfig(); // chassis config
-  private final WheelOffsets wc = RobotContainerOrig.getRobotSpecs().getWheelOffset(); // wc = wheel config
-  private final ChassisInversionSpecs is = RobotContainerOrig.getRobotSpecs().getChassisInversionSpecs(); //is = invert spec
-  private final CANConfig cac = RobotContainerOrig.getRobotSpecs().getCANConfig();
+  private final ChassisConfig cc = RobotContainer.getRobotSpecs().getChassisConfig(); // chassis config
+  private final WheelOffsets wc = RobotContainer.getRobotSpecs().getWheelOffset(); // wc = wheel config
+  private final ChassisInversionSpecs is = RobotContainer.getRobotSpecs().getChassisInversionSpecs(); //is = invert spec
+  private final CANConfig cac = RobotContainer.getRobotSpecs().getCANConfig();
+  private final RobotLimits limits = RobotContainer.getRobotSpecs().getRobotLimits();
+
   /**
    *
    * Modules are in the order of - Front Left, Front Right, Back Left, Back Right
@@ -84,7 +92,7 @@ public class SwerveDrivetrain extends SubsystemBase {
 
   // used to update postion esimates
   double kTimeoffset = .1; // [s] measurement delay from photonvis
-  private final Limelight_Subsystem limelight;
+  private final Limelight limelight;
 
   // Network tables 
   public final String NT_Name = "DT"; 
@@ -121,8 +129,8 @@ public class SwerveDrivetrain extends SubsystemBase {
   public final Field2d m_field = new Field2d();
 
   public SwerveDrivetrain() {
-    sensors = RobotContainerOrig.getSubsystem(Sensors_Subsystem.class);
-    limelight = RobotContainerOrig.getSubsystemOrNull(Limelight_Subsystem.class);  //we can deal with no LL
+    sensors = RobotContainer.getSubsystem(Sensors_Subsystem.class);
+    limelight = RobotContainer.getSubsystemOrNull(Limelight.class);  //we can deal with no LL
     watchdog = new VisionWatchdog(3.0);
 
     var MT = CANSparkMax.MotorType.kBrushless;
@@ -185,7 +193,7 @@ public class SwerveDrivetrain extends SubsystemBase {
         new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
             new PIDConstants(7.0, 0.0, 0.0), // Translation PID constants
             new PIDConstants(7.0, 0.0, 0.0), // Rotation PID constants
-            frc.base.DriveTrain.kMaxSpeed, // Max module speed, in m/s
+            limits.kMaxSpeed, // Max module speed, in m/s
             0.4, // Drive base radius in meters. Distance from robot center to furthest module.
             new ReplanningConfig()), // Default path replanning config. See the API for the options here
         () -> {

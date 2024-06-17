@@ -6,7 +6,7 @@ package frc.robot2024.commands.Etude;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.base.RobotContainerOrig;
+import frc.lib2202.builder.RobotContainer;
 import frc.robot2024.commands.Intake.MoveToAnglePos;
 import frc.robot2024.subsystems.Intake;
 import frc.robot2024.subsystems.Shooter;
@@ -45,9 +45,9 @@ public class EtudeIntake extends Command {
    */
   public EtudeIntake(boolean stay_down) {
     this.stay_down = stay_down;
-    this.intake = RobotContainerOrig.getSubsystem(Intake.class);
-    this.transfer = RobotContainerOrig.getSubsystem(Transfer.class);
-    this.shooter = RobotContainerOrig.getSubsystemOrNull("SHOOTER");
+    this.intake = RobotContainer.getSubsystem(Intake.class);
+    this.transfer = RobotContainer.getSubsystem(Transfer.class);
+    this.shooter = RobotContainer.getSubsystemOrNull("SHOOTER");
     addRequirements(intake, transfer);
   }
 

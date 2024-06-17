@@ -7,7 +7,7 @@ package frc.lib2202.command;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.lib2202.NetworkTableUtil;
+import frc.lib2202.util.NetworkTableUtil;
 
 public abstract class WatcherCmd extends Command implements NetworkTableUtil{
   /** Creates a new Watcher. */

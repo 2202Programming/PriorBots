@@ -26,8 +26,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot2024.Constants.CAN;
 import frc.robot2024.Constants.DigitalIO;
 import frc.lib2202.command.WatcherCmd;
-import frc.lib2202.NeoServo;
-import frc.lib2202.PIDFController;
+import frc.lib2202.util.NeoServo;
+import frc.lib2202.util.PIDFController;
 
 public class Intake extends SubsystemBase {
   //angle constants for commands
@@ -84,6 +84,9 @@ public class Intake extends SubsystemBase {
   // Note State variables
   boolean hasNote = false; // true when Intake has Note
 
+
+  final boolean altencoder;
+
   /*
    * Intake 
    * 
@@ -97,7 +100,9 @@ public class Intake extends SubsystemBase {
     final double angMaxAccel = 200.0; // [deg/s^2] (likely not used in servo until smart profile is enabled)
     final double angPosTol = 2.0; // [deg]
     final double angVelTol = 1.0; // [deg/s]
-
+    
+    this.altencoder = altEncoder;
+  
     //intake roller constants
     final double wheel_radius = 1.55*2.54; //in --> [cm]
     final double conversionFactor = wheel_radius*wheelGearRatio;
@@ -249,6 +254,11 @@ public class Intake extends SubsystemBase {
     this.angle_servo.periodic(); // do child objects first
     // no need for edge detect on Elvis, gate covers horizantal region of intake roller
     hasNote = senseNote();
+  }
+
+  // Account for minor differences between the different intake versions
+  public double getDownAngle() {
+    return altencoder  ? 91.0 : Intake.DownPos;
   }
 
   /*

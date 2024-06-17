@@ -5,10 +5,10 @@
 package frc.robot2024.commands.Shooter;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.base.RobotContainerOrig;
-import frc.robot2023.subsystems.Shooter;
-import frc.robot2023.subsystems.ShooterServo;
-import frc.robot2023.subsystems.Transfer;
+import frc.lib2202.builder.RobotContainer;
+import frc.robot2024.subsystems.Shooter;
+import frc.robot2024.subsystems.ShooterServo;
+import frc.robot2024.subsystems.Transfer;
 
 public class TestShoot extends Command {
   /** Creates a new ShootTest. */
@@ -16,12 +16,12 @@ public class TestShoot extends Command {
   double speed;
   Transfer transfer;
   public TestShoot(double speed) {
-        this.shooter = RobotContainerOrig.getSubsystemOrNull(Shooter.class);
+        this.shooter = RobotContainer.getSubsystemOrNull(Shooter.class);
         if(this.shooter == null){
-          this.shooter = RobotContainerOrig.getSubsystem(ShooterServo.class);
+          this.shooter = RobotContainer.getSubsystem(ShooterServo.class);
         }
         this.speed = speed;
-        this.transfer = RobotContainerOrig.getSubsystem(Transfer.class);
+        this.transfer = RobotContainer.getSubsystem(Transfer.class);
     // Use addRequirements() here to declare subsystem dependencies.
   }
 

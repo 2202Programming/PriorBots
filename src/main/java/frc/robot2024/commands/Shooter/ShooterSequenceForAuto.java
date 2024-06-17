@@ -5,12 +5,12 @@
 package frc.robot2024.commands.Shooter;
 
 import edu.wpi.first.wpilibj.util.Color8Bit;
-import frc.base.RobotContainerOrig;
-import frc.robot2023.subsystems.BlinkyLights;
-import frc.robot2023.subsystems.BlinkyLights.BlinkyLightUser;
-import frc.robot2023.subsystems.Intake;
-import frc.robot2023.subsystems.Shooter;
-import frc.robot2023.subsystems.Transfer;
+import frc.lib2202.builder.RobotContainer;
+import frc.lib2202.subsystem.BlinkyLights;
+import frc.lib2202.subsystem.BlinkyLights.BlinkyLightUser;
+import frc.robot2024.subsystems.Intake;
+import frc.robot2024.subsystems.Shooter;
+import frc.robot2024.subsystems.Transfer;
 
 /**
  * Button pressed starts command
@@ -43,9 +43,9 @@ public class ShooterSequenceForAuto extends BlinkyLightUser {
   public ShooterSequenceForAuto(boolean shootHigh, double speed) {
     this.shootHigh = shootHigh;
     this.speed = speed;
-    this.shooter = RobotContainerOrig.getSubsystem(Shooter.class);
-    this.transfer = RobotContainerOrig.getSubsystem(Transfer.class);
-    this.intake = RobotContainerOrig.getSubsystem(Intake.class);
+    this.shooter = RobotContainer.getSubsystem(Shooter.class);
+    this.transfer = RobotContainer.getSubsystem(Transfer.class);
+    this.intake = RobotContainer.getSubsystem(Intake.class);
     addRequirements(shooter, transfer, intake);
     // Use addRequirements() here to declare subsystem dependencies.
   }

@@ -5,13 +5,13 @@
 package frc.robot2024;
 
 import edu.wpi.first.math.geometry.Translation2d;
-import frc.lib2202.subsystem.Swerve.Config.CANConfig;
-import frc.lib2202.subsystem.Swerve.Config.CANModuleConfig;
-import frc.lib2202.subsystem.Swerve.Config.ChassisConfig;
-import frc.lib2202.subsystem.Swerve.Config.ChassisInversionSpecs;
-import frc.lib2202.subsystem.Swerve.Config.ModuleInversionSpecs;
-import frc.lib2202.subsystem.Swerve.Config.WheelOffsets;
-import frc.lib2202.PIDFController;
+import frc.lib2202.subsystem.swerve.config.CANConfig;
+import frc.lib2202.subsystem.swerve.config.CANModuleConfig;
+import frc.lib2202.subsystem.swerve.config.ChassisConfig;
+import frc.lib2202.subsystem.swerve.config.ChassisInversionSpecs;
+import frc.lib2202.subsystem.swerve.config.ModuleInversionSpecs;
+import frc.lib2202.subsystem.swerve.config.WheelOffsets;
+import frc.lib2202.util.PIDFController;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide

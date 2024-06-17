@@ -1,4 +1,4 @@
-package frc.lib2202.subsystem.Swerve.Config;
+package frc.lib2202.subsystem.swerve.config;
 
 // Support for multiple robots on same code base
 public class ChassisInversionSpecs {

@@ -5,8 +5,8 @@
 package frc.robot2024.commands.Intake;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.base.RobotContainerOrig;
-import frc.robot2023.subsystems.Intake;
+import frc.lib2202.builder.RobotContainer;
+import frc.robot2024.subsystems.Intake;
 
 public class TestIntakeAngle extends  Command {
     //Safe speed for moving to limit switch
@@ -15,7 +15,7 @@ public class TestIntakeAngle extends  Command {
     public final Intake intake;
     double angleVelocity; //[deg/s]
     public TestIntakeAngle(double angleVelocity) {
-        this.intake = RobotContainerOrig.getSubsystem(Intake.class);
+        this.intake = RobotContainer.getSubsystem(Intake.class);
         this.angleVelocity = angleVelocity;
     }
 

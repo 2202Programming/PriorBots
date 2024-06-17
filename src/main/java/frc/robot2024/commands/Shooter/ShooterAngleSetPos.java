@@ -5,8 +5,8 @@
 package frc.robot2024.commands.Shooter;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.base.RobotContainerOrig;
-import frc.robot2023.subsystems.ShooterServo;
+import frc.lib2202.builder.RobotContainer;
+import frc.robot2024.subsystems.ShooterServo;
 
 public class ShooterAngleSetPos extends Command {
   ShooterServo shooter;
@@ -14,7 +14,7 @@ public class ShooterAngleSetPos extends Command {
   boolean done;
  /* Move shooter to requested angle[deg] */
   public ShooterAngleSetPos(double desired_pos) {
-    shooter = RobotContainerOrig.getSubsystem(ShooterServo.class);
+    shooter = RobotContainer.getSubsystem(ShooterServo.class);
     this.desired_pos = desired_pos;
   }
 

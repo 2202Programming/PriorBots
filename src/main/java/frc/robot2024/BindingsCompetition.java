@@ -17,16 +17,16 @@ import frc.robot2024.commands.Shooter.ShooterAngleSetPos;
 import frc.robot2024.commands.Shooter.ShooterAngleVelMove;
 import frc.robot2024.commands.Shooter.ShooterServoSequence;
 import frc.robot2024.commands.Shooter.ShooterServoSequenceDebug;
-import frc.robot2024.commands.Swerve.AllianceAwareGyroReset;
-import frc.robot2024.commands.Swerve.RobotCentricDrive;
-import frc.robot2024.commands.Swerve.TargetCentricDrive;
 import frc.robot2024.commands.auto.AutoShooting;
 import frc.robot2024.commands.auto.AutoShooting.ShootingTarget;
 import frc.robot2024.subsystems.AmpMechanism;
 import frc.robot2024.subsystems.Climber;
 import frc.robot2024.subsystems.Intake;
 import frc.robot2024.subsystems.ShooterServo;
-import frc.lib2202.subsystem.Swerve.SwerveDrivetrain;
+import frc.lib2202.command.swerve.AllianceAwareGyroReset;
+import frc.lib2202.command.swerve.RobotCentricDrive;
+import frc.lib2202.command.swerve.TargetCentricDrive;
+import frc.lib2202.subsystem.swerve.SwerveDrivetrain;
 import frc.lib2202.subsystem.hid.HID_Xbox_Subsystem;
 
 /*

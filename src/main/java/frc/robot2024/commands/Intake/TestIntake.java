@@ -4,9 +4,9 @@
 
 package frc.robot2024.commands.Intake;
 
-import frc.robot2023.subsystems.BlinkyLights.BlinkyLightUser;
-import frc.base.RobotContainerOrig;
-import frc.robot2023.subsystems.Intake;
+import frc.lib2202.subsystem.BlinkyLights.BlinkyLightUser;
+import frc.lib2202.builder.RobotContainer;
+import frc.robot2024.subsystems.Intake;
 
 
 public class TestIntake extends BlinkyLightUser {
@@ -16,7 +16,7 @@ public class TestIntake extends BlinkyLightUser {
     double speed;
     public TestIntake(double speed) {
         this.speed = speed;
-        this.intake = RobotContainerOrig.getSubsystem(Intake.class);
+        this.intake = RobotContainer.getSubsystem(Intake.class);
     }
 
     // Called when the command is initially scheduled.

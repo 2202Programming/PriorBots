@@ -1,6 +1,6 @@
-package frc.lib2202.subsystem.Swerve.Config;
+package frc.lib2202.subsystem.swerve.config;
 
-import frc.lib2202.PIDFController;
+import frc.lib2202.util.PIDFController;
 
 public class ChassisConfig {
 

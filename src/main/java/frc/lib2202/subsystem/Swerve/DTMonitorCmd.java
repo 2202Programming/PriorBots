@@ -2,16 +2,16 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.lib2202.subsystem.Swerve;
+package frc.lib2202.subsystem.swerve;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.base.RobotContainerOrig;
+import frc.lib2202.builder.RobotContainer;
 import frc.lib2202.command.WatcherCmd;
-import frc.lib2202.subsystem.Swerve.Config.ChassisConfig;
+import frc.lib2202.subsystem.swerve.config.ChassisConfig;
 
 /*
  * Watcher for SwerveDrivetrain and its vision data.
@@ -46,9 +46,9 @@ public class DTMonitorCmd extends WatcherCmd {
   Pose2d pv_pose; 
 
   public DTMonitorCmd() {
-    sdt = RobotContainerOrig.getSubsystem(SwerveDrivetrain.class);
+    sdt = RobotContainer.getSubsystem(SwerveDrivetrain.class);
     odometry = sdt.getOdometry();
-    cc = RobotContainerOrig.getRobotSpecs().getChassisConfig();
+    cc = RobotContainer.getRobotSpecs().getChassisConfig();
     
     // use smartdashboard for complex objects
     var tname = getTableName();

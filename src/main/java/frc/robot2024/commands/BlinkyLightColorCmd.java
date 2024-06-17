@@ -7,12 +7,12 @@ package frc.robot2024.commands;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
-import frc.base.RobotContainerOrig;
-import frc.robot2023.subsystems.BlinkyLights;
-import frc.robot2023.subsystems.Intake;
-import frc.robot2023.subsystems.ShooterServo;
-import frc.robot2023.subsystems.Transfer;
-import frc.robot2023.subsystems.BlinkyLights.BlinkyLightUser;
+import frc.lib2202.builder.RobotContainer;
+import frc.lib2202.subsystem.BlinkyLights;
+import frc.robot2024.subsystems.Intake;
+import frc.robot2024.subsystems.ShooterServo;
+import frc.robot2024.subsystems.Transfer;
+import frc.lib2202.subsystem.BlinkyLights.BlinkyLightUser;
 
 /*
  * An example of how to use the blinky lights in your command.
@@ -27,9 +27,9 @@ import frc.robot2023.subsystems.BlinkyLights.BlinkyLightUser;
 public class BlinkyLightColorCmd extends BlinkyLightUser {
   /** Creates a new Lights Command */
   private Color8Bit myColor;
-  ShooterServo shooter = RobotContainerOrig.getSubsystem(ShooterServo.class);
-  Transfer transfer = RobotContainerOrig.getSubsystem(Transfer.class);
-  Intake intake = RobotContainerOrig.getSubsystem(Intake.class);
+  ShooterServo shooter = RobotContainer.getSubsystem(ShooterServo.class);
+  Transfer transfer = RobotContainer.getSubsystem(Transfer.class);
+  Intake intake = RobotContainer.getSubsystem(Intake.class);
 
   public BlinkyLightColorCmd(Color8Bit Color) {
     myColor = Color;

@@ -7,7 +7,7 @@ package frc.lib2202.command;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.base.Constants;
+import frc.lib2202.Constants;
 
 public class AccelWatcher extends Command {
     final DoubleSupplier accelerometer ;

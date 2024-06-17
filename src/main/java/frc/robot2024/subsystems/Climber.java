@@ -12,8 +12,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot2024.Constants.CAN;
 import frc.lib2202.command.WatcherCmd;
-import frc.lib2202.NeoServo;
-import frc.lib2202.PIDFController;
+import frc.lib2202.util.NeoServo;
+import frc.lib2202.util.PIDFController;
 
 public class Climber extends SubsystemBase {
   /** Creates a new Climber. */

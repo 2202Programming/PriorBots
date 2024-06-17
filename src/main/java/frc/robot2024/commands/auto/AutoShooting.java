@@ -6,14 +6,14 @@ package frc.robot2024.commands.auto;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.base.RobotContainerOrig;
+import frc.lib2202.builder.RobotContainer;
+import frc.lib2202.command.swerve.FaceToTag;
+import frc.lib2202.command.swerve.RotateUntilSeeTags;
 import frc.robot2024.commands.Shooter.ShooterServoSequence;
 import frc.robot2024.commands.Shooter.SpeakerShooter;
-import frc.robot2024.commands.Swerve.FaceToTag;
-import frc.robot2024.commands.Swerve.RotateUntilSeeTags;
-import frc.robot2024.subsystems.Sensors.LimelightHelpers.LimelightTarget_Fiducial;
-import frc.lib2202.subsystem.Swerve.SwerveDrivetrain;
-import frc.robot2024.subsystems.Sensors.Limelight_Subsystem;
+import frc.lib2202.subsystem.Limelight;
+import frc.lib2202.subsystem.LimelightHelpers.LimelightTarget_Fiducial;
+import frc.lib2202.subsystem.swerve.SwerveDrivetrain;
 
 public class AutoShooting extends SequentialCommandGroup {
 
@@ -23,7 +23,7 @@ public class AutoShooting extends SequentialCommandGroup {
   final double TrapRPM = 1000.0;
   final double TrapAngle = 45.0;
 
-  private Limelight_Subsystem limelight;
+  private Limelight limelight;
   SwerveDrivetrain drivetrain;
 
   /**
@@ -33,8 +33,8 @@ public class AutoShooting extends SequentialCommandGroup {
    * @param target Enum target to shoot at.
    */
   public AutoShooting(ShootingTarget target) {
-    drivetrain = RobotContainerOrig.getSubsystem(SwerveDrivetrain.class);
-    limelight = RobotContainerOrig.getSubsystem(Limelight_Subsystem.class);
+    drivetrain = RobotContainer.getSubsystem(SwerveDrivetrain.class);
+    limelight = RobotContainer.getSubsystem(Limelight.class);
 
     double tagID = determineTag(target);
 
@@ -53,8 +53,8 @@ public class AutoShooting extends SequentialCommandGroup {
   /** Test code using speakerShooter */
   public AutoShooting(ShootingTarget target, double rpm) {
     this(target);
-    drivetrain = RobotContainerOrig.getSubsystem(SwerveDrivetrain.class);
-    limelight = RobotContainerOrig.getSubsystem(Limelight_Subsystem.class);
+    drivetrain = RobotContainer.getSubsystem(SwerveDrivetrain.class);
+    limelight = RobotContainer.getSubsystem(Limelight.class);
 
     double tagID = determineTag(target);
 
@@ -72,8 +72,8 @@ public class AutoShooting extends SequentialCommandGroup {
   }
     /**Test code */
   public AutoShooting(ShootingTarget target, double angle, double rpm) {
-    drivetrain = RobotContainerOrig.getSubsystem(SwerveDrivetrain.class);
-    limelight = RobotContainerOrig.getSubsystem(Limelight_Subsystem.class);
+    drivetrain = RobotContainer.getSubsystem(SwerveDrivetrain.class);
+    limelight = RobotContainer.getSubsystem(Limelight.class);
 
     double tagID = determineTag(target);
 

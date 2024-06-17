@@ -8,13 +8,13 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.lib2202.command.swerve.FaceToTag;
+import frc.lib2202.command.swerve.RotateTo;
+import frc.lib2202.command.swerve.RotateUntilSeeTags;
 import frc.robot2024.commands.Intake.EjectNote;
 import frc.robot2024.commands.Intake.IntakeSequence;
 import frc.robot2024.commands.Shooter.ShooterSequence;
 import frc.robot2024.commands.Shooter.ShooterServoSequence;
-import frc.robot2024.commands.Swerve.FaceToTag;
-import frc.robot2024.commands.Swerve.RotateTo;
-import frc.robot2024.commands.Swerve.RotateUntilSeeTags;
 import frc.robot2024.subsystems.Intake;
 /*
  * Place commands named in PathPlaner autos here.
@@ -41,7 +41,7 @@ public class RegisteredCommands {
         NamedCommands.registerCommand("eject", 
             new EjectNote());
         
-        if (RobotContainer.getRobotSpecs().getRobotNameString().equals("CompetitionBotAlpha2024")) {// Just for alpha
+        if (RobotContainer.getRobotName().equals("CompetitionBotAlpha2024")) {// Just for alpha
             NamedCommands.registerCommand("shoot",
                 new ShooterSequence(true, 3500.0).withTimeout(ShooterTimeOut));
             

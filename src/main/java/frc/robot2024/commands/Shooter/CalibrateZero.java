@@ -6,8 +6,8 @@ package frc.robot2024.commands.Shooter;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.base.RobotContainerOrig;
-import frc.robot2023.subsystems.ShooterServo;
+import frc.lib2202.builder.RobotContainer;
+import frc.robot2024.subsystems.ShooterServo;
 
 /*
  * Calibrates the shooter by movint towards the lowest angle (zero extension)
@@ -24,7 +24,7 @@ public class CalibrateZero extends Command {
 
   //Lower the shooter servo until it stops, then set relative encoder to zero.
   public CalibrateZero() {
-    shooterServo = RobotContainerOrig.getSubsystem(ShooterServo.class);
+    shooterServo = RobotContainer.getSubsystem(ShooterServo.class);
     addRequirements(shooterServo);
   }
 

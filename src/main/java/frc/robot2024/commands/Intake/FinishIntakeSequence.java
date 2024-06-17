@@ -1,9 +1,9 @@
 package frc.robot2024.commands.Intake;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.base.RobotContainerOrig;
-import frc.robot2023.subsystems.Intake;
-import frc.robot2023.subsystems.Transfer;
+import frc.lib2202.builder.RobotContainer;
+import frc.robot2024.subsystems.Intake;
+import frc.robot2024.subsystems.Transfer;
 
 /*
  * This is used if the intakeSequence is interrupted but we had a note
@@ -29,8 +29,8 @@ public class FinishIntakeSequence extends Command {
         this.count = count;
         this.stay_down = stay_down;
         this.transfer_detected = transfer_detected;
-        this.intake = RobotContainerOrig.getSubsystem(Intake.class);
-        this.transfer = RobotContainerOrig.getSubsystem(Transfer.class);
+        this.intake = RobotContainer.getSubsystem(Intake.class);
+        this.transfer = RobotContainer.getSubsystem(Transfer.class);
     }
 
     @Override

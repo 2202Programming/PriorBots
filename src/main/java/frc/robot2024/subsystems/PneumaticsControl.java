@@ -7,7 +7,7 @@ package frc.robot2024.subsystems;
 import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot2023.Constants.CAN;
+import frc.robot2024.Constants.CAN;
 
 public class PneumaticsControl extends SubsystemBase {
 

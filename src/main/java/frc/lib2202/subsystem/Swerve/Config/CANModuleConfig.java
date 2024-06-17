@@ -1,4 +1,4 @@
-package frc.lib2202.subsystem.Swerve.Config;
+package frc.lib2202.subsystem.swerve.config;
 
  // CAN IDs for single corner of the swerve drivetrain
 

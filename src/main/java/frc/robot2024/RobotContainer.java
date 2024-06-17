@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.lib2202.builder.IRobotSpec;
 import frc.lib2202.command.PDPMonitorCmd;
-import frc.lib2202.subsystem.Swerve.SwerveDrivetrain;
+import frc.lib2202.subsystem.swerve.SwerveDrivetrain;
 import frc.lib2202.subsystem.hid.HID_Xbox_Subsystem;
 import frc.robot2024.commands.Shooter.ContinousAngleTracker;
 
@@ -32,7 +32,7 @@ public class RobotContainer {
   }
 
   // Change the line below for testing, try not to commit a change 
-  public static final frc.robot.RobotContainerOrig.Bindings bindings = Bindings.Competition;
+  public static final frc.robot.RobotContainer.Bindings bindings = Bindings.Competition;
 
   // The robot's subsystems and commands are defined here...
   static RobotContainer rc;

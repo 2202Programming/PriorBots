@@ -8,8 +8,8 @@ import com.revrobotics.RelativeEncoder;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.base.RobotContainerOrig;
-import frc.robot2023.subsystems.Shooter;
+import frc.lib2202.builder.RobotContainer;
+import frc.robot2024.subsystems.Shooter;
 
 public class RPMShooter extends Command {
   private final Shooter m_shooter;
@@ -36,7 +36,7 @@ public class RPMShooter extends Command {
   private double currentD = 0.0;
 
   public RPMShooter() {
-    m_shooter = RobotContainerOrig.getSubsystem(Shooter.class);
+    m_shooter = RobotContainer.getSubsystem(Shooter.class);
     addRequirements(m_shooter);
   }
 

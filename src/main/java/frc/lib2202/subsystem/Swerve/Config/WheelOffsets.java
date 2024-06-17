@@ -1,4 +1,4 @@
-package frc.lib2202.subsystem.Swerve.Config;
+package frc.lib2202.subsystem.swerve.config;
 
  // CANCoder offsets for absolure calibration - stored in the magnet offset of
   // the CC. [degrees]

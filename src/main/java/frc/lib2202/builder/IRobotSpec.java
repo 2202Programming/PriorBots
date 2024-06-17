@@ -4,10 +4,10 @@
 
 package frc.lib2202.builder;
 
-import frc.lib2202.subsystem.Swerve.Config.CANConfig;
-import frc.lib2202.subsystem.Swerve.Config.ChassisConfig;
-import frc.lib2202.subsystem.Swerve.Config.ChassisInversionSpecs;
-import frc.lib2202.subsystem.Swerve.Config.WheelOffsets;
+import frc.lib2202.subsystem.swerve.config.CANConfig;
+import frc.lib2202.subsystem.swerve.config.ChassisConfig;
+import frc.lib2202.subsystem.swerve.config.ChassisInversionSpecs;
+import frc.lib2202.subsystem.swerve.config.WheelOffsets;
 
 /**
  * InnerIRobotSpec
@@ -15,9 +15,11 @@ import frc.lib2202.subsystem.Swerve.Config.WheelOffsets;
 public interface IRobotSpec {
 
     public String getRobotName();
+    public RobotLimits  getRobotLimits();
+
     //swerve specs
     public boolean isSwerve();
-    public WheelOffsets getWheelOffsets();
+    public WheelOffsets getWheelOffset();
     public ChassisConfig getChassisConfig();
     public SubsystemConfig getSubsystemConfig();
     public ChassisInversionSpecs getChassisInversionSpecs();
@@ -26,4 +28,6 @@ public interface IRobotSpec {
     public abstract void setBindings();
     public abstract SubsystemConfig[] getSubsystemConfigs();  // some years may have multiple bots
     
+    public boolean burnFlash();
+
 }

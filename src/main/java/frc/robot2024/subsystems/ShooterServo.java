@@ -7,8 +7,8 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot2024.Constants.CAN;
 import frc.robot2024.Constants.DigitalIO;
 import frc.lib2202.command.WatcherCmd;
-import frc.lib2202.NeoServo;
-import frc.lib2202.PIDFController;
+import frc.lib2202.util.NeoServo;
+import frc.lib2202.util.PIDFController;
 
 public class ShooterServo extends Shooter {
 

@@ -1,4 +1,4 @@
-package frc.lib2202.subsystem.Swerve;
+package frc.lib2202.subsystem.swerve;
 
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.MagnetSensorConfigs;
@@ -16,17 +16,19 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import frc.lib2202.subsystem.Swerve.Config.ChassisConfig;
-import frc.base.Constants;
-import frc.base.RobotContainerOrig;
-import frc.robot2023.Constants.CAN;
-import frc.base.Constants.DriveTrain;
-import frc.lib2202.ModMath;
-import frc.lib2202.PIDFController;
+import frc.lib2202.subsystem.swerve.config.ChassisConfig;
+import frc.lib2202.util.ModMath;
+import frc.lib2202.util.PIDFController;
+
+import frc.lib2202.builder.IRobotSpec;
+import frc.lib2202.builder.RobotContainer;
+import frc.lib2202.builder.RobotLimits;
+
+//import frc.robot2024.Constants.CAN;
 
 public class SwerveModuleMK3 {
-  public final String NT_Name = "DT"; // expose data under DriveTrain table
-  // Hardware PID settings in Constants.DriveTrain PIDFController
+  public final String NT_Name = "DT";
+
   // PID slot for angle and drive pid on SmartMax controller
   final int kSlot = 0;
 
@@ -42,6 +44,7 @@ public class SwerveModuleMK3 {
   private final SparkPIDController angleMotorPID; // sparkmax PID can only use internal NEO encoders
   private final RelativeEncoder angleEncoder; // aka internalAngle
   private final RelativeEncoder driveEncoder;
+  
   // CTRE devices
   private final CANcoder absEncoder; // aka externalAngle (external to Neo/Smartmax)
   private double angleCmdInvert;
@@ -60,8 +63,7 @@ public class SwerveModuleMK3 {
   String NTPrefix;
 
   // m_ -> measurements made every period - public so they can be pulled for
-  // network
-  // tables...
+  // network tables...
   double m_internalAngle; // measured Neo unbounded [deg]
   double m_externalAngle; // measured CANCoder bounded +/-180 [deg]
   double m_velocity; // measured velocity [wheel's-units/s] [m/s]
@@ -102,14 +104,17 @@ public class SwerveModuleMK3 {
     absEncoder = absEnc;
     myprefix = prefix;
 
+    IRobotSpec specs = RobotContainer.getRobotSpecs();
+    RobotLimits limits = specs.getRobotLimits();
+
     // cc is the chassis config for all our pathing math
-    cc = RobotContainerOrig.getRobotSpecs().getChassisConfig();
+    cc = specs.getChassisConfig();
 
     // Always restore factory defaults at least once for new sparks - it removes gremlins
-    driveMotor.restoreFactoryDefaults(CAN.BURN_FLASH);
-    sleep(CAN.BURN_FLASH ? 1000 : 0); // only need if flash is true
-    angleMotor.restoreFactoryDefaults(CAN.BURN_FLASH);
-    sleep(CAN.BURN_FLASH ? 1000 : 0); // only need if flash is true
+    driveMotor.restoreFactoryDefaults(specs.burnFlash());
+    sleep(specs.burnFlash() ? 1000 : 0); // only need if flash is true
+    angleMotor.restoreFactoryDefaults(specs.burnFlash());
+    sleep(specs.burnFlash() ? 1000 : 0); // only need if flash is true
 
     // account for command sign differences if needed
     angleCmdInvert = (invertAngleCmd) ? -1.0 : 1.0;
@@ -139,12 +144,12 @@ public class SwerveModuleMK3 {
     cc.drivePIDF.copyTo(driveMotorPID, kSlot); // velocity mode
 
     // new current limits
-    driveMotor.setSmartCurrentLimit(DriveTrain.driveStallAmp, DriveTrain.freeAmp);
-    angleMotor.setSmartCurrentLimit(DriveTrain.angleStallAmp, DriveTrain.freeAmp);
+    driveMotor.setSmartCurrentLimit(limits.driveStallAmp, limits.freeAmp);
+    angleMotor.setSmartCurrentLimit(limits.angleStallAmp, limits.freeAmp);
     sleep(100);
 
     // burn the motor flash if BURN_FLASH is true in frc.robot.Constants.CAN
-    if (frc.base.CAN.BURN_FLASH) {
+    if (specs.burnFlash()) {
       REVLibError angleError = angleMotor.burnFlash();
       sleep(1500); // takes 1 sec to burn per Dean
 

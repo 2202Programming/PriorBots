@@ -5,8 +5,8 @@
 package frc.robot2024.commands.Intake;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.base.RobotContainerOrig;
-import frc.robot2023.subsystems.Intake;
+import frc.lib2202.builder.RobotContainer;
+import frc.robot2024.subsystems.Intake;
 
 public class DelayEject extends Command {
   final Intake intake;
@@ -14,7 +14,7 @@ public class DelayEject extends Command {
   int count;
   /** Creates a new DelayEject. */
   public DelayEject() {
-    intake = RobotContainerOrig.getSubsystem(Intake.class);
+    intake = RobotContainer.getSubsystem(Intake.class);
     // Use addRequirements() here to declare subsystem dependencies.
   }
 

@@ -18,7 +18,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot2024.Constants.CAN;
 import frc.robot2024.Constants.PCM1;
 import frc.lib2202.command.WatcherCmd;
-import frc.lib2202.PIDFController;
+import frc.lib2202.util.PIDFController;
 
 public class Shooter extends SubsystemBase {
 

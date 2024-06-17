@@ -18,8 +18,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.base.RobotContainerOrig;
-import frc.robot2023.Constants.CAN;
+import frc.lib2202.builder.RobotContainer;
 
 public class BlinkyLights extends SubsystemBase {
     // variables and constants
@@ -188,7 +187,7 @@ public class BlinkyLights extends SubsystemBase {
         final BlinkyLights lights;
 
         public BlinkyLightUser() {
-            lights = RobotContainerOrig.getObjectOrNull("LIGHTS");
+            lights = RobotContainer.getObjectOrNull("LIGHTS");
         }
 
         BlinkyLightUser(BlinkyLights lights) {

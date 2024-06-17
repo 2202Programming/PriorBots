@@ -6,8 +6,8 @@
 package frc.robot2024.commands.Shooter;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.base.RobotContainerOrig;
-import frc.robot2023.subsystems.ShooterServo;
+import frc.lib2202.builder.RobotContainer;
+import frc.robot2024.subsystems.ShooterServo;
 
 public class CalibrateAngle extends Command {
 
@@ -16,7 +16,7 @@ public class CalibrateAngle extends Command {
   boolean done;
   /** Creates a new ShooterAngleVelMove. */
   public CalibrateAngle(double vel) {
-    shooter = RobotContainerOrig.getSubsystem(ShooterServo.class);
+    shooter = RobotContainer.getSubsystem(ShooterServo.class);
     this.vel = vel;
     addRequirements(shooter);
   }

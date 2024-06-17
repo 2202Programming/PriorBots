@@ -5,7 +5,7 @@
 package frc.robot2024.commands.Climber;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.base.RobotContainerOrig;
+import frc.lib2202.builder.RobotContainer;
 import frc.robot2024.subsystems.Climber;
 
 public class Climb extends Command {
@@ -19,7 +19,7 @@ public class Climb extends Command {
    */
   public Climb(double pos) {  
     // Use addRequirements() here to declare subsystem dependencies.
-    climber = RobotContainerOrig.getSubsystem(Climber.class);
+    climber = RobotContainer.getSubsystem(Climber.class);
     this.pos = pos;
     addRequirements(climber);
   }

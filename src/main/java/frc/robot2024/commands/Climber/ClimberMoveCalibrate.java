@@ -5,7 +5,7 @@
 package frc.robot2024.commands.Climber;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.base.RobotContainerOrig;
+import frc.lib2202.builder.RobotContainer;
 import frc.robot2024.subsystems.Climber;
 
 public class ClimberMoveCalibrate extends Command {
@@ -15,7 +15,7 @@ public class ClimberMoveCalibrate extends Command {
   final double tolerance = 0.25;
 
   public ClimberMoveCalibrate() {
-    climber = RobotContainerOrig.getSubsystem(Climber.class);
+    climber = RobotContainer.getSubsystem(Climber.class);
     addRequirements(climber);
   }
 

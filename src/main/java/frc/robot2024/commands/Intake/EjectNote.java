@@ -5,17 +5,17 @@
 package frc.robot2024.commands.Intake;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.base.RobotContainerOrig;
-import frc.robot2023.subsystems.Intake;
-import frc.robot2023.subsystems.Transfer;
+import frc.lib2202.builder.RobotContainer;
+import frc.robot2024.subsystems.Intake;
+import frc.robot2024.subsystems.Transfer;
 
 public class EjectNote extends Command {
   /** Creates a new IntakeReverse. */
   final Intake intake;
   final Transfer transfer;
   public EjectNote() {
-    this.intake = RobotContainerOrig.getSubsystem(Intake.class);
-    this.transfer = RobotContainerOrig.getSubsystem(Transfer.class);
+    this.intake = RobotContainer.getSubsystem(Intake.class);
+    this.transfer = RobotContainer.getSubsystem(Transfer.class);
     // Use addRequirements() here to declare subsystem dependencies.
   }
 

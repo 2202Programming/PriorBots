@@ -5,8 +5,8 @@
 package frc.robot2024.commands.Intake;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.base.RobotContainerOrig;
-import frc.robot2023.subsystems.Transfer;
+import frc.lib2202.builder.RobotContainer;
+import frc.robot2024.subsystems.Transfer;
 /*
  * Simple command to pull note through transfer and stop at good Note location.
  */
@@ -17,7 +17,7 @@ public class TestTransfer extends Command {
   int count =0;
 
   public TestTransfer(double speed) {
-    this.transfer = RobotContainerOrig.getSubsystem(Transfer.class);
+    this.transfer = RobotContainer.getSubsystem(Transfer.class);
     this.speed = speed;
     addRequirements(transfer);
   }

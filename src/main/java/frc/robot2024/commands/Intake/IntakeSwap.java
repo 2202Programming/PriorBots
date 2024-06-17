@@ -7,9 +7,9 @@ package frc.robot2024.commands.Intake;
 import java.util.function.BooleanSupplier;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.base.RobotContainerOrig;
-import frc.robot2023.subsystems.Intake;
-import frc.robot2023.subsystems.Transfer;
+import frc.lib2202.builder.RobotContainer;
+import frc.robot2024.subsystems.Intake;
+import frc.robot2024.subsystems.Transfer;
 
 /*
  * One button toggle based on current note location
@@ -24,8 +24,8 @@ public class IntakeSwap extends Command {
 
   /** Creates a new IntakeSwitch. */
   public IntakeSwap() {
-    intake = RobotContainerOrig.getSubsystem(Intake.class);
-    transfer = RobotContainerOrig.getSubsystem(Transfer.class);
+    intake = RobotContainer.getSubsystem(Intake.class);
+    transfer = RobotContainer.getSubsystem(Transfer.class);
     addRequirements(intake, transfer);
   }
 

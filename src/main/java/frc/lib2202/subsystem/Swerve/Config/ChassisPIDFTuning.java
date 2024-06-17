@@ -1,4 +1,4 @@
-package frc.lib2202.subsystem.Swerve.Config;
+package frc.lib2202.subsystem.swerve.config;
 
 /* WIP - for now placeholder for code and comments pulled out of SDT 
  * 

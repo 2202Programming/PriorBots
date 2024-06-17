@@ -6,12 +6,11 @@ package frc.robot2024.commands.Intake;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.base.RobotContainerOrig;
-import frc.robot2023.subsystems.Intake;
-import frc.robot2023.subsystems.Shooter;
-import frc.robot2023.subsystems.ShooterServo;
-import frc.robot2023.subsystems.Transfer;
-import frc.robot.util.RobotSpecs.RobotNames;
+import frc.lib2202.builder.RobotContainer;
+import frc.robot2024.subsystems.Intake;
+import frc.robot2024.subsystems.Shooter;
+import frc.robot2024.subsystems.ShooterServo;
+import frc.robot2024.subsystems.Transfer;
 
 /**
  * Driver presses button
@@ -49,11 +48,11 @@ public class IntakeSequence extends Command {
   public IntakeSequence(boolean stay_down) {
     lastScheduled = null;
     this.stay_down = stay_down;
-    this.intake = RobotContainerOrig.getSubsystem(Intake.class);
-    this.transfer = RobotContainerOrig.getSubsystem(Transfer.class);
-    Object testShooter = RobotContainerOrig.getSubsystemOrNull(Shooter.class);
+    this.intake = RobotContainer.getSubsystem(Intake.class);
+    this.transfer = RobotContainer.getSubsystem(Transfer.class);
+    Object testShooter = RobotContainer.getSubsystemOrNull(Shooter.class);
     if(testShooter == null){
-      shooter = RobotContainerOrig.getSubsystem(ShooterServo.class);
+      shooter = RobotContainer.getSubsystem(ShooterServo.class);
     }
     else{
       shooter = (Shooter) testShooter;
@@ -62,9 +61,7 @@ public class IntakeSequence extends Command {
     must_retract_shooter = !(shooter instanceof ShooterServo);
 
     // Select down angle based on which bot we have
-    DownAngle = (RobotContainerOrig.getRobotSpecs().myRobotName == RobotNames.CompetitionBotAlpha2024) ?
-      91.0 : Intake.DownPos;
-
+    DownAngle = intake.getDownAngle();
     addRequirements(intake, transfer);
   }
 
