@@ -21,11 +21,11 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.lib2202.builder.IRobotSpec;
 import frc.lib2202.builder.RobotContainer;
 import frc.lib2202.util.ModMath;
 import frc.robot2024.Constants.CAN;
 import frc.robot2024.Constants.NTStrings;
-import frc.lib2202.RobotSpecs;
 
 public class Sensors_Subsystem extends SubsystemBase {
   public enum YawSensor {

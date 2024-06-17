@@ -12,25 +12,23 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.lib2202.builder.RobotContainer;
 import frc.lib2202.command.PDPMonitorCmd;
 import frc.lib2202.command.swerve.AllianceAwareGyroReset;
-import frc.lib2202.command.swerve.FaceToTag;
 import frc.lib2202.command.swerve.RobotCentricDrive;
-import frc.lib2202.command.swerve.RotateTo;
 import frc.lib2202.command.swerve.TargetCentricDrive;
 import frc.lib2202.command.swerve.calibrate.TestConstantVelocity;
 import frc.lib2202.command.swerve.calibrate.TestRotateVelocity;
+import frc.lib2202.subsystem.hid.HID_Xbox_Subsystem;
+import frc.lib2202.subsystem.swerve.SwerveDrivetrain;
 import frc.robot2024.Constants.Tag_Pose;
 import frc.robot2024.commands.Climber.Climb;
-import frc.robot2024.commands.Climber.ClimberVelocity;
 import frc.robot2024.commands.Etude.EtudeIntake;
 import frc.robot2024.commands.Intake.AngleCalibration;
 import frc.robot2024.commands.Intake.EjectNote;
 import frc.robot2024.commands.Intake.InIntake;
 import frc.robot2024.commands.Intake.IntakeSequence;
 import frc.robot2024.commands.Intake.MoveToAnglePos;
-import frc.robot2024.commands.Intake.TestIntake;
 import frc.robot2024.commands.Intake.TestIntakeAngle;
 import frc.robot2024.commands.Shooter.CalibrateAngle;
 import frc.robot2024.commands.Shooter.CalibrateWithLS;
@@ -40,25 +38,27 @@ import frc.robot2024.commands.Shooter.ShooterAngleVelMove;
 import frc.robot2024.commands.Shooter.ShooterSequence;
 import frc.robot2024.commands.Shooter.ShooterServoSequence;
 import frc.robot2024.commands.Shooter.ShooterServoSequenceDebug;
-import frc.robot2024.commands.Shooter.SpeakerShooter;
 import frc.robot2024.commands.Shooter.TestShoot;
 import frc.robot2024.commands.auto.AutoShooting;
 import frc.robot2024.commands.auto.AutoShooting.ShootingTarget;
-import frc.robot2024.commands.auto.TurnFaceShootAuto;
 import frc.robot2024.subsystems.AmpMechanism;
 import frc.robot2024.subsystems.Climber;
 import frc.robot2024.subsystems.Intake;
 import frc.robot2024.subsystems.Shooter;
 import frc.robot2024.subsystems.ShooterServo;
-import frc.lib2202.subsystem.swerve.SwerveDrivetrain;
-import frc.lib2202.subsystem.hid.HID_Xbox_Subsystem;
-
-import frc.robot2024.util.RobotSpecs.RobotNames;
 
 /*
  * Bindings here for testing, 
  */
 public class BindingsOther {
+
+    // enum for bindings add when needed
+    public enum Bindings {
+        Competition,
+        DriveTest, Shooter_test, IntakeTesting, auto_shooter_test, new_bot_test, comp_not_comp, Etude
+    }
+
+    static Bindings bindings = Bindings.DriveTest;
 
     public static void ConfigureOther(HID_Xbox_Subsystem dc) {
         DriverBinding(dc);
@@ -67,7 +67,7 @@ public class BindingsOther {
 
     static void DriverBinding(HID_Xbox_Subsystem dc) {
         var driver = dc.Driver();
-        var bindings = RobotContainer.bindings;
+
         var drivetrain = RobotContainer.getSubsystem(SwerveDrivetrain.class);
         var intake = RobotContainer.getSubsystem(Intake.class);
 
@@ -200,9 +200,9 @@ public class BindingsOther {
 
     static void OperatorBindings(HID_Xbox_Subsystem dc) {
         var operator = dc.Operator();
-        var bindings = RobotContainer.bindings;
         boolean skip_SS_only = false;
-        final Shooter shooter = (RobotContainer.getRobotSpecs().myRobotName == RobotNames.CompetitionBotBeta2024)
+
+        final Shooter shooter = (RobotContainer.getRobotName() == "CompetitionBotBeta2024")
                 ? RobotContainer.getSubsystemOrNull(ShooterServo.class)
                 : RobotContainer.getSubsystem(Shooter.class);
         if (!(shooter instanceof ShooterServo)) {
