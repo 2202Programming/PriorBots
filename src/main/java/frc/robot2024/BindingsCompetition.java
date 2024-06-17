@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot2024.Constants.Tag_Pose;
 import frc.robot2024.commands.Climber.Climb;
 import frc.robot2024.commands.Climber.ClimberVelocity;
 import frc.robot2024.commands.Intake.AngleCalibration;
@@ -22,7 +23,7 @@ import frc.robot2024.commands.auto.AutoShooting.ShootingTarget;
 import frc.robot2024.subsystems.AmpMechanism;
 import frc.robot2024.subsystems.Climber;
 import frc.robot2024.subsystems.Intake;
-import frc.robot2024.subsystems.ShooterServo;
+
 import frc.lib2202.command.swerve.AllianceAwareGyroReset;
 import frc.lib2202.command.swerve.RobotCentricDrive;
 import frc.lib2202.command.swerve.TargetCentricDrive;
@@ -47,7 +48,7 @@ public final class BindingsCompetition {
         // Driver buttons
         driver.leftTrigger().whileTrue(new RobotCentricDrive(drivetrain, dc));
         driver.y().onTrue(new AllianceAwareGyroReset(true));
-        driver.rightTrigger().whileTrue(new TargetCentricDrive());
+        driver.rightTrigger().whileTrue(new TargetCentricDrive(Tag_Pose.ID4, Tag_Pose.ID7));
     }
 
 

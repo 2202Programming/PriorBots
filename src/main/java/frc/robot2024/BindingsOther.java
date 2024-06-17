@@ -21,6 +21,7 @@ import frc.lib2202.command.swerve.RotateTo;
 import frc.lib2202.command.swerve.TargetCentricDrive;
 import frc.lib2202.command.swerve.calibrate.TestConstantVelocity;
 import frc.lib2202.command.swerve.calibrate.TestRotateVelocity;
+import frc.robot2024.Constants.Tag_Pose;
 import frc.robot2024.commands.Climber.Climb;
 import frc.robot2024.commands.Climber.ClimberVelocity;
 import frc.robot2024.commands.Etude.EtudeIntake;
@@ -156,21 +157,21 @@ public class BindingsOther {
             case auto_shooter_test:
                 driver.y().onTrue(new AllianceAwareGyroReset(true));
                 driver.leftBumper().whileTrue(new RobotCentricDrive(drivetrain, dc));
-                driver.rightTrigger().whileTrue(new TargetCentricDrive());
+                driver.rightTrigger().whileTrue(new TargetCentricDrive(Tag_Pose.ID4, Tag_Pose.ID7));
                 driver.povUp().onTrue(new CalibrateWithLS());
                 driver.povUp().onTrue(new AngleCalibration(-25.0));
                 driver.a().whileTrue(new IntakeSequence(false)
-                .andThen(new ShooterAngleSetPos(36.0)));
-        driver.b().whileTrue(new EjectNote());
-        driver.povDown().whileTrue(new ShooterAngleVelMove(-2));
-        driver.povRight().whileTrue(new ShooterAngleVelMove(2));
+                        .andThen(new ShooterAngleSetPos(36.0)));
+                driver.b().whileTrue(new EjectNote());
+                driver.povDown().whileTrue(new ShooterAngleVelMove(-2));
+                driver.povRight().whileTrue(new ShooterAngleVelMove(2));
                 break;
 
             case Etude:
                 driver.a().onTrue(new TestConstantVelocity(3.0, 6.0));
                 driver.b().onTrue(new TestRotateVelocity(15.0, 6.0));
                 driver.y().onTrue(new AllianceAwareGyroReset(true));
-                driver.leftTrigger().whileTrue(new TargetCentricDrive());
+                driver.leftTrigger().whileTrue(new TargetCentricDrive(Tag_Pose.ID4, Tag_Pose.ID7));
                 driver.leftBumper().whileTrue(new RobotCentricDrive(drivetrain, dc));
 
                 break;
@@ -180,16 +181,16 @@ public class BindingsOther {
                 driver.a().onTrue(new TestConstantVelocity(1.0, 4.0));
                 driver.b().onTrue(new TestRotateVelocity(15.0, 6.0));
                 driver.y().onTrue(new AllianceAwareGyroReset(true));
-                driver.leftTrigger().whileTrue(new TargetCentricDrive());
+                driver.leftTrigger().whileTrue(new TargetCentricDrive(Tag_Pose.ID4, Tag_Pose.ID7));
                 driver.leftBumper().whileTrue(new RobotCentricDrive(drivetrain, dc));
 
                 break;
-                case comp_not_comp:
-        
+            case comp_not_comp:
+
                 // Driver buttons
                 driver.leftBumper().whileTrue(new RobotCentricDrive(drivetrain, dc));
                 driver.y().onTrue(new AllianceAwareGyroReset(true));
-                driver.rightTrigger().whileTrue(new TargetCentricDrive());
+                driver.rightTrigger().whileTrue(new TargetCentricDrive(Tag_Pose.ID4, Tag_Pose.ID7));
                 break;
 
             default:
@@ -234,18 +235,17 @@ public class BindingsOther {
                 operator.x().whileTrue(new InIntake(false)); // works ---> seq for stay in intake for amp shoot
                 if (!skip_SS_only) {
                     operator.povUp().onTrue(new AngleCalibration(-25.0));// intake calibrate
-                    operator.leftTrigger().onTrue   (new ShooterServoSequenceDebug());
+                    operator.leftTrigger().onTrue(new ShooterServoSequenceDebug());
                     operator.rightTrigger().onTrue(
-                        new ShooterServoSequence()); // auto shoot
+                            new ShooterServoSequence()); // auto shoot
                     // Shooter calibrate
                     operator.rightBumper().onTrue(new CalibrateWithLS());
                     operator.leftBumper().onTrue(new ShooterAngleSetPos(28.5)
-                    .andThen(new WaitCommand(15.0)).andThen(new ShooterAngleSetPos(30.0) )
-                    .andThen(new WaitCommand(15.0)).andThen(new ShooterAngleSetPos(35.0) )
-                    .andThen(new WaitCommand(15.0)).andThen(new ShooterAngleSetPos(40.0) )
-                    .andThen(new WaitCommand(15.0)).andThen(new ShooterAngleSetPos(45.0) )
-                    .andThen(new WaitCommand(15.0)).andThen(new ShooterAngleSetPos(48.0) ) 
-                    );
+                            .andThen(new WaitCommand(15.0)).andThen(new ShooterAngleSetPos(30.0))
+                            .andThen(new WaitCommand(15.0)).andThen(new ShooterAngleSetPos(35.0))
+                            .andThen(new WaitCommand(15.0)).andThen(new ShooterAngleSetPos(40.0))
+                            .andThen(new WaitCommand(15.0)).andThen(new ShooterAngleSetPos(45.0))
+                            .andThen(new WaitCommand(15.0)).andThen(new ShooterAngleSetPos(48.0)));
                     operator.povDown().whileTrue(new TestIntakeAngle(-20.0));
                     operator.povLeft().whileTrue(new TestIntakeAngle(20.0));
                     operator.povRight().onTrue(new ShooterAngleSetPos(ShooterServo.MAX_DEGREES));
@@ -299,7 +299,7 @@ public class BindingsOther {
                 }
                 operator.y().whileTrue(new IntakeSequence(true));
                 operator.b().whileTrue(new IntakeSequence(false));
-                
+
                 operator.leftBumper().onTrue(new InstantCommand(() -> {
                     shooter.setAngleSetpoint(28.52);
                 }));
@@ -317,33 +317,36 @@ public class BindingsOther {
                 operator.leftBumper().onTrue(new ShooterSequence(true, 800.0));
                 operator.rightTrigger().onTrue(new ShooterSequence(3500.0));
                 break;
-                case comp_not_comp:
-                 var sideboard = dc.SwitchBoard();
-        var AmpMechanism = RobotContainer.getSubsystem(AmpMechanism.class);
+            case comp_not_comp:
+                var sideboard = dc.SwitchBoard();
+                var AmpMechanism = RobotContainer.getSubsystem(AmpMechanism.class);
                 SmartDashboard.putNumber("AMP MECHANISM DEBUG", 0.5);
-        // Switchboard buttons too
-        sideboard.sw21().onTrue(new Climb(Climber.ExtendPosition));
-        sideboard.sw22().onTrue(new Climb(Climber.ClimbPosition));
-        sideboard.sw23().onTrue(new MoveToAnglePos(Intake.DownPos, Intake.TravelUp));
+                // Switchboard buttons too
+                sideboard.sw21().onTrue(new Climb(Climber.ExtendPosition));
+                sideboard.sw22().onTrue(new Climb(Climber.ClimbPosition));
+                sideboard.sw23().onTrue(new MoveToAnglePos(Intake.DownPos, Intake.TravelUp));
 
-        /***************************************************************************************/
-        // REAL COMPETITION BINDINGS.
-        operator.a().whileTrue(new SequentialCommandGroup(
-            new InstantCommand( ()-> {shooter.setAngleSetpoint(32.0); }),
-            new IntakeSequence(false)));
+                /***************************************************************************************/
+                // REAL COMPETITION BINDINGS.
+                operator.a().whileTrue(new SequentialCommandGroup(
+                        new InstantCommand(() -> {
+                            shooter.setAngleSetpoint(32.0);
+                        }),
+                        new IntakeSequence(false)));
 
-        operator.b().whileTrue(new EjectNote()); // eject note from intake
-        operator.x().whileTrue(new InIntake(false)); // works ---> seq for stay in intake for amp shoot
-operator.povUp().onTrue(new AngleCalibration(-25.0));// intake calibrate
+                operator.b().whileTrue(new EjectNote()); // eject note from intake
+                operator.x().whileTrue(new InIntake(false)); // works ---> seq for stay in intake for amp shoot
+                operator.povUp().onTrue(new AngleCalibration(-25.0));// intake calibrate
 
-operator.rightBumper().onTrue(new ShooterServoSequence(46.5, 2200.0));                                                                                                
-operator.rightTrigger().onTrue(new ShooterServoSequence()); // was 35
-operator.leftTrigger().onTrue(new ShooterServoSequenceDebug());
-        // Calibration commands
-    operator.povUp().onTrue(new CalibrateWithLS()); 
-   operator.povLeft().onTrue(
-            new InstantCommand( ()-> {AmpMechanism.setServo(AmpMechanism.desiredPos); } ));
-                
+                operator.rightBumper().onTrue(new ShooterServoSequence(46.5, 2200.0));
+                operator.rightTrigger().onTrue(new ShooterServoSequence()); // was 35
+                operator.leftTrigger().onTrue(new ShooterServoSequenceDebug());
+                // Calibration commands
+                operator.povUp().onTrue(new CalibrateWithLS());
+                operator.povLeft().onTrue(
+                        new InstantCommand(() -> {
+                            AmpMechanism.setServo(AmpMechanism.desiredPos);
+                        }));
 
             default:
                 break;

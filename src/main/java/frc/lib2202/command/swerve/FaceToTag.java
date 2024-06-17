@@ -90,6 +90,10 @@ public class FaceToTag extends Command {
     kinematics = drivetrain.getKinematics();
   }
 
+  public FaceToTag(int targetID) {
+    this(targetID, targetID);  //use same target for either red or blue
+  }
+
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {

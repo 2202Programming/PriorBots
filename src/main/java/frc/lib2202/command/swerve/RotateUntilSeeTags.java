@@ -6,7 +6,6 @@ package frc.lib2202.command.swerve;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -18,6 +17,7 @@ import frc.lib2202.builder.RobotContainer;
 import frc.lib2202.subsystem.Limelight;
 import frc.lib2202.subsystem.LimelightHelpers.LimelightTarget_Fiducial;
 import frc.lib2202.subsystem.swerve.SwerveDrivetrain;
+import frc.lib2202.util.AprilTag2d;
 
 public class RotateUntilSeeTags extends Command {
   final SwerveDrivetrain drivetrain;
@@ -35,22 +35,17 @@ public class RotateUntilSeeTags extends Command {
   private double targetRot;
   private SwerveModuleState[] outputModuleState;
 
-  Translation2d targetPose; // Position want to face to
-  int targetID;
+  AprilTag2d targetPose; // Position want to face to
 
   private Timer timer;
 
   //Alliance 
-  final Translation2d redTarget;
-  final int redID;
-  final Translation2d blueTarget;
-  final int blueID;
+  final AprilTag2d redTarget;
+  final AprilTag2d blueTarget;
 
   /** Creates a new RotateTo. */
-  public RotateUntilSeeTags(int redID, Translation2d redTarget, int blueID, Translation2d blueTarget) {
-    this.redID = redID;
+  public RotateUntilSeeTags(AprilTag2d redTarget, AprilTag2d blueTarget) {
     this.redTarget = redTarget;
-    this.blueID = blueID;
     this.blueTarget = blueTarget;
 
     drivetrain = RobotContainer.getSubsystem(SwerveDrivetrain.class);
@@ -68,12 +63,11 @@ public class RotateUntilSeeTags extends Command {
   public void initialize() {
     System.out.println("***RotateIUntilSeeTags: Init...");
     targetPose = (DriverStation.getAlliance().get() == Alliance.Blue) ? blueTarget : redTarget;
-    targetID = (DriverStation.getAlliance().get() == Alliance.Blue) ? blueID : redID;
-    
+
     timer.restart();
     currentPose = drivetrain.getPose();
-    targetRot = (Math.atan2(currentPose.getTranslation().getY() - targetPose.getY(),
-        currentPose.getTranslation().getX() - targetPose.getX())) // [-pi, pi]
+    targetRot = (Math.atan2(currentPose.getTranslation().getY() - targetPose.location.getY(),
+        currentPose.getTranslation().getX() - targetPose.location.getX())) // [-pi, pi]
         * 180 / Math.PI ;
   }
 
@@ -119,7 +113,7 @@ public class RotateUntilSeeTags extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return checkForTarget(targetID) || timer.hasElapsed(1);
+    return checkForTarget(targetPose.ID) || timer.hasElapsed(1);
   }
 
 }

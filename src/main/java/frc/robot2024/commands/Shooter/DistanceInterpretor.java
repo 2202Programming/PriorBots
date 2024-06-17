@@ -121,8 +121,8 @@ public class DistanceInterpretor extends TargetWatcherCmd {
         var optAlliance = DriverStation.getAlliance();
         var alliance = optAlliance.isPresent() ? optAlliance.get() : DriverStation.Alliance.Blue;
         targetTranslation2d = (alliance == DriverStation.Alliance.Blue) ? 
-                Tag_Pose.ID7 : // Blue Alliance
-                Tag_Pose.ID4; // Red Alliance
+                Tag_Pose.ID7.location : // Blue Alliance
+                Tag_Pose.ID4.location; // Red Alliance
 
         if (!optAlliance.isPresent())
             System.out.println("Warning: Defaulting to Blue Alliance in ContinousAngleTracker cmd.");

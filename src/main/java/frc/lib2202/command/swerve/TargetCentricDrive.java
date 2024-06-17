@@ -5,7 +5,6 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -17,6 +16,7 @@ import frc.lib2202.Constants;
 import frc.lib2202.builder.RobotContainer;
 import frc.lib2202.builder.RobotLimits;
 import frc.lib2202.subsystem.swerve.SwerveDrivetrain;
+import frc.lib2202.util.AprilTag2d;
 import frc.lib2202.subsystem.Limelight;
 import frc.lib2202.subsystem.LimelightHelpers.LimelightTarget_Fiducial;
 import frc.lib2202.subsystem.hid.HID_Xbox_Subsystem;
@@ -53,10 +53,8 @@ public class TargetCentricDrive extends Command {
   final RobotLimits limits;
 
   //Alliance 
-  final Translation2d redTarget;
-  final int redID;
-  final Translation2d blueTarget;
-  final int blueID;
+  final AprilTag2d redTarget;
+  final AprilTag2d blueTarget;
 
   final Limelight limelight;
   
@@ -68,8 +66,7 @@ public class TargetCentricDrive extends Command {
 
   double targetRot;
   Pose2d currentPose;
-  Translation2d targetPose; // Position want to face to
-  int targetID; 
+  AprilTag2d targetPose; // Position want to face to
 
   // odometery PID
   PIDController centeringPid;
@@ -95,10 +92,8 @@ public class TargetCentricDrive extends Command {
   final SlewRateLimiter yspeedLimiter = new SlewRateLimiter(3);
   final SlewRateLimiter rotLimiter = new SlewRateLimiter(3);
 
-  public TargetCentricDrive(int redID, Translation2d redTarget, int blueID, Translation2d blueTarget) {
-    this.redID = redID;
+  public TargetCentricDrive(AprilTag2d redTarget, AprilTag2d blueTarget) {
     this.redTarget = redTarget;
-    this.blueID = blueID;
     this.blueTarget = blueTarget;
     
     this.dc = RobotContainer.getSubsystem("DC"); // driverControls
@@ -124,14 +119,13 @@ public class TargetCentricDrive extends Command {
   @Override
   public void initialize() {
     targetPose = (DriverStation.getAlliance().get() == Alliance.Blue) ? blueTarget : redTarget;
-    targetID = (DriverStation.getAlliance().get() == Alliance.Blue) ? blueID : redID;
     currentState = state.Init;
     SmartDashboard.putString("TargetCentricDrive State", currentState.toString());
   }
 
   @Override
   public void execute() {
-    double tagXfromCenter = checkForTarget(targetID); // checkForTarget is updating tagXfromCenter, hasTarget
+    double tagXfromCenter = checkForTarget(targetPose.ID); // checkForTarget is updating tagXfromCenter, hasTarget
 
     if (hasTarget) {
         currentState = state.TagTrack;
@@ -171,8 +165,8 @@ public class TargetCentricDrive extends Command {
 
   private void calculateRotFromOdometery() {
     currentPose = drivetrain.getPose();
-    targetRot = (Math.atan2(currentPose.getTranslation().getY() - targetPose.getY(),
-        currentPose.getTranslation().getX() - targetPose.getX())); // [-pi, pi]
+    targetRot = (Math.atan2(currentPose.getTranslation().getY() - targetPose.location.getY(),
+        currentPose.getTranslation().getX() - targetPose.location.getX())); // [-pi, pi]
     //targetRot = targetRot - Math.PI; //invert facing to have shooter face target - Not needed for betabot
     SmartDashboard.putNumber("TargetCentricDrive Odo target", targetRot);
     rot = blindPid.calculate(currentPose.getRotation().getRadians(), targetRot); //in radians

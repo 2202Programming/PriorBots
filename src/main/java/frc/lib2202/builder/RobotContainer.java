@@ -126,9 +126,8 @@ public class RobotContainer {
    */
   public RobotContainer() {
     RobotContainer.rc = this;
-    subsystemConfig = 
-
-    robotSpec = getRobotSpec();
+    subsystemConfig = null;
+    robotSpecs = null;
 
     subsystemConfig.constructAll();
     autoChooser = RegisteredCommands.RegisterCommands();

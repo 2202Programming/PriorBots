@@ -6,7 +6,6 @@ package frc.lib2202.command.swerve;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -16,6 +15,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib2202.builder.RobotContainer;
 import frc.lib2202.subsystem.swerve.SwerveDrivetrain;
+import frc.lib2202.util.AprilTag2d;
 
 public class RotateTo extends Command {
   private final SwerveDrivetrain drivetrain;
@@ -30,23 +30,17 @@ public class RotateTo extends Command {
   private double targetRot;
   private SwerveModuleState[] outputModuleState;
   
-  Translation2d targetPose; // Position want to face to
-  int targetID;
+  AprilTag2d targetPose; // Position want to face to
 
   //Alliance 
-  final Translation2d redTarget;
-  final int redID;
-  final Translation2d blueTarget;
-  final int blueID;
-
+  final AprilTag2d redTarget;
+  final AprilTag2d blueTarget;
 
   private Timer timer;
 
   /** Creates a new RotateTo. */
-  public RotateTo(int redID, Translation2d redTarget, int blueID, Translation2d blueTarget) {
-    this.redID = redID;
+  public RotateTo(AprilTag2d redTarget, AprilTag2d blueTarget) {
     this.redTarget = redTarget;
-    this.blueID = blueID;
     this.blueTarget = blueTarget;
 
     drivetrain = RobotContainer.getSubsystem(SwerveDrivetrain.class);
@@ -61,14 +55,12 @@ public class RotateTo extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    //todo remove - targetPose = (DriverStation.getAlliance().get() == Alliance.Blue) ? Tag_Pose.ID7 : Tag_Pose.ID4;
     targetPose = (DriverStation.getAlliance().get() == Alliance.Blue) ? blueTarget : redTarget;
-    targetID = (DriverStation.getAlliance().get() == Alliance.Blue) ? blueID : redID;
-    
+   
     timer.restart();
     currentPose = drivetrain.getPose();
-    targetRot = (Math.atan2(currentPose.getTranslation().getY() - targetPose.getY(),
-        currentPose.getTranslation().getX() - targetPose.getX())) // [-pi, pi]
+    targetRot = (Math.atan2(currentPose.getTranslation().getY() - targetPose.location.getY(),
+        currentPose.getTranslation().getX() - targetPose.location.getX())) // [-pi, pi]
         * 180 / Math.PI;
   }
 

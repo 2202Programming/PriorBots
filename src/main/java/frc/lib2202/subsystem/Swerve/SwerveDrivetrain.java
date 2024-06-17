@@ -45,17 +45,17 @@ import frc.lib2202.util.VisionWatchdog;
 public class SwerveDrivetrain extends SubsystemBase {
 
 // Serve Encoder names
-public enum EncoderID { BackLeft, BackRight, FrontLeft, FrontRight  }
-
+public enum EncoderID { FrontLeft, FrontRight, BackLeft, BackRight}
+//TODO - decouple sensors and CANCODERs
 
 static final double Bearing_Tol = Math.toRadians(0.5); // limit bearing
 
   // cc is the chassis config for all our pathing math
-  private final ChassisConfig cc = RobotContainer.getRobotSpecs().getChassisConfig(); // chassis config
-  private final WheelOffsets wc = RobotContainer.getRobotSpecs().getWheelOffset(); // wc = wheel config
-  private final ChassisInversionSpecs is = RobotContainer.getRobotSpecs().getChassisInversionSpecs(); //is = invert spec
-  private final CANConfig cac = RobotContainer.getRobotSpecs().getCANConfig();
-  private final RobotLimits limits = RobotContainer.getRobotSpecs().getRobotLimits();
+  final ChassisConfig cc = RobotContainer.getRobotSpecs().getChassisConfig(); // chassis config
+  final WheelOffsets wc = RobotContainer.getRobotSpecs().getWheelOffset(); // wc = wheel config
+  final ChassisInversionSpecs is = RobotContainer.getRobotSpecs().getChassisInversionSpecs(); //is = invert spec
+  final CANConfig cac = RobotContainer.getRobotSpecs().getCANConfig();
+  final RobotLimits limits = RobotContainer.getRobotSpecs().getRobotLimits();
 
   /**
    *

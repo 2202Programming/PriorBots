@@ -11,11 +11,15 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.lib2202.command.swerve.FaceToTag;
 import frc.lib2202.command.swerve.RotateTo;
 import frc.lib2202.command.swerve.RotateUntilSeeTags;
+import frc.lib2202.builder.RobotContainer;
+
+import frc.robot2024.Constants.Tag_Pose;
 import frc.robot2024.commands.Intake.EjectNote;
 import frc.robot2024.commands.Intake.IntakeSequence;
 import frc.robot2024.commands.Shooter.ShooterSequence;
 import frc.robot2024.commands.Shooter.ShooterServoSequence;
 import frc.robot2024.subsystems.Intake;
+
 /*
  * Place commands named in PathPlaner autos here.
  */
@@ -47,7 +51,7 @@ public class RegisteredCommands {
             
             NamedCommands.registerCommand("angle_shoot",
                 new SequentialCommandGroup(
-                    new RotateTo(), 
+                    new RotateTo(Tag_Pose.ID4, Tag_Pose.ID7), 
                     new ShooterSequence(3200.0)).withTimeout(ShooterTimeOut));
         } else {
             NamedCommands.registerCommand("shoot",  
@@ -55,12 +59,12 @@ public class RegisteredCommands {
             
             NamedCommands.registerCommand("angle_shoot",
                 new SequentialCommandGroup(
-                    new RotateUntilSeeTags(), 
+                    new RotateUntilSeeTags(Tag_Pose.ID4, Tag_Pose.ID7), 
                     new FaceToTag(100),//HACK Does not matter
                     new ShooterServoSequence(true).withTimeout(ShooterTimeOut)));
         
             NamedCommands.registerCommand("RotateTo", 
-                new RotateUntilSeeTags());
+                new RotateUntilSeeTags(Tag_Pose.ID4, Tag_Pose.ID7));
             NamedCommands.registerCommand("highShoot", new ShooterServoSequence(45.5,3000,false,true));
             NamedCommands.registerCommand("highShoot2500", new ShooterServoSequence(45.5,2500,false,true));
             NamedCommands.registerCommand("midShoot", new ShooterServoSequence(39,3000.0,false,true));

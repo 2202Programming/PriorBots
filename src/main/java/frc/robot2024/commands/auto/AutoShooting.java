@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.lib2202.builder.RobotContainer;
 import frc.lib2202.command.swerve.FaceToTag;
 import frc.lib2202.command.swerve.RotateUntilSeeTags;
+import frc.robot2024.Constants.Tag_Pose;
 import frc.robot2024.commands.Shooter.ShooterServoSequence;
 import frc.robot2024.commands.Shooter.SpeakerShooter;
 import frc.lib2202.subsystem.Limelight;
@@ -36,9 +37,9 @@ public class AutoShooting extends SequentialCommandGroup {
     drivetrain = RobotContainer.getSubsystem(SwerveDrivetrain.class);
     limelight = RobotContainer.getSubsystem(Limelight.class);
 
-    double tagID = determineTag(target);
+    int tagID = determineTag(target);
 
-    addCommands(new RotateUntilSeeTags());
+    addCommands(new RotateUntilSeeTags(Tag_Pose.ID4, Tag_Pose.ID7) );
     addCommands(new FaceToTag(tagID));
     if (target == ShootingTarget.Speaker) {
       addCommands(new SpeakerShooter());
@@ -56,9 +57,9 @@ public class AutoShooting extends SequentialCommandGroup {
     drivetrain = RobotContainer.getSubsystem(SwerveDrivetrain.class);
     limelight = RobotContainer.getSubsystem(Limelight.class);
 
-    double tagID = determineTag(target);
+    int tagID = determineTag(target);
 
-    addCommands(new RotateUntilSeeTags());
+    addCommands(new RotateUntilSeeTags(Tag_Pose.ID4, Tag_Pose.ID7));
     addCommands(new FaceToTag(tagID));
     if (target == ShootingTarget.Speaker) {
       addCommands(new SpeakerShooter(rpm));
@@ -75,9 +76,9 @@ public class AutoShooting extends SequentialCommandGroup {
     drivetrain = RobotContainer.getSubsystem(SwerveDrivetrain.class);
     limelight = RobotContainer.getSubsystem(Limelight.class);
 
-    double tagID = determineTag(target);
+    int tagID = determineTag(target);
 
-    addCommands(new RotateUntilSeeTags());
+    addCommands(new RotateUntilSeeTags(Tag_Pose.ID4, Tag_Pose.ID7));
     addCommands(new FaceToTag(tagID));
     if (target == ShootingTarget.Speaker) {
       addCommands(new ShooterServoSequence(angle, rpm));
@@ -95,7 +96,7 @@ public class AutoShooting extends SequentialCommandGroup {
    * @param target operator pick from three
    * @return tagID to face
    */
-  private double determineTag(ShootingTarget target) {
+  private int determineTag(ShootingTarget target) {
     // handle Optional<> from getAlliance()
     var allianceOpt = DriverStation.getAlliance();
     var alliance = DriverStation.Alliance.Blue; // default

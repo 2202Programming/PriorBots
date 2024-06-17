@@ -4,7 +4,6 @@
 
 package frc.robot2024;
 
-import edu.wpi.first.math.geometry.Translation2d;
 import frc.lib2202.subsystem.swerve.config.CANConfig;
 import frc.lib2202.subsystem.swerve.config.CANModuleConfig;
 import frc.lib2202.subsystem.swerve.config.ChassisConfig;
@@ -12,7 +11,7 @@ import frc.lib2202.subsystem.swerve.config.ChassisInversionSpecs;
 import frc.lib2202.subsystem.swerve.config.ModuleInversionSpecs;
 import frc.lib2202.subsystem.swerve.config.WheelOffsets;
 import frc.lib2202.util.PIDFController;
-
+import frc.lib2202.util.AprilTag2d;
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
  * numerical or boolean
@@ -290,39 +289,38 @@ public final class Constants {
   }
 
   public static final class Tag_Pose {
-    public static final Translation2d ID0 = new Translation2d(0,0); //dont use tag ID 0, placeholder for array
+    public static final AprilTag2d ID0 = new AprilTag2d(0, 0.0,0.0); //dont use tag ID 0, placeholder for array
     /**Blue source right */
-    public static final Translation2d ID1 = new Translation2d(15.079472, 0.245872);
+    public static final AprilTag2d ID1 = new AprilTag2d(1, 15.079472, 0.245872);
     /**Blue source left */
-    public static final Translation2d ID2 = new Translation2d(16.185134, 0.883666);
+    public static final AprilTag2d ID2 = new AprilTag2d(2, 16.185134, 0.883666);
     /**Red speaker right */
-    public static final Translation2d ID3 = new Translation2d(16.579342, 4.982718);
+    public static final AprilTag2d ID3 = new AprilTag2d(3, 16.579342, 4.982718);
     /**Red speaker left */
-    public static final Translation2d ID4 = new Translation2d(16.579342, 5.547868);
+    public static final AprilTag2d ID4 = new AprilTag2d(4, 16.579342, 5.547868);
     /**Red amp */
-    public static final Translation2d ID5 = new Translation2d(14.700758, 8.2042);
+    public static final AprilTag2d ID5 = new AprilTag2d(5, 14.700758, 8.2042);
     /**Blue amp */
-    public static final Translation2d ID6 = new Translation2d(1.8415, 8.2042);
+    public static final AprilTag2d ID6 = new AprilTag2d(6, 1.8415, 8.2042);
     /**Blue speaker right */
-    public static final Translation2d ID7 = new Translation2d(0.0381, 5.547868);
+    public static final AprilTag2d ID7 = new AprilTag2d(7, 0.0381, 5.547868);
     /**Blue speaker left */
-    public static final Translation2d ID8 = new Translation2d(0.0381, 4.982718);
+    public static final AprilTag2d ID8 = new AprilTag2d(8, 0.0381, 4.982718);
     /**Red source right */
-    public static final Translation2d ID9 = new Translation2d(0.356108, 0.883666);
+    public static final AprilTag2d ID9 = new AprilTag2d(9, 0.356108, 0.883666);
     /**Red source left */
-    public static final Translation2d ID10 = new Translation2d(1.461516, 0.245872);
+    public static final AprilTag2d ID10 = new AprilTag2d(10, 1.461516, 0.245872);
     /**Red stage (counter-clockwse starting at Stage Left) */
-    public static final Translation2d ID11 = new Translation2d(11.904726, 3.713226);
-    public static final Translation2d ID12 = new Translation2d(11.904726, 4.49834);
-    public static final Translation2d ID13 = new Translation2d(11.220196, 4.105148);
+    public static final AprilTag2d ID11 = new AprilTag2d(11, 11.904726, 3.713226);
+    public static final AprilTag2d ID12 = new AprilTag2d(12, 11.904726, 4.49834);
+    public static final AprilTag2d ID13 = new AprilTag2d(13, 11.220196, 4.105148);
     /**Blue state (counter-clockwise starting at Center Stage) */
-    public static final Translation2d ID14 = new Translation2d(5.320792, 4.105148);
-    public static final Translation2d ID15 = new Translation2d(4.641342, 4.49834);
-    public static final Translation2d ID16 = new Translation2d(4.641342, 3.713226);
+    public static final AprilTag2d ID14 = new AprilTag2d(14, 5.320792, 4.105148);
+    public static final AprilTag2d ID15 = new AprilTag2d(15, 4.641342, 4.49834);
+    public static final AprilTag2d ID16 = new AprilTag2d(16, 4.641342, 3.713226);
 
-    public static Translation2d[] tagLocations = {ID0, ID1, ID2, ID3, ID4, ID5, ID6, ID7, ID8, ID9, ID10, ID11, ID12,
-                                      ID13, ID14, ID15, ID16};
-
+    public static AprilTag2d[] tagLocations = {ID0, ID1, ID2, ID3, ID4, ID5, ID6, ID7, ID8, ID9, ID10, ID11, ID12,
+                                      ID13, ID14, ID15, ID16};     
   }
 
   /*-------NT------- */
