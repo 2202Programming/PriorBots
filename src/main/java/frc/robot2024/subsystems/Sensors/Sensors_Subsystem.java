@@ -7,11 +7,12 @@
 
 package frc.robot2024.subsystems.Sensors;
 
-import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
-import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.Pigeon2;
+import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
+import com.ctre.phoenix6.signals.SensorDirectionValue;
+
 import edu.wpi.first.hal.can.CANJNI;
 import edu.wpi.first.hal.can.CANStatus;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -21,13 +22,12 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.lib2202.builder.IRobotSpec;
-import frc.lib2202.builder.RobotContainer;
+import frc.lib2202.subsystem.swerve.IHeadingProvider;
 import frc.lib2202.util.ModMath;
 import frc.robot2024.Constants.CAN;
 import frc.robot2024.Constants.NTStrings;
 
-public class Sensors_Subsystem extends SubsystemBase {
+public class Sensors_Subsystem extends SubsystemBase implements IHeadingProvider {
   public enum YawSensor {
     kNavX, kPigeon
   };
@@ -71,10 +71,6 @@ public class Sensors_Subsystem extends SubsystemBase {
     public double front_right;
   }
 
-  public enum EncoderID {
-    BackLeft, BackRight, FrontLeft, FrontRight
-  }
-
   public enum GyroStatus {
     UsingNavx("Navx"),
     UsingPigeon("Pigeon");
@@ -90,12 +86,6 @@ public class Sensors_Subsystem extends SubsystemBase {
     }
   }
 
-  // CANcoders - monitor dt angles
-  IRobotSpec rspecs = RobotContainer.getRobotSpecs();
-  CANcoder rot_encoder_bl = init(new CANcoder(rspecs.getCANConfig().BL_MODULE.CANCODER_ID));
-  CANcoder rot_encoder_br = init(new CANcoder(rspecs.getCANConfig().BR_MODULE.CANCODER_ID));
-  CANcoder rot_encoder_fl = init(new CANcoder(rspecs.getCANConfig().FL_MODULE.CANCODER_ID));
-  CANcoder rot_encoder_fr = init(new CANcoder(rspecs.getCANConfig().FR_MODULE.CANCODER_ID));
 
   // CAN monitoring
   CANStatus m_canStatus;
@@ -182,7 +172,9 @@ public class Sensors_Subsystem extends SubsystemBase {
     m_yaw = ModMath.fmod360_2(-m_pigeon.getRotation3d().getZ() * 180.0 / Math.PI);
     m_pitch = (m_pigeon.getRotation3d().getY() * 180.0 / Math.PI) - m_pitch_bias;
     m_roll = (m_pigeon.getRotation3d().getX() * 180.0 / Math.PI) - m_roll_bias;
-    getRotationPositions(m_rot);
+   
+   
+    // getRotationPositions(m_rot);
 
     // TODO m_xyz_dps not set
     m_yaw_d = m_xyz_dps[2];
@@ -344,6 +336,7 @@ public class Sensors_Subsystem extends SubsystemBase {
     return m_yaw_d;
   }
 
+  /*****
   public RotationPositions getRotationPositions(RotationPositions pos) {
     // pos.back_left = rot_encoder_bl.getAbsolutePosition(); in phohenix 5 range is
     // (-180,180)
@@ -356,21 +349,7 @@ public class Sensors_Subsystem extends SubsystemBase {
 
     return pos;
   }
-
-  public CANcoder getCANCoder(EncoderID id) {
-    switch (id) {
-      case BackLeft:
-        return rot_encoder_bl;
-      case BackRight:
-        return rot_encoder_br;
-      case FrontLeft:
-        return rot_encoder_fl;
-      case FrontRight:
-        return rot_encoder_fr;
-      default:
-        return null;
-    }
-  }
+**********/
 
   /**
    * init() - setup cancoder the way we need them.

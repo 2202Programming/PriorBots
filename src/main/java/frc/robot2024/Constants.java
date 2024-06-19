@@ -5,7 +5,7 @@
 package frc.robot2024;
 
 import frc.lib2202.subsystem.swerve.config.CANConfig;
-import frc.lib2202.subsystem.swerve.config.CANModuleConfig;
+import frc.lib2202.subsystem.swerve.config.ModuleConfig;
 import frc.lib2202.subsystem.swerve.config.ChassisConfig;
 import frc.lib2202.subsystem.swerve.config.ChassisInversionSpecs;
 import frc.lib2202.subsystem.swerve.config.ModuleInversionSpecs;
@@ -163,15 +163,15 @@ public final class Constants {
 
     // Support for multiple robots on same code base
 
-    public static final CANModuleConfig comp2024CAN_FL = new CANModuleConfig(29, 24, 25);
-    public static final CANModuleConfig comp2024CAN_FR = new CANModuleConfig(30, 26, 27);
-    public static final CANModuleConfig comp2024CAN_BL = new CANModuleConfig(28, 22, 23);
-    public static final CANModuleConfig comp2024CAN_BR = new CANModuleConfig(31, 20, 21);
+    public static final ModuleConfig comp2024CAN_FL = new ModuleConfig(29, 24, 25);
+    public static final ModuleConfig comp2024CAN_FR = new ModuleConfig(30, 26, 27);
+    public static final ModuleConfig comp2024CAN_BL = new ModuleConfig(28, 22, 23);
+    public static final ModuleConfig comp2024CAN_BR = new ModuleConfig(31, 20, 21);
 
-    public static final CANModuleConfig swerveBotCAN_FL = new CANModuleConfig(7, 20, 21);
-    public static final CANModuleConfig swerveBotCAN_FR = new CANModuleConfig(30, 26, 27);
-    public static final CANModuleConfig swerveBotCAN_BL = new CANModuleConfig(28, 22, 23);
-    public static final CANModuleConfig swerveBotCAN_BR = new CANModuleConfig(31, 24, 25);
+    public static final ModuleConfig swerveBotCAN_FL = new ModuleConfig(7, 20, 21);
+    public static final ModuleConfig swerveBotCAN_FR = new ModuleConfig(30, 26, 27);
+    public static final ModuleConfig swerveBotCAN_BL = new ModuleConfig(28, 22, 23);
+    public static final ModuleConfig swerveBotCAN_BR = new ModuleConfig(31, 24, 25);
 
     public static final CANConfig comp2024BotCANConfig = new CANConfig(comp2024CAN_FL, comp2024CAN_FR, comp2024CAN_BL,
         comp2024CAN_BR);

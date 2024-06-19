@@ -4,6 +4,10 @@
 
 package frc.lib2202.subsystem.swerve;
 
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
+import com.ctre.phoenix6.hardware.CANcoder;
+import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
+import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
@@ -31,32 +35,20 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib2202.builder.RobotContainer;
 import frc.lib2202.builder.RobotLimits;
 import frc.lib2202.subsystem.Limelight;
-import frc.lib2202.subsystem.swerve.config.CANConfig;
 import frc.lib2202.subsystem.swerve.config.ChassisConfig;
-import frc.lib2202.subsystem.swerve.config.ChassisInversionSpecs;
-import frc.lib2202.subsystem.swerve.config.WheelOffsets;
+import frc.lib2202.subsystem.swerve.config.ModuleConfig;
 import frc.lib2202.util.ModMath;
 import frc.lib2202.util.VisionWatchdog;
 
-//import frc.robot2024.subsystems.Sensors.Sensors_Subsystem;
-//import frc.robot2024.subsystems.Sensors.Sensors_Subsystem;
-//import frc.robot2024.subsystems.Sensors.Sensors_Subsystem.EncoderID;
-
 public class SwerveDrivetrain extends SubsystemBase {
 
-// Serve Encoder names
-public enum EncoderID { FrontLeft, FrontRight, BackLeft, BackRight}
-//TODO - decouple sensors and CANCODERs
-
-static final double Bearing_Tol = Math.toRadians(0.5); // limit bearing
+  static final double Bearing_Tol = Math.toRadians(0.5); // limit bearing
 
   // cc is the chassis config for all our pathing math
-  final ChassisConfig cc = RobotContainer.getRobotSpecs().getChassisConfig(); // chassis config
-  final WheelOffsets wc = RobotContainer.getRobotSpecs().getWheelOffset(); // wc = wheel config
-  final ChassisInversionSpecs is = RobotContainer.getRobotSpecs().getChassisInversionSpecs(); //is = invert spec
-  final CANConfig cac = RobotContainer.getRobotSpecs().getCANConfig();
   final RobotLimits limits = RobotContainer.getRobotSpecs().getRobotLimits();
-
+  final ChassisConfig cc = RobotContainer.getRobotSpecs().getChassisConfig();
+  final ModuleConfig mc[];
+  
   /**
    *
    * Modules are in the order of - Front Left, Front Right, Back Left, Back Right
@@ -73,39 +65,41 @@ static final double Bearing_Tol = Math.toRadians(0.5); // limit bearing
       new Translation2d(-cc.XwheelOffset, -cc.YwheelOffset) // Back Right
   );
   final private SwerveDriveOdometry m_odometry;
-  private Pose2d m_pose;
+  Pose2d m_pose;
   @SuppressWarnings("unused")
-  private Pose2d old_pose;
-  final private VisionWatchdog watchdog;
+  Pose2d old_pose;
+  final VisionWatchdog watchdog;
 
-  private SwerveModuleState[] meas_states; // measured wheel speed & angle
-  private SwerveModulePosition[] meas_pos = new SwerveModulePosition[] {
+  SwerveModuleState[] meas_states; // measured wheel speed & angle
+  SwerveModulePosition[] meas_pos = new SwerveModulePosition[] {
       new SwerveModulePosition(),
       new SwerveModulePosition(),
       new SwerveModulePosition(),
       new SwerveModulePosition()
   };
 
-  // sensors and our mk3 modules
-  private final Sensors_Subsystem sensors;
-  private final SwerveModuleMK3[] modules;
+  final CANcoder canCoders[];
 
+  // sensors and our mk3 modules
+  final IHeadingProvider sensors;
+  final SwerveModuleMK3[] modules;
+  
   // used to update postion esimates
   double kTimeoffset = .1; // [s] measurement delay from photonvis
   private final Limelight limelight;
 
-  // Network tables 
-  public final String NT_Name = "DT"; 
-  final private NetworkTable table= NetworkTableInstance.getDefault().getTable(NT_Name);
+  // Network tables
+  public final String NT_Name = "DT";
+  final private NetworkTable table = NetworkTableInstance.getDefault().getTable(NT_Name);
 
   // ll pose updating
   private NetworkTableEntry nt_x_diff;
   private NetworkTableEntry nt_y_diff;
-  private NetworkTableEntry nt_yaw_diff;    
+  private NetworkTableEntry nt_yaw_diff;
   private boolean visionPoseUsingRotation = true;
   private boolean visionPoseEnabled = true;
 
-  //private int timer;
+  // private int timer;
   // private double currentBearing = 0;
   private double filteredBearing = 0;
   private double filteredVelocity = 0;
@@ -129,28 +123,27 @@ static final double Bearing_Tol = Math.toRadians(0.5); // limit bearing
   public final Field2d m_field = new Field2d();
 
   public SwerveDrivetrain() {
-    sensors = RobotContainer.getSubsystem(Sensors_Subsystem.class);
-    limelight = RobotContainer.getSubsystemOrNull(Limelight.class);  //we can deal with no LL
+    mc = RobotContainer.getRobotSpecs().getModuleConfigs();
+    sensors = RobotContainer.getRobotSpecs().getHeadingProvider();
+    limelight = RobotContainer.getSubsystemOrNull(Limelight.class); // we can deal with no LL
     watchdog = new VisionWatchdog(3.0);
+    canCoders = new CANcoder[mc.length];
 
     var MT = CANSparkMax.MotorType.kBrushless;
-    modules = new SwerveModuleMK3[] {
-        // Front Left
-        new SwerveModuleMK3(new CANSparkMax(cac.FL_MODULE.DRIVE_MOTOR_ID, MT), new CANSparkMax(cac.FL_MODULE.ANGLE_MOTOR_ID, MT),
-            wc.CC_FL_OFFSET, sensors.getCANCoder(EncoderID.FrontLeft), is.FL.kAngleMotorInvert,
-            is.FL.kAngleCmdInvert, is.FL.kDriveMotorInvert, "FL"),
-        // Front Right
-        new SwerveModuleMK3(new CANSparkMax(cac.FR_MODULE.DRIVE_MOTOR_ID, MT), new CANSparkMax(cac.FR_MODULE.ANGLE_MOTOR_ID, MT),
-            wc.CC_FR_OFFSET, sensors.getCANCoder(EncoderID.FrontRight), is.FR.kAngleMotorInvert,
-            is.FR.kAngleCmdInvert, is.FR.kDriveMotorInvert, "FR"),
-        // Back Left
-        new SwerveModuleMK3(new CANSparkMax(cac.BL_MODULE.DRIVE_MOTOR_ID, MT), new CANSparkMax(cac.BL_MODULE.ANGLE_MOTOR_ID, MT),
-            wc.CC_BL_OFFSET, sensors.getCANCoder(EncoderID.BackLeft), is.BL.kAngleMotorInvert,
-            is.BL.kAngleCmdInvert, is.BL.kDriveMotorInvert, "BL"),
-        // Back Right
-        new SwerveModuleMK3(new CANSparkMax(cac.BR_MODULE.DRIVE_MOTOR_ID, MT), new CANSparkMax(cac.BR_MODULE.ANGLE_MOTOR_ID, MT),
-            wc.CC_BR_OFFSET, sensors.getCANCoder(EncoderID.BackRight), is.BR.kAngleMotorInvert,
-            is.BR.kAngleCmdInvert, is.BR.kDriveMotorInvert, "BR") };
+    modules = new SwerveModuleMK3[mc.length];
+    for (int i=0; i < mc.length; i++) {
+
+      canCoders[i] = initCANcoder(mc[i].CANCODER_ID);
+      modules[i] = new SwerveModuleMK3(
+        new CANSparkMax(mc[i].DRIVE_MOTOR_ID, MT),
+        new CANSparkMax(mc[i].ANGLE_MOTOR_ID, MT),
+        mc[i].kWheelOffset,
+        canCoders[i],
+        mc[i].kAngleMotorInvert,
+        mc[i].kAngleCmdInvert, 
+        mc[i].kDriveMotorInvert,
+        mc[i].id.toString());
+    }
 
     /*
      * Here we use SwerveDrivePoseEstimator so that we can fuse odometry readings.
@@ -213,29 +206,35 @@ static final double Bearing_Tol = Math.toRadians(0.5); // limit bearing
 
   }
 
+  /**
+   * init() - setup cancoder the way we need them.
+   * This CANcoder returns value in rotation with phoenix 6 [-0.5, 0.5)
+   * 
+   * @param cc_ID
+   * @return CANcoder just initialized
+   */
+  private CANcoder initCANcoder(int cc_ID) {
+    CANcoder canCoder = new CANcoder(cc_ID);
+    CANcoderConfiguration configs = new CANcoderConfiguration();
+    // According to doc this should report absolute position from [-0.5, 0.5)
+    // rotations (clock wise is positive)
+    configs.MagnetSensor.AbsoluteSensorRange = AbsoluteSensorRangeValue.Signed_PlusMinusHalf;
+    configs.MagnetSensor.MagnetOffset = 0.0;
+    configs.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive;
+    canCoder.getConfigurator().apply(configs);
+    canCoder.clearStickyFaults();
+    return canCoder;
+  }
+
   private void offsetDebug() {
     periodic(); // run to initialize module values
-    double offsetFL = wc.CC_FL_OFFSET;
-    double measuredFL = modules[0].m_internalAngle;
-
-    double offsetFR = wc.CC_FR_OFFSET;
-    double measuredFR = modules[1].m_internalAngle;
-
-    double offsetBL = wc.CC_BL_OFFSET;
-    double measuredBL = modules[2].m_internalAngle;
-
-    double offsetBR = wc.CC_BR_OFFSET;
-    double measuredBR = modules[3].m_internalAngle;
-
     System.out.println("================Offsets==================");
-    System.out.println("FL: offset " + offsetFL + ", measured " + measuredFL + ", should be "
-        + ModMath.fmod360_2(offsetFL - measuredFL));
-    System.out.println("FR: offset " + offsetFR + ", measured " + measuredFR + ", should be "
-        + ModMath.fmod360_2(offsetFR - measuredFR));
-    System.out.println("BL: offset " + offsetBL + ", measured " + measuredBL + ", should be "
-        + ModMath.fmod360_2(offsetBL - measuredBL));
-    System.out.println("BR: offset " + offsetBR + ", measured " + measuredBR + ", should be "
-        + ModMath.fmod360_2(offsetBR - measuredBR));
+    for (int i=0; i < mc.length; i++) {
+      double offset = mc[i].kWheelOffset;
+      double measured = modules[i].m_internalAngle;
+      System.out.println(mc[i].id.toString() + ": offset " + offset + ", measured " + measured + 
+        ", should be " + ModMath.fmod360_2(offset - measured));
+    }
     System.out.println("============Offsets Done==============");
   }
 
@@ -280,7 +279,7 @@ static final double Bearing_Tol = Math.toRadians(0.5); // limit bearing
       meas_pos[i].distanceMeters = modules[i].getPosition();
     }
 
-    updateOdometry(); 
+    updateOdometry();
 
     /*
      * BEARING STUFFS FROM HERE
@@ -290,7 +289,8 @@ static final double Bearing_Tol = Math.toRadians(0.5); // limit bearing
      * // bearing
      * // It is a small change in x/y that needs to be checked for valid atan2()
      * // really should use Vy/Vx.
-     * double temp = Math.atan2(m_pose.getY() - old_pose.getY(), m_pose.getX() -  * old_pose.getX());
+     * double temp = Math.atan2(m_pose.getY() - old_pose.getY(), m_pose.getX() - *
+     * old_pose.getX());
      * // Changed from !=0 to include tol variable
      * if (Math.abs(temp) < Bearing_Tol) { // remove singularity when moving too
      * slow - otherwise lots of jitter
@@ -322,7 +322,7 @@ static final double Bearing_Tol = Math.toRadians(0.5); // limit bearing
     // WIP
   }
 
-  public SwerveDriveOdometry getOdometry(){
+  public SwerveDriveOdometry getOdometry() {
     return m_odometry;
   }
 
@@ -434,13 +434,18 @@ static final double Bearing_Tol = Math.toRadians(0.5); // limit bearing
       llPoseEstimatorUpdate();
     }
 
-    //TODO: Currently, the limelight is wrong. Whenever you move just past the stage, it appears
-    //that something is off. Specifically, the robot dramatically shifts its position. Additionally,
-    // this often causes the autonomous program to be off. Because of this, we're missing out on
-    // not only crucial points needed to win matches, but also the potential melody ranking point.
-    // Thus, we must ADD UNIT AND CONSTANT FIX TO AVOID BAD UPDATE FROM LIMELIGHT>>>>
-    if ((limelight != null) && (llPose != null) && (limelight.getNumApriltags() > 0) && 
-    (limelight.getTA() > 0.13) && (Math.abs(modules[0].getVelocity()) < 2.5)) {
+    // TODO: Currently, the limelight is wrong. Whenever you move just past the
+    // stage, it appears
+    // that something is off. Specifically, the robot dramatically shifts its
+    // position. Additionally,
+    // this often causes the autonomous program to be off. Because of this, we're
+    // missing out on
+    // not only crucial points needed to win matches, but also the potential melody
+    // ranking point.
+    // Thus, we must ADD UNIT AND CONSTANT FIX TO AVOID BAD UPDATE FROM
+    // LIMELIGHT>>>>
+    if ((limelight != null) && (llPose != null) && (limelight.getNumApriltags() > 0) &&
+        (limelight.getTA() > 0.13) && (Math.abs(modules[0].getVelocity()) < 2.5)) {
       Pose2d prev_m_Pose = m_pose;
       if (visionPoseEnabled) {
         watchdog.update(prev_m_Pose, llPose);
@@ -448,14 +453,15 @@ static final double Bearing_Tol = Math.toRadians(0.5); // limit bearing
           setPose(llPose); // update robot pose from swervedriveposeestimator, include vision-based
                            // rotation
         } else {
-          // update robot translation from swervedriveposeestimator, do not update rotation
-          setPose(new Pose2d(llPose.getTranslation(), prev_m_Pose.getRotation())); 
+          // update robot translation from swervedriveposeestimator, do not update
+          // rotation
+          setPose(new Pose2d(llPose.getTranslation(), prev_m_Pose.getRotation()));
         }
       }
       x_diff = Math.abs(prev_m_Pose.getX() - m_pose.getX());
       y_diff = Math.abs(prev_m_Pose.getY() - m_pose.getY());
       yaw_diff = Math.abs(prev_m_Pose.getRotation().getDegrees() - m_pose.getRotation().getDegrees());
-      
+
       // vision pose updating NTs
       nt_x_diff.setDouble(x_diff);
       nt_y_diff.setDouble(y_diff);
@@ -477,18 +483,20 @@ static final double Bearing_Tol = Math.toRadians(0.5); // limit bearing
 
   public Pose2d getLLEstimate() {
     return llPose;
-    //return (llPose != null) ? new Pose2d(llPose.getTranslation(), llPose.getRotation()) : null;
+    // return (llPose != null) ? new Pose2d(llPose.getTranslation(),
+    // llPose.getRotation()) : null;
   }
 
   public Pose2d getPVEstimate() {
     return pvPose;
-    //return (pvPose != null) ? new Pose2d(pvPose.getTranslation(), pvPose.getRotation()) : null;
+    // return (pvPose != null) ? new Pose2d(pvPose.getTranslation(),
+    // pvPose.getRotation()) : null;
   }
 
   public double getDistanceToTranslation(Translation2d targetTranslation) {
     return Math.sqrt(
-           Math.pow(getPose().getTranslation().getX() - targetTranslation.getX(), 2)
-              + Math.pow(getPose().getTranslation().getY() - targetTranslation.getY(), 2));
+        Math.pow(getPose().getTranslation().getX() - targetTranslation.getX(), 2)
+            + Math.pow(getPose().getTranslation().getY() - targetTranslation.getY(), 2));
 
   }
 

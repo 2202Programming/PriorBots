@@ -8,18 +8,10 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
-import frc.lib2202.command.PDPMonitorCmd;
-import frc.lib2202.subsystem.swerve.SwerveDrivetrain;
-import frc.lib2202.subsystem.swerve.config.CANConfig;
-import frc.lib2202.subsystem.swerve.config.ChassisConfig;
-import frc.lib2202.subsystem.swerve.config.ChassisInversionSpecs;
-import frc.lib2202.subsystem.swerve.config.WheelOffsets;
 import frc.lib2202.subsystem.hid.HID_Xbox_Subsystem;
+import frc.lib2202.subsystem.swerve.SwerveDrivetrain;
 import frc.robot2024.BindingsCompetition;
-import frc.robot2024.BindingsOther;
 import frc.robot2024.RegisteredCommands;
-import frc.robot2024.commands.Shooter.ContinousAngleTracker;
-import frc.lib2202.builder.IRobotSpec;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -130,11 +122,7 @@ public class RobotContainer {
     robotSpecs = null;
 
     subsystemConfig.constructAll();
-    autoChooser = RegisteredCommands.RegisterCommands();
-
-    // // Testing, but also to drive the drivers nuts...
-    // Command random_lights = new BlinkyLightColorCmd();
-    // random_lights.schedule();
+	  autoChooser = RegisteredCommands.RegisterCommands();
 
     // Quiet some of the noise
     DriverStation.silenceJoystickConnectionWarning(true);
