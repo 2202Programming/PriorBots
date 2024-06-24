@@ -6,7 +6,12 @@ package frc.lib2202.subsystem.swerve.config;
  * 
  */
 public class ModuleConfig {
-  public enum CornerID { FrontLeft, FrontRight, BackLeft, BackRight}
+  // In order used by swerve module array
+  public enum CornerID { FrontLeft(0), FrontRight(1), BackLeft(2), BackRight(3);
+    private final int idx;
+    private CornerID(int v) { idx = v;}
+    public int getIdx() {return idx;}
+  }
 
   public final CornerID id;
 
@@ -21,18 +26,18 @@ public class ModuleConfig {
   public boolean kAngleCmdInvert = false;
 
   // wheel offsets for CANCoder
-  public final double kWheelOffset;
+  public final double kAngleOffset;
 
   /**
    * CANModuleConfig - Stores one swerve module's cancoder and two motor CAN IDs
    * 
    */
-  public ModuleConfig(CornerID id, int CANCODER_ID, int DRIVE_MOTOR_ID, int ANGLE_MOTOR_ID, double wheelOffset) {
+  public ModuleConfig(CornerID id, int CANCODER_ID, int DRIVE_MOTOR_ID, int ANGLE_MOTOR_ID, double angleOffset) {
     this.id = id;
     this.CANCODER_ID = CANCODER_ID;
     this.DRIVE_MOTOR_ID = DRIVE_MOTOR_ID;
     this.ANGLE_MOTOR_ID = ANGLE_MOTOR_ID;
-    this.kWheelOffset = wheelOffset;
+    this.kAngleOffset = angleOffset;
   }
 
   /**

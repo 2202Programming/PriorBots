@@ -12,6 +12,7 @@ import frc.lib2202.subsystem.swerve.config.ModuleInversionSpecs;
 import frc.lib2202.subsystem.swerve.config.WheelOffsets;
 import frc.lib2202.util.PIDFController;
 import frc.lib2202.util.AprilTag2d;
+import static frc.lib2202.Constants.*;
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
  * numerical or boolean
@@ -25,15 +26,7 @@ import frc.lib2202.util.AprilTag2d;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-  // nominal system frame rate, DT (delta T)
-  public static final double DT = 0.02; // [s] 20ms framerate 50Hz
-
-  // Handy feet to meters
-  public static final double FTperM = 3.28084;
-  public static final double MperFT = 1.0 / FTperM;
-  public static final double DEGperRAD = 57.3;
-  public static final int NEO_COUNTS_PER_REVOLUTION = 42;
-
+  
   /*------------------------Drivetrain-------------------------*/
   public static final class DriveTrain {
     // motor constraints
@@ -65,8 +58,8 @@ public final class Constants {
     /*
      * Settings for different swerve bot chassis
      */
-    // FOR SWERVEBOT, aka Tim 2.0
-    public static final WheelOffsets swerveBotOffsets = new WheelOffsets(-98.942, 91.33, -177.035, -28.215);
+    // FOR SWERVEBOT, aka Tim 2.0  
+    public static final WheelOffsets swerveBotOffsets = new WheelOffsets(-98.942, 91.33, -177.035, -28.215); //FL BL FR BR
     public static final ChassisConfig swerveBotChassisConfig = new ChassisConfig(10.5 / 12, 10.5 / 12, 0.995,
         99.5 / 1000.0, 12.8, 8.14);
 

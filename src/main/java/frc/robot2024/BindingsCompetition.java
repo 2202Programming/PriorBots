@@ -41,7 +41,7 @@ public final class BindingsCompetition {
     }
 
 
-    static void DriverBinding(HID_Xbox_Subsystem dc) {
+    private static void DriverBinding(HID_Xbox_Subsystem dc) {
         var driver = dc.Driver();
         var drivetrain = RobotContainer.getSubsystem(SwerveDrivetrain.class);
 

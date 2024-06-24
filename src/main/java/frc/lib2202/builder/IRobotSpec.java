@@ -13,8 +13,8 @@ import frc.lib2202.subsystem.swerve.config.ModuleConfig;
  */
 public interface IRobotSpec {
 
-    public String getRobotName();
-    public RobotLimits  getRobotLimits();
+    //basic robot speeds
+    public  RobotLimits  getRobotLimits();
 
     //Sensors needed for drivetrain
     IHeadingProvider getHeadingProvider();
@@ -24,9 +24,8 @@ public interface IRobotSpec {
     public ChassisConfig getChassisConfig();
     public ModuleConfig[] getModuleConfigs();
 
-    public SubsystemConfig getSubsystemConfig();
+    // bindings
     public abstract void setBindings();
-    public abstract SubsystemConfig[] getSubsystemConfigs();  // some years may have multiple bots
     
     public boolean burnFlash();
 

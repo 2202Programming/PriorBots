@@ -1,7 +1,9 @@
 package frc.lib2202.builder;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
@@ -17,6 +19,57 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 *  See Configs.java for correct usage for different platforms we have.
 */
 public class SubsystemConfig {
+
+    // track all the possible SubsystemConfigs created
+    static List<SubsystemConfig> allConfigs = new ArrayList<SubsystemConfig>();
+    static SubsystemConfig selectedConfig = null;
+
+    // Member vars
+    final String serialNumber;
+    final String name;
+    IRobotSpec robotSpec = null;
+
+    public SubsystemConfig(String name, String serialNumber) {
+        this.name = name;
+        this.serialNumber = serialNumber;         
+        allConfigs.add(this);
+    }
+
+
+    static SubsystemConfig getSelectedConfig() {
+        if (selectedConfig == null) {
+            throw new RuntimeException("SetConfig(<serial number>) has not been set.");
+        }
+        return selectedConfig;
+    }
+
+    static SubsystemConfig SetConfig(String serialNumber)  {
+        System.out.println("***RoboRio SERIAL NUM: " + serialNumber + " ***");
+
+        if (selectedConfig != null) {
+            throw new RuntimeException("Config already set, SetConfig() called again with "+ serialNumber +
+            "\n it was previously called with "+ selectedConfig.serialNumber + " for " + selectedConfig.name +
+            "\n Check your code for multiple SetConfig() calls. ");            
+        }
+        
+        for (SubsystemConfig ssConfig : allConfigs) {
+            if (serialNumber ==ssConfig.serialNumber ) {
+                selectedConfig = ssConfig;
+                break;
+            }
+        }
+
+        // a config should be selected if not complain and crash
+        if (selectedConfig == null) {
+            throw new RuntimeException("No SubsystemConfig matching serial number " + serialNumber+ " found." +
+            "\nCheck your config files.");        
+        }
+
+        System.out.println("***Robot identified as: " + selectedConfig.name);
+        return selectedConfig;
+    }
+
+
     /* SubsystemDefinition keeps class and subsystem for use in a has map */
     static class SubsystemDefinition<T extends Object> {
         Class<T> m_Class;
@@ -85,9 +138,7 @@ public class SubsystemConfig {
             }
         }
     }
-    // Robot name filled in when constructing
-    static String robot_name = "TBD";
-
+   
     // map all the robot subsystem by a name
     LinkedHashMap<String, SubsystemDefinition<?>> m_robot_parts = new LinkedHashMap<>();
    
@@ -189,6 +240,18 @@ public class SubsystemConfig {
         return has(n);
     }
 
+    public  SubsystemConfig setRobotSpec(IRobotSpec spec) {
+        robotSpec = spec;
+        return this;
+    }
+
+    IRobotSpec getRobotSpec() {
+        if (robotSpec == null) {
+            throw new RuntimeException("RobotSpec not setup for robot: "+this.name);
+        }
+        return robotSpec;
+    }
+
     /*
      * constructAll() - call all the subsystem constructors if they haven't been
      * initialized
@@ -197,16 +260,16 @@ public class SubsystemConfig {
      * all the robot specs
      * are setup.
      */
-    public void constructAll() {
-        
-        // robot being built is?
-        robot_name = RobotContainer.getRobotName();
+    public static void constructAll() {
+    
+        var cfg = getSelectedConfig();
 
         //wait for Phoenix library initialization on other threads to complete
-        System.out.println("Waiting 5 seconds for other threads to initialize, then constructing: " + robot_name);
+        System.out.println("Waiting 5 seconds for other threads to initialize, then constructing: " + 
+            cfg.name+":"+cfg.serialNumber);
         sleep(5000);
-        System.out.println("Constructing " + robot_name);
-        for (Map.Entry<String, SubsystemDefinition<?>> entry : m_robot_parts.entrySet()) {
+        System.out.println("Constructing " + selectedConfig.name);
+        for (Map.Entry<String, SubsystemDefinition<?>> entry : cfg.m_robot_parts.entrySet()) {
             System.out.println("    Constructing " + entry.getKey() + " as instance of " +
                     entry.getValue().m_Class.getSimpleName());
             entry.getValue().construct();
@@ -214,7 +277,7 @@ public class SubsystemConfig {
             //handle alias which must be defined After the instance is created.
             var ssd = entry.getValue();
             if (ssd.m_alias != null) {
-                ssd.m_obj = get(ssd.m_Class.getSimpleName()).m_obj;
+                ssd.m_obj = selectedConfig.get(ssd.m_Class.getSimpleName()).m_obj;
             }
         }
     }

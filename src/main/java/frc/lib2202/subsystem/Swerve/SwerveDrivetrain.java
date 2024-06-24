@@ -137,7 +137,7 @@ public class SwerveDrivetrain extends SubsystemBase {
       modules[i] = new SwerveModuleMK3(
         new CANSparkMax(mc[i].DRIVE_MOTOR_ID, MT),
         new CANSparkMax(mc[i].ANGLE_MOTOR_ID, MT),
-        mc[i].kWheelOffset,
+        mc[i].kAngleOffset,
         canCoders[i],
         mc[i].kAngleMotorInvert,
         mc[i].kAngleCmdInvert, 
@@ -230,7 +230,7 @@ public class SwerveDrivetrain extends SubsystemBase {
     periodic(); // run to initialize module values
     System.out.println("================Offsets==================");
     for (int i=0; i < mc.length; i++) {
-      double offset = mc[i].kWheelOffset;
+      double offset = mc[i].kAngleOffset;
       double measured = modules[i].m_internalAngle;
       System.out.println(mc[i].id.toString() + ": offset " + offset + ", measured " + measured + 
         ", should be " + ModMath.fmod360_2(offset - measured));

@@ -5,13 +5,9 @@
 package frc.lib2202.builder;
 
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+//TODO fix me   import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
-import frc.lib2202.subsystem.hid.HID_Xbox_Subsystem;
-import frc.lib2202.subsystem.swerve.SwerveDrivetrain;
-import frc.robot2024.BindingsCompetition;
-import frc.robot2024.RegisteredCommands;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -35,16 +31,9 @@ public class RobotContainer {
 
   // The robot's subsystems and commands are defined here...
   static RobotContainer rc;   //singleton
-  final String serialnum = System.getenv("serialnum");   // all starts here
-  final String robotName;
 
-  final IRobotSpec robotSpecs;
   final SubsystemConfig subsystemConfig;
-
-  final HID_Xbox_Subsystem dc;
-  final SwerveDrivetrain drivetrain;
-  
-  final SendableChooser<Command> autoChooser;
+  //TODO FIX ME  final SendableChooser<Command> autoChooser;
   
   // support old accessor for Robot's container 
   public static RobotContainer RC() {
@@ -96,11 +85,11 @@ public class RobotContainer {
   }
 
   public static IRobotSpec getRobotSpecs() {
-    return rc.robotSpecs;
+    return rc.subsystemConfig.getRobotSpec();
   }
 
   public static String getRobotName() {
-    return rc.serialnum;
+    return rc.subsystemConfig.name;
   }
 
   /**
@@ -118,11 +107,11 @@ public class RobotContainer {
    */
   public RobotContainer() {
     RobotContainer.rc = this;
-    subsystemConfig = null;
-    robotSpecs = null;
+    // use serial number to set the proper config
+    subsystemConfig = SubsystemConfig.SetConfig(System.getenv("serialnum"));
+    SubsystemConfig.constructAll();
 
-    subsystemConfig.constructAll();
-	  autoChooser = RegisteredCommands.RegisterCommands();
+	  //TODO   fix   me  autoChooser = RegisteredCommands.RegisterCommands();
 
     // Quiet some of the noise
     DriverStation.silenceJoystickConnectionWarning(true);
@@ -167,7 +156,7 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return autoChooser.getSelected();
+    return null ; //TODO FIXME autoChooser.getSelected();
   }
 
 }
