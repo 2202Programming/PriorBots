@@ -4,15 +4,7 @@
 
 package frc.robot2024;
 
-import frc.lib2202.subsystem.swerve.config.CANConfig;
-import frc.lib2202.subsystem.swerve.config.ModuleConfig;
-import frc.lib2202.subsystem.swerve.config.ChassisConfig;
-import frc.lib2202.subsystem.swerve.config.ChassisInversionSpecs;
-import frc.lib2202.subsystem.swerve.config.ModuleInversionSpecs;
-import frc.lib2202.subsystem.swerve.config.WheelOffsets;
-import frc.lib2202.util.PIDFController;
 import frc.lib2202.util.AprilTag2d;
-import static frc.lib2202.Constants.*;
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
  * numerical or boolean
@@ -27,7 +19,12 @@ import static frc.lib2202.Constants.*;
  */
 public final class Constants {
   
-  /*------------------------Drivetrain-------------------------*/
+
+  /*------------------------Drivetrain-------------------------
+
+  Moved to new format for better support of multiple bots -- See IRobotSpec and RobotSpec_<bot>.java
+  files for details...   DPL 
+
   public static final class DriveTrain {
     // motor constraints
     public static final double motorMaxRPM = 5600; // motor limit
@@ -38,7 +35,7 @@ public final class Constants {
     public static final int freeAmp = 20;
 
     // Constraints on speeds enforeced in DriveTrain
-    // TODO make kMaxSpeed Bot dependent
+  
     public static final double kMaxSpeed = 16.2 * MperFT; // [m/s] new gears 3/23/24 16.6 m/s max
     public static final double kMaxAngularSpeed = 2 * Math.PI; // [rad/s]
   
@@ -57,7 +54,7 @@ public final class Constants {
                                                                                             // SDS sample code?
     /*
      * Settings for different swerve bot chassis
-     */
+     
     // FOR SWERVEBOT, aka Tim 2.0  
     public static final WheelOffsets swerveBotOffsets = new WheelOffsets(-98.942, 91.33, -177.035, -28.215); //FL BL FR BR
     public static final ChassisConfig swerveBotChassisConfig = new ChassisConfig(10.5 / 12, 10.5 / 12, 0.995,
@@ -177,6 +174,7 @@ public final class Constants {
 
   } // end DriveTrain configs
 
+  **************************************************************/
   /*-------------------------Ports/CAN-------------------------------- */
   /**
    * CAN bus IDs
@@ -320,44 +318,5 @@ public final class Constants {
   public final static class NTStrings {
     public final static String NT_Name_Position = "Position";
   }
-
-  // public static final class CAN{
-  // /* 1/20/24
-  // * CAN IDs:
-  // * Corner 3 Drive Motor BL: 22
-  // * Corner 3 Direction Motor BL: 23
-  // * BL Encoder: 28
-  // *
-  // * Corner 2 Drive Motor FL: 20
-  // * Corner 2 Direction Motor FL: 21
-  // * FL Encoder: 29
-  // *
-  // * Corner 4 Drive Motor BR: 24
-  // * Corner 4 Direction Motor BR: 25
-  // * BR Encoder
-  // *
-  // * Corner 1 Direction Motor FR: 27
-  // * Corner 1 Drive Motor FR: 26
-  // * FR Encoder: 30
-  // */
-
-  // // CAN IDs for DT encoders
-  // public static final int DT_BL_ENCODER = 28;
-  // public static final int DT_FL_ENCODER = 29;
-  // public static final int DT_FR_ENCODER = 30;
-  // public static final int DT_BR_ENCODER = 31;
-
-  // // CAN IDs for drivetrain motors
-  // public static final int DT_FL_DRIVE = 20;
-  // public static final int DT_FL_DIRECTION = 21;
-
-  // public static final int DT_BL_DRIVE = 22;
-  // public static final int DT_BL_DIRECTION = 23;
-
-  // public static final int DT_BR_DRIVE = 24;
-  // public static final int DT_BR_DIRECTION = 25;
-
-  // public static final int DT_FR_DRIVE = 26;
-  // public static final int DT_FR_DIRECTION = 27;
 
 }

@@ -13,20 +13,20 @@ import frc.lib2202.subsystem.swerve.config.ModuleConfig;
  */
 public interface IRobotSpec {
 
-    //basic robot speeds
+    // basic robot speeds
     public  RobotLimits  getRobotLimits();
 
-    //Sensors needed for drivetrain
+    // Sensors needed for drivetrain
     IHeadingProvider getHeadingProvider();
 
-    //swerve specs
+    // swerve specs
     public boolean isSwerve();
     public ChassisConfig getChassisConfig();
     public ModuleConfig[] getModuleConfigs();
 
     // bindings
     public abstract void setBindings();
-    
+
     public boolean burnFlash();
 
 }
