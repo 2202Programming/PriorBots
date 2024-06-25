@@ -38,7 +38,9 @@ public class RobotSpec_CompBot2024 implements IRobotSpec {
                 pdp.clearStickyFaults();
                 return pdp;
             })
-            .add(BlinkyLights.class, "LIGHTS")
+            .add(BlinkyLights.class, "LIGHTS", () -> {
+                return new BlinkyLights(CAN.CANDLE1, CAN.CANDLE2);
+            })
             .add(HID_Xbox_Subsystem.class, "DC", () -> {
                 return new HID_Xbox_Subsystem(0.3, 0.9, 0.05);
             })

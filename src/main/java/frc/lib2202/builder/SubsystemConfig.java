@@ -44,7 +44,7 @@ public class SubsystemConfig {
     }
 
     static SubsystemConfig SetConfig(String serialNumber)  {
-        System.out.println("***RoboRio SERIAL NUM: " + serialNumber + " ***");
+        System.out.println("***RoboRio SERIAL NUM: '" + serialNumber + "' ***");
 
         if (selectedConfig != null) {
             throw new RuntimeException("Config already set, SetConfig() called again with "+ serialNumber +
@@ -61,7 +61,7 @@ public class SubsystemConfig {
 
         // a config should be selected if not complain and crash
         if (selectedConfig == null) {
-            throw new RuntimeException("No SubsystemConfig matching serial number " + serialNumber+ " found." +
+            throw new RuntimeException("No SubsystemConfig matching serial number '" + serialNumber+ "' found." +
             "\nCheck your config files.");        
         }
 

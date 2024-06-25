@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 //TODO fix me   import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import frc.base.Main;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -107,8 +108,11 @@ public class RobotContainer {
    */
   public RobotContainer() {
     RobotContainer.rc = this;
-    // use serial number to set the proper config
-    subsystemConfig = SubsystemConfig.SetConfig(System.getenv("serialnum"));
+    // use serial number to set the proper config, use env or static set in Main.java
+    String serialnum = System.getenv("serialnum");
+    serialnum = (serialnum == null) ? Main.serialnum : serialnum;
+    subsystemConfig = SubsystemConfig.SetConfig(serialnum);
+    
     SubsystemConfig.constructAll();
 
 	  //TODO   fix   me  autoChooser = RegisteredCommands.RegisterCommands();
@@ -127,12 +131,7 @@ public class RobotContainer {
   //     drivetrain.setDefaultCommand(new FieldCentricDrive());
   //   }
 
-  //   new PDPMonitorCmd(); // auto scheduled, runs when disabled
-  //   // uncomment to enable shooter angle tracking
-  //   if (RobotContainer.getRobotSpecs().myRobotName.toString().equals("CompetitionBotBeta2024")){
-  //   //TODO: DO WE NEED THIS?
-  //   new ContinousAngleTracker(true);  //auto schedules
-  // }
+  
   //   // make some noise if we are not on Competion bindings
   //   if (bindings != Bindings.Competition) {
   //     System.out.println(
