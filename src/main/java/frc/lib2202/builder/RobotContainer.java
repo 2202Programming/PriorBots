@@ -5,7 +5,7 @@
 package frc.lib2202.builder;
 
 import edu.wpi.first.wpilibj.DriverStation;
-//TODO fix me   import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.base.Main;
@@ -34,7 +34,7 @@ public class RobotContainer {
   static RobotContainer rc;   //singleton
 
   final SubsystemConfig subsystemConfig;
-  //TODO FIX ME  final SendableChooser<Command> autoChooser;
+  final SendableChooser<Command> autoChooser;
   
   // support old accessor for Robot's container 
   public static RobotContainer RC() {
@@ -96,15 +96,7 @@ public class RobotContainer {
   /**
    * The container for the robot.
    * 
-   * You likely shouldn't need to edit this file.
-   * For runtime config, see:   
-   *  {@link Configs } - subsystems, watchers
-   *  {@link Constants }
-   *  {@link RegisteredCommands } - PathPlanner named commands
-   *  {@link BindingsCompetition } - triggers
-   * 
-   *  public final Bindings - should normally point to Competition.
-   * 
+   * You likely shouldn't need to edit this file.  
    */
   public RobotContainer() {
     RobotContainer.rc = this;
@@ -112,41 +104,13 @@ public class RobotContainer {
     String serialnum = System.getenv("serialnum");
     serialnum = (serialnum == null) ? Main.serialnum : serialnum;
     subsystemConfig = SubsystemConfig.SetConfig(serialnum);
-    
     SubsystemConfig.constructAll();
-
-	  //TODO   fix   me  autoChooser = RegisteredCommands.RegisterCommands();
 
     // Quiet some of the noise
     DriverStation.silenceJoystickConnectionWarning(true);
 
-    
-
-  //   // get subsystem vars as needed for bindings
-  //   drivetrain = getSubsystem(SwerveDrivetrain.class);
-  //   dc = getSubsystem("DC");
-
-  //   /* Setup the commands below */
-  //   if (drivetrain != null) {
-  //     drivetrain.setDefaultCommand(new FieldCentricDrive());
-  //   }
-
-  
-  //   // make some noise if we are not on Competion bindings
-  //   if (bindings != Bindings.Competition) {
-  //     System.out.println(
-  //         "*****************************************************************************\n" +
-  //         "* Warning: Not using competition bindings, using: " + bindings.toString() + "\n" +
-  //         "*****************************************************************************\n");
-  //     BindingsOther.ConfigureOther(dc);
-  //   } else {
-  //     // Competition Bindings, see BindingsCompetition.java
-  //     BindingsCompetition.ConfigueCompetition(dc);
-  //   }
-
-
-  
-
+    getRobotSpecs().setBindings();
+    autoChooser = getRobotSpecs().getRegisteredCommands();
   }
 
   /**
@@ -155,7 +119,7 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return null ; //TODO FIXME autoChooser.getSelected();
+    return (autoChooser != null) ? autoChooser.getSelected() :  null;
   }
 
 }

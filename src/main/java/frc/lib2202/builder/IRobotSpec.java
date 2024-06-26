@@ -4,6 +4,8 @@
 
 package frc.lib2202.builder;
 
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib2202.subsystem.swerve.IHeadingProvider;
 import frc.lib2202.subsystem.swerve.config.ChassisConfig;
 import frc.lib2202.subsystem.swerve.config.ModuleConfig;
@@ -20,7 +22,6 @@ public interface IRobotSpec {
     IHeadingProvider getHeadingProvider();
 
     // swerve specs
-    public boolean isSwerve();
     public ChassisConfig getChassisConfig();
     public ModuleConfig[] getModuleConfigs();
 
@@ -28,5 +29,8 @@ public interface IRobotSpec {
     public abstract void setBindings();
 
     public boolean burnFlash();
+
+    // Setup registered commands
+    public SendableChooser<Command> getRegisteredCommands();
 
 }

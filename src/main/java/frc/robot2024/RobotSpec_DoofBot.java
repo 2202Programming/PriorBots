@@ -15,6 +15,9 @@ import frc.lib2202.util.PIDFController;
 import frc.robot2024.subsystems.Sensors.Sensors_Subsystem;
 import static frc.lib2202.Constants.MperFT;
 
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj2.command.Command;
+
 public class RobotSpec_DoofBot implements IRobotSpec {
 
     final SubsystemConfig ssConfig = new SubsystemConfig("2023-DoofBot", "TBD-123456-TBD")
@@ -63,11 +66,6 @@ public class RobotSpec_DoofBot implements IRobotSpec {
     @Override
     public IHeadingProvider getHeadingProvider() {
         return RobotContainer.getSubsystem(Sensors_Subsystem.class);
-    }
-
-    @Override
-    public boolean isSwerve() {
-        return true;
     }
 
     @Override
@@ -131,6 +129,11 @@ public class RobotSpec_DoofBot implements IRobotSpec {
     @Override
     public boolean burnFlash() {
         return burnFlash;
+    }
+
+    @Override
+    public SendableChooser<Command> getRegisteredCommands() {
+        return null;
     }
 
 }

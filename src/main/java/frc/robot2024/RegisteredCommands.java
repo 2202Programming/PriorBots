@@ -8,11 +8,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.lib2202.builder.RobotContainer;
 import frc.lib2202.command.swerve.FaceToTag;
 import frc.lib2202.command.swerve.RotateTo;
 import frc.lib2202.command.swerve.RotateUntilSeeTags;
-import frc.lib2202.builder.RobotContainer;
-
 import frc.robot2024.Constants.Tag_Pose;
 import frc.robot2024.commands.Intake.EjectNote;
 import frc.robot2024.commands.Intake.IntakeSequence;

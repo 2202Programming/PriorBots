@@ -2,6 +2,8 @@ package frc.lib2202.builder;
 
 import static frc.lib2202.Constants.MperFT;
 
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib2202.subsystem.swerve.IHeadingProvider;
 import frc.lib2202.subsystem.swerve.config.ChassisConfig;
 import frc.lib2202.subsystem.swerve.config.ModuleConfig;
@@ -46,10 +48,6 @@ public class RobotSpecDefault implements IRobotSpec {
         return RobotContainer.getSubsystem(Sensors_Subsystem.class);
     }
 
-    @Override
-    public boolean isSwerve() {
-        return false;
-    }
 
     @Override
     public ChassisConfig getChassisConfig() {
@@ -69,6 +67,11 @@ public class RobotSpecDefault implements IRobotSpec {
     @Override
     public boolean burnFlash() {
         return false;
+    }
+
+    @Override
+    public SendableChooser<Command> getRegisteredCommands() {
+      return null;
     }
 
 }

@@ -129,6 +129,7 @@ public class SwerveDrivetrain extends SubsystemBase {
     cc = RobotContainer.getRobotSpecs().getChassisConfig();
     mc = RobotContainer.getRobotSpecs().getModuleConfigs();
    
+    //TODO Check coordinate frame for robot signs look wrong and might account for inversion issues...dpl 6/25/24
     kinematics = new SwerveDriveKinematics(
       new Translation2d(cc.XwheelOffset, cc.YwheelOffset), // Front Left
       new Translation2d(cc.XwheelOffset, -cc.YwheelOffset), // Front Right

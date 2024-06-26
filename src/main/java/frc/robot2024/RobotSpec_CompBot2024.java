@@ -4,6 +4,7 @@ import static frc.lib2202.Constants.MperFT;
 
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib2202.builder.IRobotSpec;
 import frc.lib2202.builder.RobotContainer;
@@ -119,11 +120,6 @@ public class RobotSpec_CompBot2024 implements IRobotSpec {
     }
 
     @Override
-    public boolean isSwerve() {
-        return true;
-    }
-
-    @Override
     public ChassisConfig getChassisConfig() {
         return comp2024BotBetaChassisConfig;
     }
@@ -151,25 +147,21 @@ public class RobotSpec_CompBot2024 implements IRobotSpec {
                 29, 24, 25,
                 -125.595)
                 .setInversions(true, true, false);
-        ;
 
         modules[CornerID.FrontRight.getIdx()] = new ModuleConfig(CornerID.FrontRight,
                 30, 26, 27,
                 -114.785)
                 .setInversions(false, true, false);
-        ;
 
         modules[CornerID.BackLeft.getIdx()] = new ModuleConfig(CornerID.BackLeft,
                 28, 22, 23,
                 28.125)
                 .setInversions(true, true, false);
-        ;
 
         modules[CornerID.BackRight.getIdx()] = new ModuleConfig(CornerID.BackRight,
                 31, 20, 21,
                 -115.752)
                 .setInversions(false, true, false);
-        ;
 
         return modules;
     }
@@ -186,6 +178,11 @@ public class RobotSpec_CompBot2024 implements IRobotSpec {
     @Override
     public boolean burnFlash() {
         return burnFlash;
+    }
+
+    @Override
+    public SendableChooser<Command> getRegisteredCommands() {
+        return RegisteredCommands.RegisterCommands();
     }
 
 }

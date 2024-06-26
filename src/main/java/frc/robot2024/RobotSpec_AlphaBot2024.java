@@ -4,6 +4,7 @@ import static frc.lib2202.Constants.MperFT;
 
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib2202.builder.IRobotSpec;
 import frc.lib2202.builder.RobotContainer;
@@ -85,7 +86,7 @@ public class RobotSpec_AlphaBot2024 implements IRobotSpec {
   public RobotSpec_AlphaBot2024() {
     // finish BetaBot's drivePIDF
     chassisConfig.drivePIDF.setIZone(0.2);
-    
+
     // add the specs to the ssconfig
     ssconfig.setRobotSpec(this);
   }
@@ -100,11 +101,6 @@ public class RobotSpec_AlphaBot2024 implements IRobotSpec {
   @Override
   public IHeadingProvider getHeadingProvider() {
     return RobotContainer.getSubsystem(Sensors_Subsystem.class);
-  }
-
-  @Override
-  public boolean isSwerve() {
-    return true;
   }
 
   @Override
@@ -167,6 +163,11 @@ public class RobotSpec_AlphaBot2024 implements IRobotSpec {
   @Override
   public boolean burnFlash() {
     return burnFlash;
+  }
+
+  @Override
+  public SendableChooser<Command> getRegisteredCommands() {
+    return RegisteredCommands.RegisterCommands();
   }
 
 }
