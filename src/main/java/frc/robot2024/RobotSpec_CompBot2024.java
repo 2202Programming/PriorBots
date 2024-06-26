@@ -30,8 +30,8 @@ import frc.robot2024.subsystems.Sensors.Sensors_Subsystem;
 
 public class RobotSpec_CompBot2024 implements IRobotSpec {
 
-    static final SubsystemConfig comp2024BetaBotSubsystemConfig = new SubsystemConfig("CompetitionBotBeta2024",
-            "032D2062")
+    final SubsystemConfig config = new SubsystemConfig(
+            "CompetitionBotBeta2024", "032D2062")
             // deferred construction via Supplier<Object> lambda
             .add(PowerDistribution.class, "PDP", () -> {
                 var pdp = new PowerDistribution(CAN.PDP, ModuleType.kRev);
@@ -74,34 +74,37 @@ public class RobotSpec_CompBot2024 implements IRobotSpec {
 
     // set this true at least once after robot hw stabilizes
     boolean burnFlash = false;
-
     boolean swerve = true;
 
     // Robot Speed Limits
-    static double maxSpeed = 15.0 * MperFT; // [m/s]
-    static double maxRotationRate = 2.0 * Math.PI; // [rad/s]
-    static RobotLimits robotLimits = new RobotLimits(maxSpeed, maxRotationRate);
+    double maxSpeed = 15.0 * MperFT; // [m/s]
+    double maxRotationRate = 2.0 * Math.PI; // [rad/s]
+    RobotLimits robotLimits = new RobotLimits(maxSpeed, maxRotationRate);
 
     // Chassis
-    static double kWheelCorrectionFactor = .987;
-    static double kSteeringGR = 21.428;
-    static double kDriveGR = 6.12;
-    static double kWheelDiameter = MperFT * 4.0 / 12.0; // [m]
+    double kWheelCorrectionFactor = .987;
+    double kSteeringGR = 21.428;
+    double kDriveGR = 6.12;
+    double kWheelDiameter = MperFT * 4.0 / 12.0; // [m]
 
-    static final ChassisConfig comp2024BotBetaChassisConfig = new ChassisConfig(
-        MperFT * (24.875 / 12.0) / 2.0, // x
-        MperFT * (20.5 / 12.0) / 2.0, // y
-        kWheelCorrectionFactor, // scale [] <= 1.0
-       kWheelDiameter,
-        kSteeringGR,
-        kDriveGR,
-        new PIDFController(0.085, 0.00055, 0.0, 0.21292), // drive
-        new PIDFController(0.01, 0.0, 0.0, 0.0)  // angle
-        );
-        // finish BetaBot's drivePIDF 
-        static {
-          comp2024BotBetaChassisConfig.drivePIDF.setIZone(0.2);
-        }
+    final ChassisConfig comp2024BotBetaChassisConfig = new ChassisConfig(
+            MperFT * (24.875 / 12.0) / 2.0, // x
+            MperFT * (20.5 / 12.0) / 2.0, // y
+            kWheelCorrectionFactor, // scale [] <= 1.0
+            kWheelDiameter,
+            kSteeringGR,
+            kDriveGR,
+            new PIDFController(0.085, 0.00055, 0.0, 0.21292), // drive
+            new PIDFController(0.01, 0.0, 0.0, 0.0) // angle
+    );
+
+    public RobotSpec_CompBot2024() {
+        // finish BetaBot's drivePIDF
+        comp2024BotBetaChassisConfig.drivePIDF.setIZone(0.2);
+
+        // finally add this spec to the config
+        config.setRobotSpec(this);
+    }
 
     // Required method that use the specs above
 
@@ -133,34 +136,40 @@ public class RobotSpec_CompBot2024 implements IRobotSpec {
         // final ModuleConfig comp2024CAN_FR = new ModuleConfig(30, 26, 27);
         // final ModuleConfig comp2024CAN_BL = new ModuleConfig(28, 22, 23);
         // final ModuleConfig comp2024CAN_BR = new ModuleConfig(31, 20, 21);
-        // final CANConfig comp2024BotCANConfig = new CANConfig(comp2024CAN_FL, comp2024CAN_FR, comp2024CAN_BL, comp2024CAN_BR);
+        // final CANConfig comp2024BotCANConfig = new CANConfig(comp2024CAN_FL,
+        // comp2024CAN_FR, comp2024CAN_BL, comp2024CAN_BR);
 
-        // ChassisInversionSpecs comp2024BotBetaInversionSpecs = new ChassisInversionSpecs(
-        //    new ModuleInversionSpecs(false, true, false), // FR
-        //    new ModuleInversionSpecs(true, true, false), // FL
-        //    new ModuleInversionSpecs(false, true, false), // BR
-        //    new ModuleInversionSpecs(true, true, false)); // BL
+        // ChassisInversionSpecs comp2024BotBetaInversionSpecs = new
+        // ChassisInversionSpecs(
+        // new ModuleInversionSpecs(false, true, false), // FR
+        // new ModuleInversionSpecs(true, true, false), // FL
+        // new ModuleInversionSpecs(false, true, false), // BR
+        // new ModuleInversionSpecs(true, true, false)); // BL
 
         ModuleConfig[] modules = new ModuleConfig[4];
         modules[CornerID.FrontLeft.getIdx()] = new ModuleConfig(CornerID.FrontLeft,
                 29, 24, 25,
                 -125.595)
-                .setInversions(true,true,false);;
+                .setInversions(true, true, false);
+        ;
 
         modules[CornerID.FrontRight.getIdx()] = new ModuleConfig(CornerID.FrontRight,
                 30, 26, 27,
                 -114.785)
-                .setInversions(false,true,false);;
+                .setInversions(false, true, false);
+        ;
 
         modules[CornerID.BackLeft.getIdx()] = new ModuleConfig(CornerID.BackLeft,
                 28, 22, 23,
                 28.125)
-                .setInversions(true,true,false);;
+                .setInversions(true, true, false);
+        ;
 
         modules[CornerID.BackRight.getIdx()] = new ModuleConfig(CornerID.BackRight,
                 31, 20, 21,
                 -115.752)
-                .setInversions(false,true,false);;
+                .setInversions(false, true, false);
+        ;
 
         return modules;
     }

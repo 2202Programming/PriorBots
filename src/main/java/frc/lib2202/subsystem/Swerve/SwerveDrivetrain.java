@@ -45,8 +45,8 @@ public class SwerveDrivetrain extends SubsystemBase {
   static final double Bearing_Tol = Math.toRadians(0.5); // limit bearing
 
   // cc is the chassis config for all our pathing math
-  final RobotLimits limits = RobotContainer.getRobotSpecs().getRobotLimits();
-  final ChassisConfig cc = RobotContainer.getRobotSpecs().getChassisConfig();
+  final RobotLimits limits /* = RobotContainer.getRobotSpecs().getRobotLimits() */;
+  final ChassisConfig cc  /* = RobotContainer.getRobotSpecs().getChassisConfig() */;
   final ModuleConfig mc[];
   
   /**
@@ -58,12 +58,14 @@ public class SwerveDrivetrain extends SubsystemBase {
    * [m]
    * https://docs.wpilib.org/en/stable/docs/software/kinematics-and-odometry/swerve-drive-kinematics.html#constructing-the-kinematics-object
    */
-  private SwerveDriveKinematics kinematics = new SwerveDriveKinematics(
+  private SwerveDriveKinematics kinematics; /*= new SwerveDriveKinematics(
       new Translation2d(cc.XwheelOffset, cc.YwheelOffset), // Front Left
       new Translation2d(cc.XwheelOffset, -cc.YwheelOffset), // Front Right
       new Translation2d(-cc.XwheelOffset, cc.YwheelOffset), // Back Left
       new Translation2d(-cc.XwheelOffset, -cc.YwheelOffset) // Back Right
-  );
+  ); */
+
+
   final private SwerveDriveOdometry m_odometry;
   Pose2d m_pose;
   @SuppressWarnings("unused")
@@ -71,12 +73,12 @@ public class SwerveDrivetrain extends SubsystemBase {
   final VisionWatchdog watchdog;
 
   SwerveModuleState[] meas_states; // measured wheel speed & angle
-  SwerveModulePosition[] meas_pos = new SwerveModulePosition[] {
+  SwerveModulePosition[] meas_pos; /*= new SwerveModulePosition[] {
       new SwerveModulePosition(),
       new SwerveModulePosition(),
       new SwerveModulePosition(),
       new SwerveModulePosition()
-  };
+  }; */
 
   final CANcoder canCoders[];
 
@@ -90,7 +92,7 @@ public class SwerveDrivetrain extends SubsystemBase {
 
   // Network tables
   public final String NT_Name = "DT";
-  final private NetworkTable table = NetworkTableInstance.getDefault().getTable(NT_Name);
+  final private NetworkTable table;
 
   // ll pose updating
   private NetworkTableEntry nt_x_diff;
@@ -120,10 +122,27 @@ public class SwerveDrivetrain extends SubsystemBase {
 
   private Pose2d llPose;
   private Pose2d pvPose;
-  public final Field2d m_field = new Field2d();
+  public final Field2d m_field;  /* = new Field2d(); */
 
   public SwerveDrivetrain() {
+    limits = RobotContainer.getRobotSpecs().getRobotLimits();
+    cc = RobotContainer.getRobotSpecs().getChassisConfig();
     mc = RobotContainer.getRobotSpecs().getModuleConfigs();
+   
+    kinematics = new SwerveDriveKinematics(
+      new Translation2d(cc.XwheelOffset, cc.YwheelOffset), // Front Left
+      new Translation2d(cc.XwheelOffset, -cc.YwheelOffset), // Front Right
+      new Translation2d(-cc.XwheelOffset, cc.YwheelOffset), // Back Left
+      new Translation2d(-cc.XwheelOffset, -cc.YwheelOffset) // Back Right
+  );
+
+    meas_pos = new SwerveModulePosition[] {
+    new SwerveModulePosition(),
+    new SwerveModulePosition(),
+    new SwerveModulePosition(),
+    new SwerveModulePosition()
+};
+
     sensors = RobotContainer.getRobotSpecs().getHeadingProvider();
     limelight = RobotContainer.getSubsystemOrNull(Limelight.class); // we can deal with no LL
     watchdog = new VisionWatchdog(3.0);
@@ -145,6 +164,8 @@ public class SwerveDrivetrain extends SubsystemBase {
         mc[i].id.toString());
     }
 
+     this.m_field = new Field2d();
+     this.table = NetworkTableInstance.getDefault().getTable(NT_Name);
     /*
      * Here we use SwerveDrivePoseEstimator so that we can fuse odometry readings.
      * The numbers used below are robot specific, and should be tuned.

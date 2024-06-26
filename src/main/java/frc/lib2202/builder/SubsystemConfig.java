@@ -247,7 +247,8 @@ public class SubsystemConfig {
 
     IRobotSpec getRobotSpec() {
         if (robotSpec == null) {
-            throw new RuntimeException("RobotSpec not setup for robot: "+this.name);
+            throw new RuntimeException("RobotSpec not setup for robot: "+this.name +
+            "\nCheck your RobotSpec_"+this.name+".java file, add 'ssConfig.setRobotSpec(this)'' in the default constructor.");
         }
         return robotSpec;
     }

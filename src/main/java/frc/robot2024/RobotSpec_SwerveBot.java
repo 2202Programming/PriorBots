@@ -42,14 +42,17 @@ public class RobotSpec_SwerveBot implements IRobotSpec {
             kDriveGR);
 
     // Subsystems and hardware on Tim 2.0
-    static final SubsystemConfig swerveBotSubsystemConfig = new SubsystemConfig("SwerveBot - aka Tim", "031b7511")
+    SubsystemConfig ssConfig = new SubsystemConfig("SwerveBot - aka Tim", "031b7511")
             .add(Sensors_Subsystem.class)
             .add(Limelight.class)
             .add(SwerveDrivetrain.class)
             .add(HID_Xbox_Subsystem.class, "DC", () -> {
                 return new HID_Xbox_Subsystem(0.3, 0.9, 0.05);
-            })
-            .setRobotSpec(new RobotSpec_SwerveBot());
+            });
+
+    public RobotSpec_SwerveBot() {
+        ssConfig.setRobotSpec(this);
+    }
 
     // Required method that use the specs above
 
@@ -82,33 +85,35 @@ public class RobotSpec_SwerveBot implements IRobotSpec {
         // CANModuleConfig swerveBotCAN_FR = new CANModuleConfig(30, 26, 27);
         // CANModuleConfig swerveBotCAN_BL = new CANModuleConfig(28, 22, 23);
         // CANModuleConfig swerveBotCAN_BR = new CANModuleConfig(31, 24, 25);
-        // CANConfig chadBotCANConfig = new CANConfig(swerveBotCAN_FL, swerveBotCAN_FR, swerveBotCAN_BL, swerveBotCAN_BR);
-        //ChassisInversionSpecs swerveBotChassisInversionSpecs = new ChassisInversionSpecs(
-        //    new ModuleInversionSpecs(true, false, false), // FR
-        //    new ModuleInversionSpecs(false, false, false), // FL
-        //    new ModuleInversionSpecs(true, false, false), // BR
-        //    new ModuleInversionSpecs(false, false, false)); // BL
+        // CANConfig chadBotCANConfig = new CANConfig(swerveBotCAN_FL, swerveBotCAN_FR,
+        // swerveBotCAN_BL, swerveBotCAN_BR);
+        // ChassisInversionSpecs swerveBotChassisInversionSpecs = new
+        // ChassisInversionSpecs(
+        // new ModuleInversionSpecs(true, false, false), // FR
+        // new ModuleInversionSpecs(false, false, false), // FL
+        // new ModuleInversionSpecs(true, false, false), // BR
+        // new ModuleInversionSpecs(false, false, false)); // BL
 
         ModuleConfig[] modules = new ModuleConfig[4];
         modules[CornerID.FrontLeft.getIdx()] = new ModuleConfig(CornerID.FrontLeft,
-         7, 20, 21, 
-         -175.60)
-         .setInversions(false,false,false);
+                7, 20, 21,
+                -175.60)
+                .setInversions(false, false, false);
 
         modules[CornerID.FrontRight.getIdx()] = new ModuleConfig(CornerID.FrontRight,
-         30, 26, 27,
-          -162.15)
-          .setInversions(true,false,false);
+                30, 26, 27,
+                -162.15)
+                .setInversions(true, false, false);
 
         modules[CornerID.BackLeft.getIdx()] = new ModuleConfig(CornerID.BackLeft,
-         28, 22, 23,
-          -115.40)
-          .setInversions(false,false,false);
+                28, 22, 23,
+                -115.40)
+                .setInversions(false, false, false);
 
         modules[CornerID.BackRight.getIdx()] = new ModuleConfig(CornerID.BackRight,
-         31, 24, 25,
-          158.81)
-          .setInversions(true,true,false);
+                31, 24, 25,
+                158.81)
+                .setInversions(true, true, false);
 
         return modules;
     }

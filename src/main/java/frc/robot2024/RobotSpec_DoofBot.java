@@ -17,16 +17,13 @@ import static frc.lib2202.Constants.MperFT;
 
 public class RobotSpec_DoofBot implements IRobotSpec {
 
-    public static final SubsystemConfig doofBotSubsystemConfig = new 
-        SubsystemConfig("2023-DoofBot", "TBD-123456-TBD")
+    final SubsystemConfig ssConfig = new SubsystemConfig("2023-DoofBot", "TBD-123456-TBD")
             .add(Sensors_Subsystem.class)
             .add(Limelight.class)
             .add(HID_Xbox_Subsystem.class, "DC", () -> {
                 return new HID_Xbox_Subsystem(0.3, 0.9, 0.05);
             })
-            .add(SwerveDrivetrain.class)
-            .setRobotSpec(new RobotSpec_SwerveBot()); // TODO fix doof specs
-
+            .add(SwerveDrivetrain.class); // TODO fix doof specs
 
     // set this true at least once after robot hw stabilizes
     boolean burnFlash = false;
@@ -44,19 +41,23 @@ public class RobotSpec_DoofBot implements IRobotSpec {
     static double kWheelDiameter = MperFT * 4.0 / 12.0; // [m]
 
     public static final ChassisConfig doofBotChassisConfig = new ChassisConfig(
-        MperFT * (23.5 / 12.0) / 2.0, // based on CAD in reference_links
-        MperFT * (19.5 / 12.0) / 2.0, // based on CAD in reference_links
-        kWheelCorrectionFactor, // scale [] <= 1.0
-        MperFT * (4.0 / 12.0), // wheel diameter[m] Comp bot is 4" wheels
-        kSteeringGR, // confirmed with vince
-        kDriveGR,
-        new PIDFController(0.085, 0.00055, 0.0, 0.21292),
-        new PIDFController(0.01, 0.0, 0.0, 0.0) //angle
-        ); 
+            MperFT * (23.5 / 12.0) / 2.0, // based on CAD in reference_links
+            MperFT * (19.5 / 12.0) / 2.0, // based on CAD in reference_links
+            kWheelCorrectionFactor, // scale [] <= 1.0
+            MperFT * (4.0 / 12.0), // wheel diameter[m] Comp bot is 4" wheels
+            kSteeringGR, // confirmed with vince
+            kDriveGR,
+            new PIDFController(0.085, 0.00055, 0.0, 0.21292),
+            new PIDFController(0.01, 0.0, 0.0, 0.0) // angle
+    );
+
+    public RobotSpec_DoofBot() {
+        ssConfig.setRobotSpec(this);
+    }
 
     @Override
     public RobotLimits getRobotLimits() {
-       return limits;
+        return limits;
     }
 
     @Override
@@ -66,7 +67,7 @@ public class RobotSpec_DoofBot implements IRobotSpec {
 
     @Override
     public boolean isSwerve() {
-       return true;
+        return true;
     }
 
     @Override
@@ -78,57 +79,58 @@ public class RobotSpec_DoofBot implements IRobotSpec {
     public ModuleConfig[] getModuleConfigs() {
 
         // For 2023 CompetitionBot - Doof
-        // public static final WheelOffsets doofBotOffsets = new WheelOffsets(129.03, -83.94, -57.83, 139.38); //FL BL FR BR
+        // public static final WheelOffsets doofBotOffsets = new WheelOffsets(129.03,
+        // -83.94, -57.83, 139.38); //FL BL FR BR
         // from original constants
-        // CANConfig doofBotCANConfig = new CANConfig(swerveBotCAN_FL, swerveBotCAN_FR, swerveBotCAN_BL, swerveBotCAN_BR);
+        // CANConfig doofBotCANConfig = new CANConfig(swerveBotCAN_FL, swerveBotCAN_FR,
+        // swerveBotCAN_BL, swerveBotCAN_BR);
         // ModuleConfig comp2024CAN_FL = new ModuleConfig(29, 24, 25);
         // ModuleConfig comp2024CAN_FR = new ModuleConfig(30, 26, 27);
         // ModuleConfig comp2024CAN_BL = new ModuleConfig(28, 22, 23);
         // ModuleConfig comp2024CAN_BR = new ModuleConfig(31, 20, 21);
-        //ChassisInversionSpecs doofBotChassisInversionSpecs = new ChassisInversionSpecs(
-        //    new ModuleInversionSpecs(true, false, false), // FR
-        //    new ModuleInversionSpecs(false, false, false), // FL
-        //    new ModuleInversionSpecs(true, false, false), // BR
-        //    new ModuleInversionSpecs(false, false, false)); // BL
+        // ChassisInversionSpecs doofBotChassisInversionSpecs = new
+        // ChassisInversionSpecs(
+        // new ModuleInversionSpecs(true, false, false), // FR
+        // new ModuleInversionSpecs(false, false, false), // FL
+        // new ModuleInversionSpecs(true, false, false), // BR
+        // new ModuleInversionSpecs(false, false, false)); // BL
 
-       ModuleConfig[] modules = new ModuleConfig[4];
-        modules[CornerID.FrontLeft.getIdx()] = new ModuleConfig(CornerID.FrontLeft, 
-            29,24, 25, 
-            129.03)
-            .setInversions(false, false, false);
+        ModuleConfig[] modules = new ModuleConfig[4];
+        modules[CornerID.FrontLeft.getIdx()] = new ModuleConfig(CornerID.FrontLeft,
+                29, 24, 25,
+                129.03)
+                .setInversions(false, false, false);
 
         modules[CornerID.FrontRight.getIdx()] = new ModuleConfig(CornerID.FrontRight,
-            30, 26, 27,
-             -57.83)
-             .setInversions(true, true, false);
+                30, 26, 27,
+                -57.83)
+                .setInversions(true, true, false);
 
         modules[CornerID.BackLeft.getIdx()] = new ModuleConfig(CornerID.BackLeft,
-            28, 22,23,
-             -83.94)
-             .setInversions(false, false, false);
+                28, 22, 23,
+                -83.94)
+                .setInversions(false, false, false);
 
         modules[CornerID.BackRight.getIdx()] = new ModuleConfig(CornerID.BackRight,
-            31,20,21,
-            139.38)
-            .setInversions(true, false, false);
-        
-       return modules;
+                31, 20, 21,
+                139.38)
+                .setInversions(true, false, false);
+
+        return modules;
     }
 
     @Override
     public void setBindings() {
         HID_Xbox_Subsystem dc = RobotContainer.getSubsystem("DC");
-        //pick one of the next two lines
-        BindingsCompetition.ConfigueCompetition(dc);    
-        //BindingsOther.ConfigureOther(dc);
+        // pick one of the next two lines
+        BindingsCompetition.ConfigueCompetition(dc);
+        // BindingsOther.ConfigureOther(dc);
 
     }
 
     @Override
     public boolean burnFlash() {
-      return burnFlash;
+        return burnFlash;
     }
-
-
 
 }
