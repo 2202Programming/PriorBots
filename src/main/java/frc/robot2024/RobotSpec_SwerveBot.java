@@ -119,10 +119,7 @@ public class RobotSpec_SwerveBot implements IRobotSpec {
     @Override
     public void setBindings() {
         HID_Xbox_Subsystem dc = RobotContainer.getSubsystem("DC");
-        // pick one of the next two lines
-        BindingsCompetition.ConfigureCompetition(dc);
-        // BindingsOther.ConfigureOther(dc);
-
+        //if code is ever added for tim's other mechanisms besides chassis, bindings go here --er
     }
 
     @Override
