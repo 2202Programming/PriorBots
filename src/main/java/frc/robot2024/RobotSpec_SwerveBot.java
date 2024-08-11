@@ -76,6 +76,8 @@ public class RobotSpec_SwerveBot implements IRobotSpec {
 
     @Override
     public ModuleConfig[] getModuleConfigs() {
+        // dpl 8/11/2024   posible fix for https://github.com/2202Programming/PriorBots/issues/1 
+        //                 offset angles adjusted along with invert flags.
         // from original constants
         // WheelOffsets chadBotOffsets = new WheelOffsets(-175.60, -115.40, -162.15,
         // 158.81); //FL BL FR BR
@@ -95,29 +97,30 @@ public class RobotSpec_SwerveBot implements IRobotSpec {
         ModuleConfig[] modules = new ModuleConfig[4];
         modules[CornerID.FrontLeft.getIdx()] = new ModuleConfig(CornerID.FrontLeft,
                 7, 20, 21,
-                -175.60)
+                -98.9) //possible fix was -175.60)
                 .setInversions(false, false, false);
 
         modules[CornerID.FrontRight.getIdx()] = new ModuleConfig(CornerID.FrontRight,
                 30, 26, 27,
-                -162.15)
+                -177.0) // was -162.15)
                 .setInversions(true, false, false);
 
         modules[CornerID.BackLeft.getIdx()] = new ModuleConfig(CornerID.BackLeft,
                 28, 22, 23,
-                -115.40)
+                91.3) //was -115.40)
                 .setInversions(false, false, false);
 
         modules[CornerID.BackRight.getIdx()] = new ModuleConfig(CornerID.BackRight,
                 31, 24, 25,
-                158.81)
-                .setInversions(true, true, false);
+                -28.2)// was 158.81)
+                .setInversions(true, /*was true */false, false);
 
         return modules;
     }
 
     @Override
     public void setBindings() {
+        @SuppressWarnings("unused")
         HID_Xbox_Subsystem dc = RobotContainer.getSubsystem("DC");
         //if code is ever added for tim's other mechanisms besides chassis, bindings go here --er
     }
