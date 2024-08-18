@@ -4,6 +4,9 @@
 
 package frc.lib2202.subsystem.swerve;
 
+import com.ctre.phoenix6.StatusCode;
+import com.ctre.phoenix6.StatusSignal;
+//wip import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
@@ -41,6 +44,8 @@ import frc.lib2202.util.ModMath;
 import frc.lib2202.util.VisionWatchdog;
 
 public class SwerveDrivetrain extends SubsystemBase {
+  static final String canBusName = "rio";
+  static final double longWaitSeconds = 1.0;   // cancode config wait
 
   static final double Bearing_Tol = Math.toRadians(0.5); // limit bearing
 
@@ -153,16 +158,18 @@ public class SwerveDrivetrain extends SubsystemBase {
     modules = new SwerveModuleMK3[mc.length];
     for (int i=0; i < mc.length; i++) {
 
-      canCoders[i] = initCANcoder(mc[i].CANCODER_ID);
+      canCoders[i] = initCANcoder(mc[i].CANCODER_ID, mc[i].kAngleOffset);
       modules[i] = new SwerveModuleMK3(
         new CANSparkMax(mc[i].DRIVE_MOTOR_ID, MT),
-        new CANSparkMax(mc[i].ANGLE_MOTOR_ID, MT),
-        mc[i].kAngleOffset,
+        new CANSparkMax(mc[i].ANGLE_MOTOR_ID, MT),        
         canCoders[i],
         mc[i].kAngleMotorInvert,
         mc[i].kAngleCmdInvert, 
         mc[i].kDriveMotorInvert,
         mc[i].id.toString());
+
+      /* Speed up signals to an appropriate rate */
+      //wip BaseStatusSignal.setUpdateFrequencyForAll(100, canCoders[i].getPosition(), canCoders[i].getVelocity());
     }
 
      this.m_field = new Field2d();
@@ -229,35 +236,57 @@ public class SwerveDrivetrain extends SubsystemBase {
   }
 
   /**
-   * init() - setup cancoder the way we need them.
+   * initCANcoder() - setup cancoder the way we need them.
    * This CANcoder returns value in rotation with phoenix 6 [-0.5, 0.5)
+   * rotations (clock wise is positive).
+   * canBusName set to "rio" at top of module
    * 
    * @param cc_ID
+   * @param cc_offset_deg [+/- 180 deg]
+   * 
    * @return CANcoder just initialized
    */
-  private CANcoder initCANcoder(int cc_ID) {
-    CANcoder canCoder = new CANcoder(cc_ID);
-    CANcoderConfiguration configs = new CANcoderConfiguration();
-    // According to doc this should report absolute position from [-0.5, 0.5)
-    // rotations (clock wise is positive)
+  private CANcoder initCANcoder(int cc_ID, double cc_offset_deg) {
+    CANcoder canCoder = new CANcoder(cc_ID, canBusName);
+    StatusSignal<Double> abspos = canCoder.getAbsolutePosition();
+    System.out.println("CANCoder(" + cc_ID + ") before offset, position = " + 
+      abspos.waitForUpdate(longWaitSeconds, true) +
+      " (" + abspos.getValueAsDouble()*360.0+" deg)" );
+
+    CANcoderConfiguration configs = new CANcoderConfiguration();      
     configs.MagnetSensor.AbsoluteSensorRange = AbsoluteSensorRangeValue.Signed_PlusMinusHalf;
-    configs.MagnetSensor.MagnetOffset = 0.0;
+    configs.MagnetSensor.MagnetOffset = cc_offset_deg/360.0; // put offset deg on +/- 0.5 range
     configs.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive;
-    canCoder.getConfigurator().apply(configs);
-    canCoder.clearStickyFaults();
+    canCoder.clearStickyFaults(longWaitSeconds);
+
+    //update mag offset and check status, report errors
+    StatusCode status = canCoder.getConfigurator().apply(configs, longWaitSeconds);
+    if (!status.isOK()) {
+      System.out.println("Warning CANCoder(" +cc_ID+") returned "+status.toString() + " on applying confg. Retrying");
+      SwerveModuleMK3.sleep(100);
+      canCoder.clearStickyFaults(longWaitSeconds);
+      status = canCoder.getConfigurator().apply(configs, longWaitSeconds);
+      System.out.println("CANCoder(" + cc_ID + ") status on retry: "+ status.toString() + " moving on, good luck.");
+    }
+    canCoder.clearStickyFaults(longWaitSeconds);    
+    System.out.println("CANCoder(" + cc_ID + ")  after offset, position = " +
+      abspos.waitForUpdate(longWaitSeconds, true) +
+      " (" + abspos.getValueAsDouble()*360.0+" deg)" );      
     return canCoder;
   }
 
   private void offsetDebug() {
     periodic(); // run to initialize module values
-    System.out.println("================Offsets==================");
+    System.out.println("================OffsetDebug==================");
     for (int i=0; i < mc.length; i++) {
       double offset = mc[i].kAngleOffset;
       double measured = modules[i].m_internalAngle;
-      System.out.println(mc[i].id.toString() + ": offset " + offset + ", measured " + measured + 
-        ", should be " + ModMath.fmod360_2(offset - measured));
+      double cc_measured = modules[i].m_externalAngle;
+      System.out.println(mc[i].id.toString() + ": offset=" + offset + ", internal=" + measured + 
+        " cancoder_measured=" + cc_measured +
+        ", if wheel zero aligned adjust offset by " + ModMath.fmod360_2(offset - measured));
     }
-    System.out.println("============Offsets Done==============");
+    System.out.println("============OffsetDebug Done==============");
   }
 
   public void drive(SwerveModuleState[] states) {

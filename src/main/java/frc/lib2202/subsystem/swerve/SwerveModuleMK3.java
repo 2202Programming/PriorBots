@@ -97,7 +97,7 @@ public class SwerveModuleMK3 {
   public String myprefix;
   private CANcoderConfiguration absEncoderConfiguration;
 
-  public SwerveModuleMK3(CANSparkMax driveMtr, CANSparkMax angleMtr, double offsetDegrees, CANcoder absEnc,
+  public SwerveModuleMK3(CANSparkMax driveMtr, CANSparkMax angleMtr, CANcoder absEnc,
       boolean invertAngleMtr, boolean invertAngleCmd, boolean invertDrive, String prefix) {
     driveMotor = driveMtr;
     angleMotor = angleMtr;
@@ -118,7 +118,7 @@ public class SwerveModuleMK3 {
 
     // account for command sign differences if needed
     angleCmdInvert = (invertAngleCmd) ? -1.0 : 1.0;
-    setMagOffset(offsetDegrees);
+    //dpl removed, set in parent setMagOffset(offsetDegrees);
 
     // Drive Motor config
     driveMotor.setInverted(invertDrive);
@@ -211,8 +211,11 @@ public class SwerveModuleMK3 {
    * Warning, we had to sleep afer setting configs before the absolute position
    * could be read in calibrate.
    * 
+   * Deprecated, cancoder fully calibrated in SwerveDrivetrain initCANcoder() now. 8/18/24
+   * 
    * @param offsetDegrees
    */
+  @Deprecated
   void setMagOffset(double offsetDegrees) {
     // adjust magnetic offset in absEncoder, measured constants.
     absEncoderConfiguration = new CANcoderConfiguration();
@@ -345,10 +348,9 @@ public class SwerveModuleMK3 {
     m_internalAngle = angleEncoder.getPosition() * angleCmdInvert;
     m_velocity = driveEncoder.getVelocity();
     m_position = driveEncoder.getPosition();
-
+    m_externalAngle = absEncoder.getAbsolutePosition().getValueAsDouble() * 360.0;
     // these are for human consumption, update slower
-    if (frameCounter++ == 10) {
-      m_externalAngle = absEncoder.getAbsolutePosition().getValueAsDouble() * 360.0;
+    if (frameCounter++ > 10) {      
       NTUpdate();
       frameCounter = 0;
     }
@@ -485,7 +487,7 @@ public class SwerveModuleMK3 {
     nte_applied_output.setDouble(driveMotor.getAppliedOutput());
   }
 
-  void sleep(long ms) {
+  public static void sleep(long ms) {
     try {
       Thread.sleep(ms);
     } catch (Exception e) {
