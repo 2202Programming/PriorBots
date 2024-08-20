@@ -37,8 +37,8 @@ public class RobotSpec_SwerveBot implements IRobotSpec {
     static double kWheelDiameter = MperFT * 4.0 / 12.0; // [m]
 
     static final ChassisConfig chassisConfig = new ChassisConfig(
-            MperFT * (21.516 / 12.0) / 2.0, // X offset
-            MperFT * (24.87 / 12) / 2.0, // Y offset
+            0.62 / 2.0, // X offset [m]
+            0.545 / 2.0, // Y offset [m]
             kWheelCorrectionFactor,
             kWheelDiameter,
             kSteeringGR,
