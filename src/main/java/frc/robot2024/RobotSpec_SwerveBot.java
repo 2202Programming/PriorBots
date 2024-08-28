@@ -97,22 +97,22 @@ public class RobotSpec_SwerveBot implements IRobotSpec {
         ModuleConfig[] modules = new ModuleConfig[4];
         modules[CornerID.FrontLeft.getIdx()] = new ModuleConfig(CornerID.FrontLeft,
                 7, 20, 21,
-                -98.9) //possible fix was -175.60)
+               97.382) //-98.9) //possible fix was -175.60)
                 .setInversions(false, false, false);
 
         modules[CornerID.FrontRight.getIdx()] = new ModuleConfig(CornerID.FrontRight,
                 30, 26, 27,
-                -177.0) // was -162.15)
+                176.7479) //-177.0) // was -162.15)
                 .setInversions(true, false, false);
 
         modules[CornerID.BackLeft.getIdx()] = new ModuleConfig(CornerID.BackLeft,
                 28, 22, 23,
-                91.3) //was -115.40)
+                -93.515) //was -115.40)
                 .setInversions(false, false, false);
 
         modules[CornerID.BackRight.getIdx()] = new ModuleConfig(CornerID.BackRight,
                 31, 24, 25,
-                -28.2)// was 158.81)
+                28.7217)// was 158.81)
                 .setInversions(true, /*was true */false, false);
 
         return modules;
