@@ -5,7 +5,7 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.utils.hid;
+package frc.timbot.utils.hid;
 
 import java.util.HashMap;
 

@@ -5,7 +5,7 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.utils;
+package frc.timbot.utils;
 
 /**
  * Add your docs here.
