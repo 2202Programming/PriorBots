@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.utils.hid;
+package frc.timbot.utils.hid;
 
 public enum XboxPOV {
   // POV Hat

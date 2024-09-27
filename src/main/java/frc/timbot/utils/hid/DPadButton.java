@@ -1,9 +1,9 @@
-package frc.robot.utils.hid;
+package frc.timbot.utils.hid;
 
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj2.command.button.Button;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 
-public class DPadButton extends Button {
+public class DPadButton extends Trigger {
 
     XboxController joystick;
     Direction direction;

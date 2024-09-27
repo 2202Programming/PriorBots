@@ -5,11 +5,11 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands;
+package frc.timbot.commands;
 
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import frc.robot.subsystems.Trigger;
-import frc.robot.utils.Stick;
+import frc.timbot.subsystems.Trigger;
+import frc.timbot.utils.Stick;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
