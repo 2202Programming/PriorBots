@@ -1,4 +1,4 @@
-package frc.robot.utils.hid;
+package frc.timbot.utils.hid;
 
 /**
  * 

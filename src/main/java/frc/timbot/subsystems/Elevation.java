@@ -5,15 +5,15 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.subsystems;
+package frc.timbot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
-import frc.robot.utils.Stick;
+import frc.timbot.Constants;
+import frc.timbot.utils.Stick;
 
 public class Elevation extends SubsystemBase {
   /**
@@ -28,7 +28,7 @@ public class Elevation extends SubsystemBase {
     // https://github.dev/CrossTheRoadElec/Phoenix-Examples-Languages
 
     // Initialization procedure brought from
-    // https://github.com/CrossTheRoadElec/Phoenix-Examples-Languages/blob/master/Java%20Talon%20FX%20(Falcon%20500)/PositionClosedLoop/src/main/java/frc/robot/Robot.java
+    // https://github.com/CrossTheRoadElec/Phoenix-Examples-Languages/blob/master/Java%20Talon%20FX%20(Falcon%20500)/PositionClosedLoop/src/main/java/frc/timbot/timbot.java
     this.actuator.configFactoryDefault();
     this.actuator.configSelectedFeedbackSensor(FeedbackDevice.PulseWidthEncodedPosition,
         Constants.Elevation.kPIDLoopIdx, Constants.Elevation.kTimeoutMs);

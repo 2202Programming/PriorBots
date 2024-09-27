@@ -1,9 +1,9 @@
-package frc.robot.utils.hid;
+package frc.timbot.utils.hid;
 
 import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj2.command.button.Button;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 
-public class JoystickTrigger extends Button {
+public class JoystickTrigger extends Trigger {
     private final GenericHID joystick;
     private final int axisNumber;
     private final double threshold;
