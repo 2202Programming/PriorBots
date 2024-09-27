@@ -1,4 +1,4 @@
-package frc.robot.utils.hid;
+package frc.timbot.utils.hid;
 
 import edu.wpi.first.hal.HAL;
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
