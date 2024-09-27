@@ -17,7 +17,7 @@ public class RobotLimits {
 
     public RobotLimits(double maxSpeedFPS, double maxAngularSpeedDPS) {
         kMaxSpeed = maxSpeedFPS * MperFT;
-        kMaxAngularSpeed = maxAngularSpeedDPS * Math.PI;        
+        kMaxAngularSpeed = maxAngularSpeedDPS * (Math.PI / 180.0);        
     }
 
     public RobotLimits setMaxSpeed(double maxSpeed) {

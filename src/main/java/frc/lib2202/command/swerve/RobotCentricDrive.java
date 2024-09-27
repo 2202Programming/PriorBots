@@ -58,7 +58,7 @@ public RobotCentricDrive() {
 
   @Override
   public void initialize() {
-    SmartDashboard.putBoolean("RobotCentricDrive Enabled", true);
+    SmartDashboard.putBoolean("RobotCentricDrive", true);
   }
 
   void calculate() {
@@ -84,7 +84,7 @@ public RobotCentricDrive() {
 
   @Override
   public void end(boolean interrupted) {
-    SmartDashboard.putBoolean("RobotCentricDrive Enabled", false);
+    SmartDashboard.putBoolean("RobotCentricDrive", false);
     drivetrain.stop();
   }
 

@@ -9,6 +9,7 @@ import frc.lib2202.builder.RobotContainer;
 import frc.lib2202.builder.RobotLimits;
 import frc.lib2202.builder.SubsystemConfig;
 import frc.lib2202.command.swerve.FieldCentricDrive;
+import frc.lib2202.command.swerve.RobotCentricDrive;
 import frc.lib2202.subsystem.Limelight;
 import frc.lib2202.subsystem.hid.HID_Xbox_Subsystem;
 import frc.lib2202.subsystem.swerve.IHeadingProvider;
@@ -139,7 +140,7 @@ public class RobotSpec_SwerveBot implements IRobotSpec {
     public void setDefaultCommands() {
        SwerveDrivetrain drivetrain = RobotContainer.getSubsystem(SwerveDrivetrain.class);
         if (drivetrain != null) {
-            drivetrain.setDefaultCommand(new FieldCentricDrive());
+            drivetrain.setDefaultCommand(new    RobotCentricDrive() );//    FieldCentricDrive());
           }
     }
 
