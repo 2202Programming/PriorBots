@@ -1,26 +1,22 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.chadbot.commands.Shoot;
 
-import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.chadbot.RobotContainer;
 import frc.chadbot.Constants.Autonomous;
 import frc.chadbot.Constants.Shooter;
 import frc.chadbot.subsystems.Intake_Subsystem;
 import frc.chadbot.subsystems.Magazine_Subsystem;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import frc.chadbot.subsystems.shooter.Shooter_Subsystem;
 import frc.chadbot.subsystems.shooter.Shooter_Subsystem.ShooterSettings;
 import frc.chadbot.util.PoseMath;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 
 /**
  * Use the gated version - it ties into the light gates on the magazine
  */
-public class VelShootCommand extends Command implements SolutionProvider{ 
+public class VelShootCommand extends CommandBase implements SolutionProvider{ 
 
     public static final double USE_CURRENT_ANGLE = 0.0;
 
@@ -70,7 +66,7 @@ public class VelShootCommand extends Command implements SolutionProvider{
 
     //close slope/intercept.  Slope will change multiplier between distance and RPM.  Intercept will add RPMs to all distances equally.
     final double SLOPE = 4.872;
-    final double INTERCEPT = 26.8 * 1.1; //10% chance 10k lakes practice adjustment shooting short
+    final double INTERCEPT = 26.8;
 
     //change slope multiplier to increase FPS at far distances.
     final double FARSLOPE = SLOPE*1.4;

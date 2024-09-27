@@ -1,6 +1,9 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
+/*----------------------------------------------------------------------------*/
+/* Copyright (c) 2020 FIRST. All Rights Reserved.                             */
+/* Open Source Software - may be modified and shared by FRC teams. The code   */
+/* must be accompanied by the FIRST BSD license file in the root directory of */
+/* the project.                                                               */
+/*----------------------------------------------------------------------------*/
 
 package frc.chadbot.subsystems.ifx;
 
@@ -9,16 +12,17 @@ import java.util.HashMap;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj2.command.Subsystem;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import edu.wpi.first.wpilibj2.command.button.POVButton;
-import frc.chadbot.subsystems.hid.GeneralTrigger;
-import frc.chadbot.subsystems.hid.HID_Xbox_Subsystem;
-import frc.chadbot.subsystems.hid.JoystickTrigger;
-import frc.chadbot.subsystems.hid.SideboardController;
-import frc.chadbot.subsystems.hid.XboxAxis;
-import frc.chadbot.subsystems.hid.XboxButton;
-import frc.chadbot.subsystems.hid.XboxPOV;
-import frc.chadbot.subsystems.hid.SideboardController.SBButton;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.lib2202.subsystem.hid.HID_Xbox_Subsystem;
+
+import frc.lib2202.subsystem.hid.JoystickButton;
+import frc.lib2202.subsystem.hid.JoystickTrigger;
+import frc.lib2202.subsystem.hid.POVButton;
+import frc.lib2202.subsystem.hid.SideboardController;
+import frc.lib2202.subsystem.id.XboxAxis;
+import frc.lib2202.subsystem.hid.XboxButton;
+import frc.lib2202.subsystem.hid.XboxPOV;
+import frc.lib2202.subsystem.hid.SideboardController.SBButton;
 
 /**
  * 
@@ -149,8 +153,8 @@ public interface DriverControls extends Subsystem {
   }
 
   
-  public default GeneralTrigger bind(Id id, XboxButton buttonId1, XboxButton buttonId2) {
-    return (deviceMap.get(id) != null) ? new GeneralTrigger(
+  public default Trigger bind(Id id, XboxButton buttonId1, XboxButton buttonId2) {
+    return (deviceMap.get(id) != null) ? new Trigger(
         () -> deviceMap.get(id).getRawButton(buttonId1.getCode()) && 
               deviceMap.get(id).getRawButton(buttonId2.getCode())) : null;
   }

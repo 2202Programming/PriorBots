@@ -8,8 +8,13 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-//import frc.robot.commands.Shoot.RPMShootCommand;
 import frc.chadbot.commands.Shoot.RPMShootCommandTune;
+
+
+
+//////THIS WILL GET DELETED and incorporated into robotspec_chadbot
+
+
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -28,6 +33,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
+    LiveWindow.setEnabled(false);
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     robotContainer = new RobotContainer();
@@ -89,8 +95,8 @@ public class Robot extends TimedRobot {
     RobotContainer.RC().limelight.enableLED();
     robotContainer.drivetrain.setBrakeMode(); //brake mode for gameplay
     CommandScheduler.getInstance().cancelAll();
-    if(RobotContainer.RC().m_driveController != null){
-      CommandScheduler.getInstance().schedule(RobotContainer.RC().m_driveController);
+    if(RobotContainer.RC().drivetrainCommand != null){
+      CommandScheduler.getInstance().schedule(RobotContainer.RC().drivetrainCommand); //start driverController
       //CommandScheduler.getInstance().schedule(new RPMShootCommandTune());
     }
   }
@@ -105,7 +111,7 @@ public class Robot extends TimedRobot {
     // Cancels all running commands at the start of test mode.
     CommandScheduler.getInstance().cancelAll();
     CommandScheduler.getInstance().schedule(new RPMShootCommandTune());
-    CommandScheduler.getInstance().schedule(RobotContainer.RC().m_driveController);
+    CommandScheduler.getInstance().schedule(RobotContainer.RC().drivetrainCommand);
   }
 
   /** This function is called periodically during test mode. */
@@ -114,4 +120,3 @@ public class Robot extends TimedRobot {
     CommandScheduler.getInstance().run();
   }
 }
-
