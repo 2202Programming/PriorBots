@@ -1,17 +1,16 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.chadbot.commands;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.chadbot.RobotContainer;
 import frc.chadbot.commands.MovePositioner.PositionerMode;
 import frc.chadbot.subsystems.Intake_Subsystem;
 import frc.chadbot.subsystems.Magazine_Subsystem;
+import frc.chadbot.subsystems.ifx.DriverControls.Id;
 
 /**
  * 
@@ -37,7 +36,7 @@ import frc.chadbot.subsystems.Magazine_Subsystem;
  * simplify driver workload
  * 
  */
-public class MagazineGatedCommand extends Command implements MagazineController {
+public class MagazineGatedCommand extends CommandBase implements MagazineController {
     final Magazine_Subsystem magazine;
     final Intake_Subsystem intake;
     final double magazineSpeed;
@@ -57,6 +56,7 @@ public class MagazineGatedCommand extends Command implements MagazineController 
     int side_off_count_down;
 
     int ball_count;
+    int last_ball_count;
 
     public enum MagazineState {
         ConfirmEmpty("confirming empty"), // ball in deadzone?
@@ -153,6 +153,7 @@ public class MagazineGatedCommand extends Command implements MagazineController 
         // read gates, save as previous values for edge detection
         prev_upper_lg = magazine.upperGateBlocked();
         prev_lower_lg = magazine.lowerGateBlocked();
+        last_ball_count = 0;
 
         // sort out gates and ball positions for state machine
         state = (prev_lower_lg) ? MagazineState.OneBall_Lower : MagazineState.Empty;
@@ -173,7 +174,8 @@ public class MagazineGatedCommand extends Command implements MagazineController 
     public void execute() {
         boolean lower_lg = magazine.lowerGateBlocked();
         boolean upper_lg = magazine.upperGateBlocked();
-
+        rumbleMag();
+        
         // handle driver requests or execute magazine state machine
         if (feed_request) {
             spinup_safe = true;
@@ -385,7 +387,7 @@ public class MagazineGatedCommand extends Command implements MagazineController 
     /**
      * Default on/off commands for Driver Events.
      */
-    class EjectCmd extends Command {
+    class EjectCmd extends CommandBase {
         MagazineController controller;
 
         EjectCmd(MagazineController c) {
@@ -404,7 +406,7 @@ public class MagazineGatedCommand extends Command implements MagazineController 
         }
     }
 
-    class FeedCmd extends Command {
+    class FeedCmd extends CommandBase {
         MagazineController controller;
 
         FeedCmd(MagazineController c) {
@@ -422,5 +424,17 @@ public class MagazineGatedCommand extends Command implements MagazineController 
             controller.feederOff();
         }
 
+    }
+    //rumble controllers if magazine is full
+    void rumbleMag(){
+        if (ball_count==2 && last_ball_count==1){ //turn on rumble for double ball notification
+            CommandScheduler.getInstance().schedule(new JoystickRumble(Id.Driver, 1, 2));
+            CommandScheduler.getInstance().schedule(new JoystickRumble(Id.Assistant, 1, 2));
+        }
+        if (ball_count==1 && last_ball_count==0){ //turn on rumble for single ball notification
+            CommandScheduler.getInstance().schedule(new JoystickRumble(Id.Driver, 0.5, 1));
+            CommandScheduler.getInstance().schedule(new JoystickRumble(Id.Assistant, 0.5, 1));
+        }
+        last_ball_count = ball_count;
     }
 }

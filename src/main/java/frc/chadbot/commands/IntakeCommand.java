@@ -4,13 +4,13 @@
 
 package frc.chadbot.commands;
 
-import edu.wpi.first.wpilibj2.command.Command;
 import java.util.function.DoubleSupplier;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.chadbot.RobotContainer;
 import frc.chadbot.Constants.MagazineSettings;
 import frc.chadbot.subsystems.Intake_Subsystem;
 
-public class IntakeCommand extends Command{
+public class IntakeCommand extends CommandBase {
   /**
    * IntakeCommand is used to handle the Intake Motors (either intaking or expelling), deploy intake arms on Initialization
    */
@@ -95,4 +95,3 @@ public class IntakeCommand extends Command{
     return finished;  // never finishes, this can be a default command
   }
 }
-

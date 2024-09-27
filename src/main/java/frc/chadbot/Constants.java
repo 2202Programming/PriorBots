@@ -1,14 +1,17 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
+/*----------------------------------------------------------------------------*/
+/* Copyright (c) 2018-2019 FIRST. All Rights Reserved.                        */
+/* Open Source Software - may be modified and shared by FRC teams. The code   */
+/* must be accompanied by the FIRST BSD license file in the root directory of */
+/* the project.                                                               */
+/*----------------------------------------------------------------------------*/
 
 package frc.chadbot;
 
-import frc.chadbot.util.PIDFController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.chadbot.subsystems.shooter.FlyWheel.FlyWheelConfig;
 import frc.chadbot.subsystems.shooter.Shooter_Subsystem.ShooterSettings;
+import frc.lib2202.util.PIDFController;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
@@ -22,20 +25,41 @@ import frc.chadbot.subsystems.shooter.Shooter_Subsystem.ShooterSettings;
  */
 public final class Constants {
 
-  public static final boolean IS_COMPETITION_BOT = true;
-  public static final boolean HAS_INTAKE = IS_COMPETITION_BOT ? true : false;
-  public static final boolean HAS_SHOOTER = IS_COMPETITION_BOT ? true : false;
-  public static final boolean HAS_MAGAZINE = IS_COMPETITION_BOT ? true : false;
-  public static final boolean HAS_CLIMBER = IS_COMPETITION_BOT ? true : false;
+  public static final class SubsystemConfig{
 
-  public static final boolean HAS_DRIVETRAIN = true;
-  
+    public final boolean HAS_INTAKE;
+    public final boolean HAS_SHOOTER;
+    public final boolean IS_COMPETITION_BOT;
+    public final boolean HAS_MAGAZINE;
+    public final boolean HAS_CLIMBER;
+    public final boolean HAS_POSITIONER;
+    public final boolean HAS_DRIVETRAIN;
+    public final boolean HAS_LIMELIGHT;
+
+    public SubsystemConfig(boolean HAS_INTAKE, boolean HAS_SHOOTER,boolean IS_COMPETITION_BOT, boolean HAS_MAGAZINE, boolean HAS_CLIMBER,
+      boolean HAS_POSITIONER, boolean HAS_DRIVETRAIN, boolean HAS_LIMELIGHT) {
+        this.HAS_INTAKE = HAS_INTAKE;
+        this.HAS_SHOOTER = HAS_SHOOTER;
+        this.IS_COMPETITION_BOT = IS_COMPETITION_BOT;
+        this.HAS_MAGAZINE = HAS_MAGAZINE;
+        this.HAS_CLIMBER = HAS_CLIMBER;
+        this.HAS_POSITIONER = HAS_POSITIONER;
+        this.HAS_DRIVETRAIN = HAS_DRIVETRAIN;
+        this.HAS_LIMELIGHT = HAS_LIMELIGHT;
+      }
+    }
+
+  public static final SubsystemConfig swerveBotSubsystemConfig = new SubsystemConfig(false, false, false, false, false, false, true, true);
+  public static final SubsystemConfig compBotSubsystemConfig = new SubsystemConfig(true, true, true, true, true, true, true, true);
+
   public static final double FTperM = 3.28084;
   public static final double MperFT = 1.0 / FTperM;
 
   public static final double DT = 0.02; // 20ms framerate 50Hz
   public static final double Tperiod = 0.02; // framerate period 20ms, 50Hz
   public static final int NEO_COUNTS_PER_REVOLUTION = 42;
+
+  public final static String NT_NAME_POSITION = "Position";
 
   public static final class Autonomous {
 
@@ -189,7 +213,48 @@ public final class Constants {
           public static final double StickDeadzone = 0.05; // non-dim [0.0 - 1.0]
       }
 
+    public static final class ChassisConfig{
+
+        // Kinematics model - wheel offsets from center of robot (0, 0)
+        // Left Front given below, symmetry used for others 
+        public final double XwheelOffset;  //meters, half of X wheelbase
+        public final double YwheelOffset; //meters, half of Y wheelbase
+
+        public final double wheelCorrectionFactor; //percent
+        public final double wheelDiameter; //meters
+        public final double kSteeringGR;   // [mo-turns to 1 angle wheel turn]
+        public final double kDriveGR;      // [mo-turn to 1 drive wheel turn] 
+
+        public ChassisConfig(double XwheelOffset, double YwheelOffset, double wheelCorrectionFactor, double wheelDiameter, double kSteeringGR,
+          double kDriveGR){
+            this.XwheelOffset = XwheelOffset;
+            this.YwheelOffset = YwheelOffset;
+            this.wheelCorrectionFactor = wheelCorrectionFactor;
+            this.wheelDiameter = wheelDiameter * wheelCorrectionFactor;
+            this.kSteeringGR = kSteeringGR;
+            this.kDriveGR = kDriveGR;
+        }
+    }
+
+    // CANCoder offsets for absolure calibration - stored in the magnet offset of the CC. [degrees]  
+    public static final class WheelOffsets{
+        public final double CC_FL_OFFSET;
+        public final double CC_BL_OFFSET;
+        public final double CC_FR_OFFSET;
+        public final double CC_BR_OFFSET;
+
+        public WheelOffsets(double FL, double BL, double FR, double BR){
+          this.CC_FL_OFFSET = FL;
+          this.CC_BL_OFFSET = BL;
+          this.CC_FR_OFFSET = FR;
+          this.CC_BR_OFFSET = BR;
+        }
+    }
+
     public static final class DriveTrain {
+        // NTs
+        public static final String NT_NAME_DT = "DT"; // expose data under DriveTrain table
+
         // motor constraints
         public static final double motorMaxRPM = 5600;    // motor limit
 
@@ -215,36 +280,20 @@ public final class Constants {
         public static final PIDFController anglePIDF = new PIDFController(0.01, 0.0, 0.0, 0.0); //maybe 1.0,0.0,0.1 from SDS sample code?
         
         
-        // CANCoder offsets for absolure calibration - stored in the magnet offset of the CC. [degrees]
-        // public static final double CC_FL_OFFSET = -99.58;
-        // public static final double CC_BL_OFFSET = 90.351;
-        // public static final double CC_FR_OFFSET = -173.84;
-        // public static final double CC_BR_OFFSET = -27.24;
+        
       
-        /* FOR SWERVEBOT
-        public static final double CC_FL_OFFSET =   -100.142; //-99.842; //  -99.667;
-        public static final double CC_BL_OFFSET =    91.33; //91.83;  //   90.43;
-        public static final double CC_FR_OFFSET =   -175.135; //-174.635; // -175.25;
-        public static final double CC_BR_OFFSET =   -28.215; //-28.415; //  -28.38;
-        */
+        //FOR SWERVEBOT
+        public static final WheelOffsets swerveBotOffsets = 
+          new WheelOffsets(-98.942, 91.33, -177.035, -28.215);
+        public static final ChassisConfig swerveBotChassisConfig =
+          new ChassisConfig(10.5 / 12, 10.5 / 12, 0.995, 99.5/1000.0, 12.8, 8.14);
 
-        //FOR BETABOT - degrees
-        public static final double CC_FL_OFFSET =    -175.60; 
-        public static final double CC_BL_OFFSET =    -115.40; 
-        public static final double CC_FR_OFFSET =   -162.15; 
-        public static final double CC_BR_OFFSET =   158.81; 
+        //FOR Competion Bot - degrees
+        public static final WheelOffsets compBotOffsets = 
+          new WheelOffsets(-175.60, -115.40, -162.15, 158.81);
+        public static final ChassisConfig compBotChassisConfig =
+          new ChassisConfig(MperFT*(21.516/12)/2, MperFT*(24.87/12)/2, 0.995, 99.5/1000.0, 12.8, 8.14);
 
-        // Kinematics model - wheel offsets from center of robot (0, 0)
-        // Left Front given below, symmetry used for others 
-        // Betabot is 21.516" left-right and 24.87" front-back
-        public static final double XwheelOffset = IS_COMPETITION_BOT ? MperFT*(21.516/12)/2 : 10.5 / 12;     
-        public static final double YwheelOffset = IS_COMPETITION_BOT ? MperFT*(24.87/12)/2 : 10.5 / 12; 
-        public static final double wheelCorrectionFactor = 0.995; // Move 2cm further in auto //measured on swervebot 
-        public static final double wheelDiameter = 99.5 /1000.0 * wheelCorrectionFactor;   //measured 2/28/22 mm [m]
-
-        // Gear ratios - confirmed https://www.swervedrivespecialties.com/products/mk3-swerve-module?variant=39420433203313
-        public static final double kSteeringGR = 12.8;   // [mo-turns to 1 angle wheel turn]
-        public static final double kDriveGR = 8.14;      // [mo-turn to 1 drive wheel turn]  //New mk4 is 8.14:1; old swerve bot was 8.16:1
     } 
     
     public final static class NTStrings {
@@ -325,4 +374,9 @@ public final class Constants {
 
     }
 
+    public static final class Sensors {
+      public enum EncoderID {
+        BackLeft, BackRight, FrontLeft, FrontRight
+      }
+    }
 }

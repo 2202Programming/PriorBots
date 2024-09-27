@@ -1,29 +1,23 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.chadbot.commands.Shoot;
 
-import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.chadbot.Constants;
 import frc.chadbot.RobotContainer;
 import frc.chadbot.Constants.Autonomous;
 import frc.chadbot.commands.IntakeCommand;
 import frc.chadbot.commands.IntakeCommand.IntakeMode;
 import frc.chadbot.subsystems.Intake_Subsystem;
 import frc.chadbot.subsystems.Magazine_Subsystem;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.chadbot.subsystems.shooter.FlyWheelRPM;
 import frc.chadbot.subsystems.shooter.Shooter_Subsystem;
 import frc.chadbot.subsystems.shooter.Shooter_Subsystem.ShooterSettings;
 import frc.chadbot.util.PoseMath;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class RPMShootCommandTune extends Command{ 
+public class RPMShootCommandTune extends CommandBase{ 
     public static final double USE_CURRENT_ANGLE = 0.0;
 
     final Magazine_Subsystem magazine;
@@ -63,8 +57,8 @@ public class RPMShootCommandTune extends Command{
 
     final ShooterSettings defaultShooterSettings = new ShooterSettings(requestedVelocity, 0.0, USE_CURRENT_ANGLE, 0.20);
 
-    private ShootCommand currentShooterCommand;
-    private Pose2d centerField = Constants.Autonomous.hubPose;
+    private VelShootCommand currentShooterCommand;
+   // private Pose2d centerField = Constants.Autonomous.hubPose;
     private double distanceToTarget = 0;
     
     public RPMShootCommandTune(double requestedVelocity){
@@ -86,7 +80,7 @@ public class RPMShootCommandTune extends Command{
     public void initialize(){
         table = NetworkTableInstance.getDefault().getTable("ShootCommand");
 
-        currentShooterCommand = new ShootCommand(new ShooterSettings(10, 0.0) , 20);
+        currentShooterCommand = new VelShootCommand(new ShooterSettings(10, 0.0) , 20);
         CommandScheduler.getInstance().schedule(currentShooterCommand);
         RobotContainer.RC().drivetrain.setPose(Autonomous.startPose1);
 
@@ -174,7 +168,7 @@ public class RPMShootCommandTune extends Command{
         requestedVelocity = SmartDashboard.getNumber("Velocity Requested", 10);  
         if(requestedVelocity != previousVelocity){
             currentShooterCommand.setFinished();
-            currentShooterCommand = new ShootCommand(requestedVelocity); 
+            currentShooterCommand = new VelShootCommand(requestedVelocity); 
             CommandScheduler.getInstance().schedule(currentShooterCommand);
         }
         previousVelocity = requestedVelocity;

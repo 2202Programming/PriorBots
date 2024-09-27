@@ -1,4 +1,4 @@
-package frc.robot2024;
+package frc.chadbot;
 
 import static frc.lib2202.Constants.MperFT;
 
@@ -16,6 +16,8 @@ import frc.lib2202.subsystem.swerve.SwerveDrivetrain;
 import frc.lib2202.subsystem.swerve.config.ChassisConfig;
 import frc.lib2202.subsystem.swerve.config.ModuleConfig;
 import frc.lib2202.subsystem.swerve.config.ModuleConfig.CornerID;
+
+//todo - remove robot2024 and replace with lib2202
 import frc.robot2024.subsystems.sensors.Sensors_Subsystem;
 
 public class RobotSpec_ChadBot implements IRobotSpec {
