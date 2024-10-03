@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Set;
 
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
-import frc.chadbot.subsystems.Sensors_Subsystem;
+import frc.robot2024.subsystems.sensors.Sensors_Subsystem;
 import frc.lib2202.subsystem.swerve.SwerveDrivetrain;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;

@@ -10,17 +10,17 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.chadbot.RobotContainer;
 import frc.chadbot.Constants.NTStrings;
 import frc.chadbot.commands.Shoot.SolutionProvider;
 import frc.chadbot.subsystems.Limelight_Subsystem;
-import frc.chadbot.subsystems.SwerveDrivetrain;
+import frc.lib2202.subsystem.swerve.SwerveDrivetrain;
 import frc.chadbot.subsystems.ifx.DriverControls;
 import frc.chadbot.subsystems.shooter.Shooter_Subsystem;
 
-public class DriveControllerDrivetrain extends CommandBase implements SolutionProvider {
+public class DriveControllerDrivetrain extends Command implements SolutionProvider {
 
   public enum DriveModes {
     robotCentric("Robot Centric"),

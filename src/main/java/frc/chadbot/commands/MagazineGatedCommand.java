@@ -4,7 +4,7 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.chadbot.RobotContainer;
 import frc.chadbot.commands.MovePositioner.PositionerMode;
@@ -36,7 +36,7 @@ import frc.chadbot.subsystems.ifx.DriverControls.Id;
  * simplify driver workload
  * 
  */
-public class MagazineGatedCommand extends CommandBase implements MagazineController {
+public class MagazineGatedCommand extends Command implements MagazineController {
     final Magazine_Subsystem magazine;
     final Intake_Subsystem intake;
     final double magazineSpeed;
@@ -387,7 +387,7 @@ public class MagazineGatedCommand extends CommandBase implements MagazineControl
     /**
      * Default on/off commands for Driver Events.
      */
-    class EjectCmd extends CommandBase {
+    class EjectCmd extends Command {
         MagazineController controller;
 
         EjectCmd(MagazineController c) {
@@ -406,7 +406,7 @@ public class MagazineGatedCommand extends CommandBase implements MagazineControl
         }
     }
 
-    class FeedCmd extends CommandBase {
+    class FeedCmd extends Command {
         MagazineController controller;
 
         FeedCmd(MagazineController c) {

@@ -358,7 +358,7 @@ public final class Constants {
         upperFWConfig.inverted = false;
         upperFWConfig.flywheelRadius = 2 / 12.0; // feet
         upperFWConfig.pid = new PIDFController(0.12, 0.0, 4.0, 0.034); // kP kI kD kFF
-        upperFWConfig.pid.setIzone(1800);
+        upperFWConfig.pid.setIZone(1800);
       }
 
       public static FlyWheelConfig lowerFWConfig = new FlyWheelConfig();
@@ -369,7 +369,7 @@ public final class Constants {
         lowerFWConfig.inverted = false; 
         lowerFWConfig.flywheelRadius = 2 / 12.0;   //feet 
         lowerFWConfig.pid = new PIDFController(0.12, 0.0, 4.0, 0.034); // kP kI kD kFF
-        lowerFWConfig.pid.setIzone(1800);
+        lowerFWConfig.pid.setIZone(1800);
       }
 
     }

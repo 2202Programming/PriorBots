@@ -1,6 +1,6 @@
 package frc.chadbot.commands.Shoot;
 
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.chadbot.RobotContainer;
 import frc.chadbot.subsystems.Intake_Subsystem;
 import frc.chadbot.subsystems.Magazine_Subsystem;
@@ -12,7 +12,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 
 
 
-public class BasicShootCommand extends CommandBase{ 
+public class BasicShootCommand extends Command{ 
     public static final double USE_CURRENT_ANGLE = 0.0;
 
     final Magazine_Subsystem magazine;

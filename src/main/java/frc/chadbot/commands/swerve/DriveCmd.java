@@ -12,13 +12,13 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.chadbot.Constants;
 import frc.chadbot.Constants.DriveTrain;
-import frc.chadbot.subsystems.SwerveDrivetrain;
+import frc.lib2202.subsystem.swerve.SwerveDrivetrain;
 import frc.chadbot.subsystems.ifx.DriverControls;
 
-public class DriveCmd extends CommandBase {
+public class DriveCmd extends Command {
 
   public enum DriveModeTypes {
     robotCentric("Robot Centric"),

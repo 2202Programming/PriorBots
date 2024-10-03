@@ -1,6 +1,6 @@
 package frc.chadbot.commands.Shoot;
 
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.chadbot.RobotContainer;
 import frc.chadbot.Constants.Autonomous;
 import frc.chadbot.Constants.Shooter;
@@ -8,7 +8,7 @@ import frc.chadbot.subsystems.Intake_Subsystem;
 import frc.chadbot.subsystems.Magazine_Subsystem;
 import frc.chadbot.subsystems.shooter.Shooter_Subsystem;
 import frc.chadbot.subsystems.shooter.Shooter_Subsystem.ShooterSettings;
-import frc.chadbot.util.PoseMath;
+import frc.lib2202.util.PoseMath;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -16,7 +16,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 /**
  * Use the gated version - it ties into the light gates on the magazine
  */
-public class VelShootCommand extends CommandBase implements SolutionProvider{ 
+public class VelShootCommand extends Command implements SolutionProvider{ 
 
     public static final double USE_CURRENT_ANGLE = 0.0;
 

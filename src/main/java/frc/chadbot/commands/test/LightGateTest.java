@@ -7,11 +7,11 @@ package frc.chadbot.commands.test;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.chadbot.RobotContainer;
 import frc.chadbot.subsystems.Magazine_Subsystem;
 
-public class LightGateTest extends CommandBase {
+public class LightGateTest extends Command {
   final Magazine_Subsystem mag;
 
   final String NT_Name = "/TestGates";
