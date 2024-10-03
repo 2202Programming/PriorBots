@@ -1,6 +1,6 @@
 package frc.chadbot.commands.Shoot;
 
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.chadbot.RobotContainer;
 import frc.chadbot.Constants.Autonomous;
@@ -11,13 +11,13 @@ import frc.chadbot.subsystems.Magazine_Subsystem;
 import frc.chadbot.subsystems.shooter.FlyWheelRPM;
 import frc.chadbot.subsystems.shooter.Shooter_Subsystem;
 import frc.chadbot.subsystems.shooter.Shooter_Subsystem.ShooterSettings;
-import frc.chadbot.util.PoseMath;
+import frc.lib2202.util.PoseMath;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class RPMShootCommandTune extends CommandBase{ 
+public class RPMShootCommandTune extends Command{ 
     public static final double USE_CURRENT_ANGLE = 0.0;
 
     final Magazine_Subsystem magazine;

@@ -1,12 +1,12 @@
 package frc.chadbot.commands.Shoot;
 
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.chadbot.RobotContainer;
 import frc.chadbot.subsystems.Intake_Subsystem;
 import frc.chadbot.subsystems.Magazine_Subsystem;
 import frc.chadbot.subsystems.shooter.Shooter_Subsystem;
 
-public class ShootCommand extends CommandBase{
+public class ShootCommand extends Command{
     final Magazine_Subsystem magazine;
     final Intake_Subsystem intake;
     final Shooter_Subsystem shooter;

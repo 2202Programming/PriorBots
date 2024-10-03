@@ -13,16 +13,17 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.lib2202.subsystem.hid.HID_Xbox_Subsystem;
 
-import frc.lib2202.subsystem.hid.JoystickButton;
-import frc.lib2202.subsystem.hid.JoystickTrigger;
-import frc.lib2202.subsystem.hid.POVButton;
-import frc.lib2202.subsystem.hid.SideboardController;
-import frc.lib2202.subsystem.id.XboxAxis;
+// import frc.lib2202.subsystems.hid.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.button.POVButton;
+import frc.lib2202.subsystem.hid.SwitchboardController;
+import frc.lib2202.subsystem.hid.XboxAxis;
 import frc.lib2202.subsystem.hid.XboxButton;
 import frc.lib2202.subsystem.hid.XboxPOV;
-import frc.lib2202.subsystem.hid.SideboardController.SBButton;
+import frc.lib2202.subsystem.hid.SwitchboardController.SBButton;
 
 /**
  * 
@@ -140,15 +141,15 @@ public interface DriverControls extends Subsystem {
     return bindButton(id, button.getCode());
   }
 
-  public default JoystickTrigger bind(Id id, XboxAxis axis) {
-    return (deviceMap.get(id) != null) ? new JoystickTrigger(deviceMap.get(id), axis.getCode(), 0.5) : null;
+  public default Trigger bind(Id id, XboxAxis axis) {
+    return (deviceMap.get(id) != null) ? new Trigger(deviceMap.get(id), axis.getCode(), 0.5) : null;
   }
 
   public default POVButton bind(Id id, XboxPOV pov) {
     return (deviceMap.get(id) != null) ? new POVButton(deviceMap.get(id), pov.get()) : null;
   }
 
-  public default JoystickButton bind(Id id, SideboardController.SBButton sw) {
+  public default JoystickButton bind(Id id, SwitchboardController.SBButton sw) {
     return  bindButton(id, sw.value);
   }
 
