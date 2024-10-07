@@ -4,7 +4,7 @@
 
 package frc.timbot;
 
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
@@ -14,11 +14,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.timbot.Constants.PCM;
 import frc.timbot.Constants.CAN;
-import frc.timbot.commands.AdjustElevation;
 import frc.timbot.commands.Fire;
 import frc.timbot.commands.FireThenIdle;
 import frc.timbot.commands.SetSpinFlywheel;
-import frc.timbot.subsystems.Elevation;
 import frc.timbot.subsystems.Flywheel;
 import frc.timbot.subsystems.Trigger;
 import frc.timbot.utils.hid.DriverControls;
@@ -42,7 +40,6 @@ public class RobotContainer {
 
   private Flywheel m_flywheel;
   private Trigger m_trigger;
-  private Elevation m_elevator;
 
   private DriverControls dc = new DriverControls();
 
@@ -54,11 +51,9 @@ public class RobotContainer {
     motor1 = new TalonFX(Constants.CAN.FLYWHEEL_TALON1);
     motor2 = new TalonFX(Constants.CAN.FLYWHEEL_TALON2);
     actuator = new TalonSRX(Constants.CAN.ACTUATOR_TALON);
-    solenoid = new DoubleSolenoid(CAN.PCM, PCM.TRIGGER_FORWARD, PCM.TRIGGER_BACK);
 
     m_flywheel = new Flywheel(motor1, motor2);
     m_trigger = new Trigger(solenoid);
-    m_elevator = new Elevation(actuator);
 
     // Configure the button bindings
     configureButtonBindings();
@@ -74,8 +69,6 @@ public class RobotContainer {
     dc.registerController(Id.Driver, new XboxController(1));
     dc.bind(Id.Driver, XboxButton.A).whileTrue(new SetSpinFlywheel(m_flywheel, 0.5))
         .button(new SetSpinFlywheel(m_flywheel, 0));
-
-    dc.bind(Id.Driver, XboxButton.X).onTrue(new AdjustElevation(m_elevator)); // increments angle by 50
 
     dc.bind(Id.Driver, XboxButton.B).onTrue(new FireThenIdle(m_trigger, m_flywheel));
   }
