@@ -1,5 +1,6 @@
 package frc.timbot.subsystem;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -13,13 +14,17 @@ public class FlywheelSubsystem extends SubsystemBase {
         this.motor2 = motor2;
     }
 
+    @Override
+    public void periodic() {
+    }
+
     public void speed(double speed) {
         motor1.set(speed);
         motor2.set(speed);
     }
 
     public boolean isAtSpeed() {
-        if ((motor1.getVelocity() >= 0) && (motor2.getVelocity() >= 0)) {
+        if ((motor1.getVelocity() > 0) && (motor2.getVelocity() > 0)) {
             return true;
         }
         return false;
