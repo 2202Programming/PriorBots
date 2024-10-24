@@ -134,7 +134,8 @@ public class SwerveDrivetrain extends SubsystemBase {
     cc = RobotContainer.getRobotSpecs().getChassisConfig();
     mc = RobotContainer.getRobotSpecs().getModuleConfigs();
    
-    //TODO Check coordinate frame for robot signs look wrong and might account for inversion issues...dpl 6/25/24
+    // Coords checked: Left +Y offset, right -Y offset, +X, front -x back.
+    //See https://docs.wpilib.org/en/stable/docs/software/basic-programming/coordinate-system.html
     kinematics = new SwerveDriveKinematics(
       new Translation2d(cc.XwheelOffset, cc.YwheelOffset), // Front Left
       new Translation2d(cc.XwheelOffset, -cc.YwheelOffset), // Front Right
@@ -248,10 +249,11 @@ public class SwerveDrivetrain extends SubsystemBase {
    */
   private CANcoder initCANcoder(int cc_ID, double cc_offset_deg) {
     CANcoder canCoder = new CANcoder(cc_ID, canBusName);
-    StatusSignal<Double> abspos = canCoder.getAbsolutePosition();
-    System.out.println("CANCoder(" + cc_ID + ") before offset, position = " + 
-      abspos.waitForUpdate(longWaitSeconds, true) +
-      " (" + abspos.getValueAsDouble()*360.0+" deg)" );
+    StatusSignal<Double> abspos = canCoder.getAbsolutePosition().waitForUpdate(longWaitSeconds, true);
+    StatusSignal<Double> pos = canCoder.getPosition().waitForUpdate(longWaitSeconds, true);
+    System.out.println("CANCoder(" + cc_ID + ") before offset change: \n"+
+      "\tabspos = " + abspos.getValue() + " (" + abspos.getValue()*360.0+" deg)\n" +
+      "\tpos = " + pos.getValue() + " (" + pos.getValue()*360.0 +" deg)"  );
 
     CANcoderConfiguration configs = new CANcoderConfiguration();      
     configs.MagnetSensor.AbsoluteSensorRange = AbsoluteSensorRangeValue.Signed_PlusMinusHalf;
@@ -269,9 +271,14 @@ public class SwerveDrivetrain extends SubsystemBase {
       System.out.println("CANCoder(" + cc_ID + ") status on retry: "+ status.toString() + " moving on, good luck.");
     }
     canCoder.clearStickyFaults(longWaitSeconds);    
-    System.out.println("CANCoder(" + cc_ID + ")  after offset, position = " +
-      abspos.waitForUpdate(longWaitSeconds, true) +
-      " (" + abspos.getValueAsDouble()*360.0+" deg)" );      
+    
+    //Re-read sensor, blocking calls
+    abspos.waitForUpdate(longWaitSeconds, true);
+    pos.waitForUpdate(longWaitSeconds, true);
+
+    System.out.println("CANCoder(" + cc_ID + ") After offset change: \n"+
+      "\tabspos = " + abspos.getValue() + " (" + abspos.getValue()*360.0+" deg)\n" +
+      "\tpos = " + pos.getValue() + " (" + pos.getValue()*360.0 + " deg)" );
     return canCoder;
   }
 

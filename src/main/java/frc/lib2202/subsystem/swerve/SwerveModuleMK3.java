@@ -1,5 +1,6 @@
 package frc.lib2202.subsystem.swerve;
 
+import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.hardware.CANcoder;
@@ -233,7 +234,6 @@ public class SwerveModuleMK3 {
     //}
 
     System.out.println("Module " + myprefix + ": CANCODER Angle after offset programmed=" + absEncoder.getPosition());
-
   }
 
   /**
@@ -245,21 +245,26 @@ public class SwerveModuleMK3 {
     // read absEncoder position, set internal angleEncoder to that value adjust for
     // cmd inversion.
     // Average a couple of samples of the absolute encoder
-    double pos_deg = absEncoder.getAbsolutePosition().getValue() * 360.0;
+    // DPL  double pos_deg = absEncoder.getAbsolutePosition().getValue() * 360.0;   //10/23/24 change to use pos,not abs
+    StatusSignal<Double> pos_deg = absEncoder.getPosition().waitForUpdate(1.0);
+    double cc_pos = angleCmdInvert * pos_deg.getValue() * 360.0;
     //sleep(10);
     //double absPosition = absEncoder.getAbsolutePosition().getValue() * 360.0;
     //pos_deg = (pos_deg + absPosition) / 2.0;
 
-    angleEncoder.setPosition(angleCmdInvert * pos_deg);
+    //set the angleEncoder to value from absEncoder
+    angleEncoder.setPosition(cc_pos);
+
+    //read back the internal angle from the sparkmax
     sleep(100); // sparkmax gremlins
-    double temp = angleEncoder.getPosition();
+    double angle_pos = angleEncoder.getPosition();
     sleep(100); // sparkmax gremlins
 
     int counter = 0;
-    while (Math.abs(pos_deg - temp) > 0.1) { // keep trying to set encoder angle if it's not matching
-      angleEncoder.setPosition(angleCmdInvert * pos_deg);
+    while (Math.abs(cc_pos - angle_pos) > 0.1) { // keep trying to set encoder angle if it's not matching      
+      angleEncoder.setPosition(cc_pos);
       sleep(100); // sparkmax gremlins
-      temp = angleEncoder.getPosition();
+      angle_pos = angleEncoder.getPosition();
       sleep(100); // sparkmax gremlins
       if (counter++ > 20) {
         System.out.println("*** Angle position set failed after 20 tries ***");
@@ -267,10 +272,8 @@ public class SwerveModuleMK3 {
       }
     }
 
-    realityCheckSparkMax(angleCmdInvert * pos_deg, temp);
-
-    System.out.println("Module " + myprefix + ": NEO post-calibrate angle=" + angleEncoder.getPosition());
-
+    realityCheckSparkMax(cc_pos, angle_pos);
+    System.out.println("Module " + myprefix + ": SparkMax post-calibrate angle=" + angleEncoder.getPosition());
   }
 
   void realityCheckSparkMax(double angle_cancoder, double internal_angle) {

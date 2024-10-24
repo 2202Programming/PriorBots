@@ -23,8 +23,6 @@ public final class Main {
     new RobotSpec_DoofBot();
 
   }
-  public static String serialnum="032D2062"; // robot2024 comp bot
-
   public static void main(String... args) {
     new Main();
     RobotBase.startRobot(Robot::new);

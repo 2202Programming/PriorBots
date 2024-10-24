@@ -10,6 +10,7 @@ import frc.lib2202.builder.RobotLimits;
 import frc.lib2202.builder.SubsystemConfig;
 import frc.lib2202.command.swerve.FieldCentricDrive;
 import frc.lib2202.command.swerve.RobotCentricDrive;
+import frc.lib2202.command.swerve.calibrate.TestRotateVelocity;
 import frc.lib2202.subsystem.Limelight;
 import frc.lib2202.subsystem.hid.HID_Xbox_Subsystem;
 import frc.lib2202.subsystem.swerve.IHeadingProvider;
@@ -138,9 +139,18 @@ public class RobotSpec_SwerveBot implements IRobotSpec {
 
     @Override
     public void setDefaultCommands() {
-       SwerveDrivetrain drivetrain = RobotContainer.getSubsystem(SwerveDrivetrain.class);
+        //Either mode is good for default, debugging easier with RCD.
+        //Driving easier with FCD
+        @SuppressWarnings("unused")
+        Command FCD = new FieldCentricDrive();
+        Command RCD = new RobotCentricDrive();
+        @SuppressWarnings("unused")
+        Command testRotateCMD =  new TestRotateVelocity(60.0, 4.0);
+        
+        var cmd = RCD;
+        SwerveDrivetrain drivetrain = RobotContainer.getSubsystem(SwerveDrivetrain.class);
         if (drivetrain != null) {
-            drivetrain.setDefaultCommand(new    RobotCentricDrive() );//    FieldCentricDrive());
+            drivetrain.setDefaultCommand(cmd);
           }
     }
 

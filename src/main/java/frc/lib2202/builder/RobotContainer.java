@@ -8,7 +8,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
-import frc.base.Main;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -102,7 +101,8 @@ public class RobotContainer {
     RobotContainer.rc = this;
     // use serial number to set the proper config, use env or static set in Main.java
     String serialnum = System.getenv("serialnum");
-    serialnum = (serialnum == null) ? Main.serialnum : serialnum;
+    //For sim debug, set in Debug:main powershell:   $env:serialnum ='123412341234'   
+    //serialnum = (serialnum == null) ? Main.serialnum : serialnum;
     subsystemConfig = SubsystemConfig.SetConfig(serialnum);
     SubsystemConfig.constructAll();
 
