@@ -137,7 +137,8 @@ public class SwerveDrivetrain extends SubsystemBase {
     // Coords checked: Left +Y offset, right -Y offset, +X, front -x back.
     //See https://docs.wpilib.org/en/stable/docs/software/basic-programming/coordinate-system.html
     kinematics = new SwerveDriveKinematics(
-      new Translation2d(cc.XwheelOffset, cc.YwheelOffset), // Front Left
+      //match order to ModuleConfig.java 
+      new Translation2d(cc.XwheelOffset, cc.YwheelOffset), // Front Left 
       new Translation2d(cc.XwheelOffset, -cc.YwheelOffset), // Front Right
       new Translation2d(-cc.XwheelOffset, cc.YwheelOffset), // Back Left
       new Translation2d(-cc.XwheelOffset, -cc.YwheelOffset) // Back Right
