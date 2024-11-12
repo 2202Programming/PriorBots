@@ -26,20 +26,17 @@ import frc.chadbot.commands.swerve.DriveControllerDrivetrain;
 import frc.chadbot.commands.swerve.DriveControllerWithShooter;
 import frc.chadbot.commands.swerve.LimelightDriveCmd;
 import frc.chadbot.subsystems.Intake_Subsystem;
-import frc.chadbot.subsystems.Limelight_Subsystem;
+import frc.lib2202.subsystem.Limelight;
 import frc.chadbot.subsystems.Magazine_Subsystem;
 import frc.chadbot.subsystems.Positioner_Subsystem;
 import frc.chadbot.subsystems.Sensors_Subsystem;
-import frc.chadbot.subsystems.SwerveDrivetrain;
-import frc.chadbot.subsystems.hid.HID_Xbox_Subsystem;
-import frc.chadbot.subsystems.hid.XboxAxis;
-import frc.chadbot.subsystems.hid.XboxButton;
-import frc.chadbot.subsystems.hid.XboxPOV;
-import frc.chadbot.subsystems.hid.SideboardController.SBButton;
+import frc.lib2202.subsystem.swerve.SwerveDrivetrain;
+import frc.lib2202.subsystem.hid.HID_Xbox_Subsystem;
+import frc.lib2202.subsystem.hid.SwitchboardController.SBButton;
 import frc.chadbot.subsystems.ifx.DriverControls.Id;
 import frc.chadbot.subsystems.shooter.Shooter_Subsystem;
-import frc.chadbot.util.RobotSpecs;
-import frc.chadbot.util.RobotSpecs.RobotNames;
+import frc.chadbot.RobotSpec_ChadBot;
+//import frc.chadbot.RobotSpec_ChadBot.RobotNames;
 import frc.chadbot.ux.Dashboard;
 
 public class RobotContainer {
@@ -53,6 +50,7 @@ public class RobotContainer {
   CommandXboxController driverController = new CommandXboxController(0);
   CommandXboxController opController = new CommandXboxController(1);
 
+  // TODO WHERE TF IS SENSORS SUBSYSTEM AT 
   public final Dashboard dashboard;
   public Shooter_Subsystem shooter = null;
   public final HID_Xbox_Subsystem driverControls;
@@ -61,7 +59,7 @@ public class RobotContainer {
   public SwerveDrivetrain drivetrain = null;
   public Magazine_Subsystem magazine = null;
 //  public Climber climber = null;
-  public Limelight_Subsystem limelight = null;
+  public Limelight limelight = null;
   public Positioner_Subsystem positioner = null;
 
   public static String auto_path_name = "NONE";
@@ -69,14 +67,14 @@ public class RobotContainer {
   public DriveControllerWithShooter m_driveController = null;
   public DriveControllerDrivetrain m_driveControllerDrivetrain = null;
   public Command drivetrainCommand = null;
-  public RobotSpecs m_robotSpecs;
+  public RobotSpec_ChadBot m_robotSpecs;
   MagazineGatedCommand mag_default_cmd;
 
   // modifiable commands
   // DriveCmd swd;
   LimelightDriveCmd swd;
 
-  public RobotNames myRobotName;
+
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -88,7 +86,7 @@ public class RobotContainer {
     sensors = new Sensors_Subsystem();
     dashboard = new Dashboard(rc);
     driverControls = new HID_Xbox_Subsystem(DriverPrefs.VelExpo, DriverPrefs.RotationExpo, DriverPrefs.StickDeadzone);
-    m_robotSpecs = new RobotSpecs(System.getenv("serialnum"));
+    m_robotSpecs = new RobotSpec_ChadBot(System.getenv("serialnum"));
 
     // These are hardware specific
     if (m_robotSpecs.getSubsystemConfig().HAS_DRIVETRAIN)
@@ -104,7 +102,7 @@ public class RobotContainer {
 //    if (m_robotSpecs.getSubsystemConfig().HAS_CLIMBER)
 //      climber = new Climber();
     if (m_robotSpecs.getSubsystemConfig().HAS_LIMELIGHT)
-      limelight = new Limelight_Subsystem();
+      limelight = new Limelight();
 
     if (m_robotSpecs.getSubsystemConfig().HAS_DRIVETRAIN && m_robotSpecs.getSubsystemConfig().HAS_SHOOTER && m_robotSpecs.getSubsystemConfig().HAS_MAGAZINE) {
        // set default commands

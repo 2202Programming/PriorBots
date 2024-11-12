@@ -16,7 +16,8 @@ import frc.lib2202.subsystem.swerve.SwerveDrivetrain;
 import frc.lib2202.subsystem.swerve.config.ChassisConfig;
 import frc.lib2202.subsystem.swerve.config.ModuleConfig;
 import frc.lib2202.subsystem.swerve.config.ModuleConfig.CornerID;
-
+import frc.robot2024.BindingsCompetition;
+import frc.robot2024.RegisteredCommands;
 //todo - remove robot2024 and replace with lib2202
 import frc.robot2024.subsystems.sensors.Sensors_Subsystem;
 
@@ -59,7 +60,11 @@ public class RobotSpec_ChadBot implements IRobotSpec {
     ssConfig.setRobotSpec(this);
   }
 
-  @Override
+  public RobotSpec_ChadBot(String getenv) {
+    //TODO Auto-generated constructor stub
+}
+
+@Override
   public RobotLimits getRobotLimits() {
     return limits;
   }

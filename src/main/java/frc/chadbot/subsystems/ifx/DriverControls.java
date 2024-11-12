@@ -20,9 +20,6 @@ import frc.lib2202.subsystem.hid.HID_Xbox_Subsystem;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.lib2202.subsystem.hid.SwitchboardController;
-import frc.lib2202.subsystem.hid.XboxAxis;
-import frc.lib2202.subsystem.hid.XboxButton;
-import frc.lib2202.subsystem.hid.XboxPOV;
 import frc.lib2202.subsystem.hid.SwitchboardController.SBButton;
 
 /**

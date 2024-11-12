@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.chadbot.Constants;
 import frc.chadbot.Constants.DriveTrain;
 import frc.chadbot.Constants.Shooter;
-import frc.chadbot.subsystems.Limelight_Subsystem;
+import frc.lib2202.subsystem.Limelight;
 import frc.lib2202.subsystem.swerve.SwerveDrivetrain;
 import frc.chadbot.subsystems.ifx.DriverControls;
 
@@ -32,7 +32,7 @@ public class HubCentricDrive extends DriveCmdClass {
   final SwerveDrivetrain drivetrain;
   final DriverControls dc;
   final SwerveDriveKinematics kinematics;
-  final Limelight_Subsystem limelight;
+  final Limelight limelight;
 
   // output to Swerve Drivetrain
   double xSpeed, ySpeed, rot;
@@ -75,7 +75,7 @@ public class HubCentricDrive extends DriveCmdClass {
 
   final boolean PID_TUNING = false;
 
-  public HubCentricDrive(SwerveDrivetrain drivetrain, DriverControls dc, Limelight_Subsystem limelight) {
+  public HubCentricDrive(SwerveDrivetrain drivetrain, DriverControls dc, Limelight limelight) {
     this.drivetrain = drivetrain;
     addRequirements(drivetrain);
     this.dc = dc;
