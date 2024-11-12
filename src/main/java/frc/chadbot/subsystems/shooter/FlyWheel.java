@@ -95,6 +95,7 @@ public class FlyWheel {
     motor.configFactoryDefault();
 
     // use the config to set all values at once
+    //TODO wtf is .copyTo() - er
     cfg.pid.copyTo(motor, kPIDLoopIdx );
     motor.getAllConfigs(srxconfig);
 

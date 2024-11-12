@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.chadbot.subsystems.ifx.DriverControls;
 import frc.lib2202.subsystem.hid.DriverControls.Id;
 import frc.lib2202.subsystem.hid.SwitchboardController.SBButton;
 
@@ -44,7 +45,7 @@ import frc.lib2202.subsystem.hid.SwitchboardController.SBButton;
  *      Y stick forward will be positive creates positive velocity for that side.
  * 
  */
-public class HID_Xbox_Subsystem extends SubsystemBase {
+public class HID_Xbox_Subsystem extends SubsystemBase implements DriverControls {
   /**
    * Creates a new HID_Subsystem.
    */
@@ -273,8 +274,8 @@ public void turnOffRumble(Id id, RumbleType type){
   }
 }
 
-public boolean isConnected(Id id){
-  switch (id){
+public boolean isConnected(frc.chadbot.subsystems.ifx.DriverControls.Id switchboard2){
+  switch (switchboard2){
     case Driver:
       return driver.getHID().isConnected();
     case Operator:
