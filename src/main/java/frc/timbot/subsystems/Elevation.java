@@ -11,6 +11,8 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.timbot.Constants;
 import frc.timbot.utils.Stick;
@@ -21,6 +23,8 @@ public class Elevation extends SubsystemBase {
    */
 
   public TalonSRX actuator;
+  public AnalogInput volts = new AnalogInput(0);
+  public PIDController linearControlPID = new PIDController(getPosition(), getPosition(), getPosition());
 
   public Elevation(TalonSRX actuator) {
     this.actuator = actuator;
@@ -71,7 +75,12 @@ public class Elevation extends SubsystemBase {
   }
 
   public double angleToPosition(double angle) {
-    return angle;
+    double height = 17.72 + this.getPosition();
+    return height;
+  }
+
+  public double getPosition() { //in centimeters
+    return volts.getVoltage() * 1.2 * 2.54; //basiclly 0-5 volts * 6 inches/5 * conversion inches to cm
   }
 
 }
