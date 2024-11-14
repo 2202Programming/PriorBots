@@ -1,4 +1,4 @@
-package frc.robot2024;
+package frc.timbot;
 
 import static frc.lib2202.Constants.MperFT;
 
@@ -18,6 +18,7 @@ import frc.lib2202.subsystem.swerve.config.ChassisConfig;
 import frc.lib2202.subsystem.swerve.config.ModuleConfig;
 import frc.lib2202.subsystem.swerve.config.ModuleConfig.CornerID;
 import frc.robot2024.subsystems.sensors.Sensors_Subsystem;
+import frc.timbot.subsystem.FlywheelSubsystem;
 
 //Swerve bot aka Tim specs
 public class RobotSpec_SwerveBot implements IRobotSpec {
@@ -52,7 +53,8 @@ public class RobotSpec_SwerveBot implements IRobotSpec {
             .add(SwerveDrivetrain.class)
             .add(HID_Xbox_Subsystem.class, "DC", () -> {
                 return new HID_Xbox_Subsystem(0.3, 0.9, 0.05);
-            });
+            })
+            .add(FlywheelSubsystem.class);
 
     public RobotSpec_SwerveBot() {
         ssConfig.setRobotSpec(this);
@@ -123,7 +125,7 @@ public class RobotSpec_SwerveBot implements IRobotSpec {
     public void setBindings() {
         @SuppressWarnings("unused")
         HID_Xbox_Subsystem dc = RobotContainer.getSubsystem("DC");
-        //if code is ever added for tim's other mechanisms besides chassis, bindings go here --er
+        
     }
 
     @Override
@@ -142,6 +144,12 @@ public class RobotSpec_SwerveBot implements IRobotSpec {
         if (drivetrain != null) {
             drivetrain.setDefaultCommand(new    RobotCentricDrive() );//    FieldCentricDrive());
           }
+    }
+
+    //BINDINGS
+
+    static void configureButtonBindings() {
+         
     }
 
 

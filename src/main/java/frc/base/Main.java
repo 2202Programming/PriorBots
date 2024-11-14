@@ -10,7 +10,7 @@ import frc.robot2024.RobotSpec_AlphaBot2024;
 import frc.robot2024.RobotSpec_ChadBot;
 import frc.robot2024.RobotSpec_CompBot2024;
 import frc.robot2024.RobotSpec_DoofBot;
-import frc.robot2024.RobotSpec_SwerveBot;
+import frc.timbot.RobotSpec_SwerveBot;
 
 public final class Main {
   private Main() {

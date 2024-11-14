@@ -1,14 +1,14 @@
 package frc.timbot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.timbot.subsystems.Flywheel;
+import frc.timbot.subsystem.FlywheelSubsystem;
 import frc.timbot.utils.Stick;
 
 public class Shoot extends Command {
 
-    private Flywheel flywheel;
+    private FlywheelSubsystem flywheel;
 
-    public Shoot(Flywheel flywheel) {
+    public Shoot(FlywheelSubsystem flywheel) {
         this.flywheel = flywheel;
     }
 
@@ -29,8 +29,9 @@ public class Shoot extends Command {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        if(flywheel.isAtSpeed()) {
+        if(flywheel.isAtSpeed(0.01)) {
             return true;
         }
+        return false;
     }
 }
