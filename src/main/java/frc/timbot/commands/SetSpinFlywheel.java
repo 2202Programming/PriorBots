@@ -8,7 +8,7 @@
 package frc.timbot.commands;
 
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import frc.timbot.subsystems.Flywheel;
+import frc.timbot.subsystem.FlywheelSubsystem;
 import frc.timbot.utils.Stick;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
@@ -16,10 +16,10 @@ import frc.timbot.utils.Stick;
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class SetSpinFlywheel extends InstantCommand {
 
-  private Flywheel m_flywheel;
+  private FlywheelSubsystem m_flywheel;
   private double speed;
 
-  public SetSpinFlywheel(Flywheel flywheel, double speed) {
+  public SetSpinFlywheel(FlywheelSubsystem flywheel, double speed) {
     m_flywheel = flywheel;
     this.speed = speed;
     // Use addRequirements() here to declare subsystem dependencies.
@@ -29,6 +29,6 @@ public class SetSpinFlywheel extends InstantCommand {
   @Override
   public void initialize() {
     Stick.log("Starting SetSpinFlywheel2 command");
-    m_flywheel.spinPower(speed);
+    m_flywheel.speed(speed);
   }
 }
