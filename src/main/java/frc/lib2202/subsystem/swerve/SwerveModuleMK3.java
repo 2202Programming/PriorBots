@@ -240,31 +240,40 @@ public class SwerveModuleMK3 {
    * calibrate() - aligns Neo internal position with absolute encoder. This needs
    * to be done at power up, or when the unbounded encoder gets close to its
    * overflow point.
+   * 
+   * CanCoder note:  
+   *    absolutePosition -  +-.5 range (-=180 deg) and includes the mag offset correction
+   *    normal position - has own offset, created by setting its position, so there are two offsets.
+   *                    - position (user offset) is calculated from diff of absPos and set value (I think)
+   *                    - normal position will grow to count total rotations, so mod math is needed
+   *                      if you want to use it on +/- 180 range.
+   *  
    */
   void calibrate() {
-    // read absEncoder position, set internal angleEncoder to that value adjust for
-    // cmd inversion.
-    // Average a couple of samples of the absolute encoder
-    // DPL  double pos_deg = absEncoder.getAbsolutePosition().getValue() * 360.0;   //10/23/24 change to use pos,not abs
-    StatusSignal<Double> pos_deg = absEncoder.getPosition().waitForUpdate(1.0);
-    double cc_pos = angleCmdInvert * pos_deg.getValue() * 360.0;
-    //sleep(10);
-    //double absPosition = absEncoder.getAbsolutePosition().getValue() * 360.0;
-    //pos_deg = (pos_deg + absPosition) / 2.0;
-
+    // read absEncoder position, set internal angleEncoder to that value adjust for cmd inversion.
+    StatusSignal<Double> abspos_deg = absEncoder.getAbsolutePosition().waitForUpdate(1.0);
+    double cc_pos = angleCmdInvert * abspos_deg.getValue() * 360.0;
+    
     //set the angleEncoder to value from absEncoder
-    angleEncoder.setPosition(cc_pos);
+    REVLibError angEncErr =  angleEncoder.setPosition(cc_pos);
 
     //read back the internal angle from the sparkmax
     sleep(100); // sparkmax gremlins
     double angle_pos = angleEncoder.getPosition();
     sleep(100); // sparkmax gremlins
-
+ 
+    // keep trying to set encoder angle if it's not matching      
     int counter = 0;
-    while (Math.abs(cc_pos - angle_pos) > 0.1) { // keep trying to set encoder angle if it's not matching      
-      angleEncoder.setPosition(cc_pos);
+    while (Math.abs(cc_pos - angle_pos) > 0.1) {
+      angEncErr = angleEncoder.setPosition(cc_pos);
       sleep(100); // sparkmax gremlins
       angle_pos = angleEncoder.getPosition();
+      if (angEncErr != REVLibError.kOk) {
+        System.out.println("Warning internal angle Encoder(" + this.myprefix+") returned "+angEncErr.toString() + 
+          " on setPosition(). Retrying");
+        System.out.println("\tcc_pos="+cc_pos);
+        System.out.println("\tangle_pos="+angle_pos);
+      }
       sleep(100); // sparkmax gremlins
       if (counter++ > 20) {
         System.out.println("*** Angle position set failed after 20 tries ***");
