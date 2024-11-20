@@ -10,7 +10,7 @@ import frc.robot2024.RobotSpec_AlphaBot2024;
 import frc.robot2024.RobotSpec_ChadBot;
 import frc.robot2024.RobotSpec_CompBot2024;
 import frc.robot2024.RobotSpec_DoofBot;
-import frc.timbot.RobotSpec_SwerveBot;
+import frc.timbot.RobotSpec_TimBot;
 
 public final class Main {
   private Main() {
@@ -19,7 +19,7 @@ public final class Main {
     new RobotSpec_AlphaBot2024();
     new RobotSpec_CompBot2024();
     new RobotSpec_ChadBot();
-    new RobotSpec_SwerveBot();
+    new RobotSpec_TimBot();
     new RobotSpec_DoofBot();
 
   }
@@ -27,4 +27,4 @@ public final class Main {
     new Main();
     RobotBase.startRobot(Robot::new);
   }
-}
+}   
