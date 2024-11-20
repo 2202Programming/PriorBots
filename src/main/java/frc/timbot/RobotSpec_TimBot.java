@@ -22,7 +22,7 @@ import frc.robot2024.subsystems.sensors.Sensors_Subsystem;
 import frc.timbot.subsystem.FlywheelSubsystem;
 
 //Swerve bot aka Tim specs
-public class RobotSpec_SwerveBot implements IRobotSpec {
+public class RobotSpec_TimBot implements IRobotSpec {
     // set this true at least once after robot hw stabilizes
     boolean burnFlash = false;
 
@@ -57,7 +57,7 @@ public class RobotSpec_SwerveBot implements IRobotSpec {
             })
             .add(FlywheelSubsystem.class);
 
-    public RobotSpec_SwerveBot() {
+    public RobotSpec_TimBot() {
         ssConfig.setRobotSpec(this);
     }
 
