@@ -13,10 +13,9 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib2202.builder.RobotContainer;
 import frc.chadbot.Constants.Shooter;
-//import frc.chadbot.subsystems.Limelight_Subsystem; removed bc we might implement LL differently 
 import frc.lib2202.subsystem.swerve.SwerveDrivetrain;
 import frc.lib2202.subsystem.Limelight;
-import frc.lib2202.subsystem.LimelightHelpers;
+
 
 
 /* Current driving behavior:
@@ -75,10 +74,10 @@ public class LimeLightAim extends Command {
   //will finish when PID error is small enough, to allow auto to progress to next command.
 
   public LimeLightAim() {
-    this.drivetrain = RobotContainer.RC().drivetrain;
+    this.drivetrain = RobotContainer.getSubsystem(SwerveDrivetrain.class);
     addRequirements(drivetrain);
     this.kinematics = drivetrain.getKinematics();
-    this.limelight = RobotContainer.RC().limelight;
+    this.limelight = RobotContainer.getSubsystem(Limelight.class);
 
     // anglePid = new PIDController(angle_kp, angle_ki, angle_kd);
     limelightPid = new PIDController(limelight_kP, limelight_kI, limelight_kD);

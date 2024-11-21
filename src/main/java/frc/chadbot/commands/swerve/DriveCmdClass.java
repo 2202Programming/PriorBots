@@ -5,7 +5,6 @@
 package frc.chadbot.commands.swerve;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Command;
 
 /* This class allows drive controller to set pitch/roll correction without knowing exactly which drive command is running */
 /* Possibly could have been an interface but I didn't think that would work */
