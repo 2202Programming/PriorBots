@@ -26,7 +26,7 @@ public class Trigger extends SubsystemBase {
     this.solenoid = solenoid;
     idle();
     // compressor = new Compressor(1); // 1 is CAN ID of PCM
-    solenoid.clearAllPCMStickyFaults();
+    //solenoid.clearAllPCMStickyFaults();
 
   }
 
