@@ -1,17 +1,18 @@
 package frc.chadbot.commands.Shoot;
 
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.chadbot.RobotContainer;
 import frc.chadbot.Constants.Autonomous;
 import frc.chadbot.Constants.Shooter;
 import frc.chadbot.subsystems.Intake_Subsystem;
 import frc.chadbot.subsystems.Magazine_Subsystem;
 import frc.chadbot.subsystems.shooter.Shooter_Subsystem;
 import frc.chadbot.subsystems.shooter.Shooter_Subsystem.ShooterSettings;
+import frc.lib2202.builder.RobotContainer;
+import frc.lib2202.subsystem.Limelight;
 import frc.lib2202.util.PoseMath;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.networktables.NetworkTableInstance;
 
 /**
  * Use the gated version - it ties into the light gates on the magazine
@@ -23,7 +24,8 @@ public class VelShootCommand extends Command implements SolutionProvider{
     final Magazine_Subsystem magazine;
     final Intake_Subsystem intake;
     final Shooter_Subsystem shooter;
-    final SolutionProvider solutionProvider;  
+    final SolutionProvider solutionProvider;
+    final Limelight limelight;  
     final double TESTANGLE = 0.0;
     final double TESTTOL = 0.02;
     final int BackupPeriod;
@@ -98,9 +100,11 @@ public class VelShootCommand extends Command implements SolutionProvider{
     Stage stage;
     
     public VelShootCommand(ShooterSettings shooterSettings, int backupFrameCount, SolutionProvider solutionProvider){
-        this.intake = RobotContainer.RC().intake;
-        this.shooter = RobotContainer.RC().shooter;
-        this.magazine = RobotContainer.RC().magazine;
+        this.intake = RobotContainer.getSubsystem(Intake_Subsystem.class);
+        this.shooter = RobotContainer.getSubsystem(Shooter_Subsystem.class);
+        this.magazine = RobotContainer.getSubsystem(Magazine_Subsystem.class);
+        this.limelight = RobotContainer.getSubsystem(Limelight.class);
+
         // the default solution provider is always true
         this.solutionProvider = (solutionProvider ==null) ? this : solutionProvider;
         m_shooterSettings = shooterSettings;
@@ -232,10 +236,10 @@ public class VelShootCommand extends Command implements SolutionProvider{
     }
 
     public void calculateDistance(){
-        currentDistance = PoseMath.poseDistance(RobotContainer.RC().drivetrain.getPose(), Autonomous.hubPose); //crappy estimate from odometery
-        if (RobotContainer.RC().limelight.getTarget() && RobotContainer.RC().limelight.getLEDStatus()){
+        currentDistance = PoseMath.poseDistance(drivetrain.getPose(), Autonomous.hubPose); //crappy estimate from odometery
+        if (limelight.getTarget() && limelight.getLEDStatus()){
             //calculate current distance with limelight area instead of odometery
-            currentDistance = RobotContainer.RC().limelight.estimateDistance(); 
+            currentDistance = limelight.estimateDistance(); 
         }
         currentDistance += distanceOffeset;  //add in velocity based distance offset
     }
