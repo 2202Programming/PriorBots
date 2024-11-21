@@ -13,21 +13,36 @@ import frc.timbot.subsystems.Elevation;
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class AdjustElevation extends InstantCommand {
+public class SendToMax extends InstantCommand {
 
-  private Elevation m_elevator;
-  private double angle;
+  private Elevation m_elevator; //works entirely in cm
 
-  public AdjustElevation(Elevation m_elevator) {
+  public SendToMax(Elevation m_elevator) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.m_elevator = m_elevator;
-    angle = 0;
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    angle = angle + 50;
-    m_elevator.setActuatorAngle(angle);
+    if (m_elevator.getPos() > 5.9) {
+      m_elevator.setPoint(0);
+    } else {
+      m_elevator.setPoint(6);
+    }
+  } 
+
+  public void execute() {
+
   }
+
+  public void end() {
+    m_elevator.setPoint(m_elevator.getPos());
+  }
+
+  public boolean isFinished() {
+    return m_elevator.isAtPosition();
+  }
+
 }
+
