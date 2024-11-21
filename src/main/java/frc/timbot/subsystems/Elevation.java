@@ -5,57 +5,55 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
+
 package frc.timbot.subsystems;
 
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkLowLevel.MotorType;
-
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.AnalogInput;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+import com.revrobotics.CANSparkMax;
+import frc.timbot.Constants.CAN;
 
 public class Elevation extends SubsystemBase {
-  /**
-   * Creates a new Elevation.
-   */
+  private static final double kp = 1.0;
+  private static final double ki = 0;
+  private static final double kd = 0;
+  private static final double conversion = 6.0/5.0; //define later [in/volt]
+  /** Creates a new LaunchAngle. */
+  final CANSparkMax angleMotor = new CANSparkMax(CAN.ACTUATOR_SPARK, CANSparkMax.MotorType.kBrushed);
+  final AnalogInput vPositionSensor = new AnalogInput(0); //[volts]
+  final PIDController pid = new PIDController(kp, ki, kd); //change these names later
+  private double distance = 0.0; //[cm]
+  private double distanceCmd = 0.0; //[cm]
+  
 
-  public CANSparkMax actuator = new CANSparkMax(18, MotorType.kBrushless);
-  public AnalogInput volts = new AnalogInput(0);
-  public PIDController linearControlPID = new PIDController(getPosition(), getPosition(), getPosition());
-  public double height = 0.0;
-  public double speed = 0.0; //comanded power between 1.0 and -1.0
-
-  public Elevation(CANSparkMax actuator) {
-    volts.setAverageBits(4);
+  public Elevation() {
+  
   }
 
   @Override
   public void periodic() {
-    System.out.println(this.getPosition());
-    this.getHeight();
+    distance = vPositionSensor.getVoltage()*conversion;
+    double output = pid.calculate(distance, distanceCmd); //FOR FUTURE REFFERENCE GAVIN. THIS IS HOW TO PID.
+    angleMotor.set(output);
+    pid.setTolerance(5, 10); //What units?
   }
 
-  public void setActuatorAngle(double angle) {
-
+  public double getPos() {
+    return distance;
   }
 
-  public double getHeight() {
-    height = 11*2.54 + this.getPosition();
-    return height;
+  public void setPoint(double point){ //0 is bottom, 6 is top
+    if (point > 6) {
+      point = 6;
+    } else if (point < 0) {
+      point = 0;
+    }
+    distanceCmd = point;
   }
 
-  public double getPosition() { //in inches
-    System.out.println(volts.getVoltage());
-    return volts.getVoltage() * 1.2 * 2.54; //basiclly 0-5 volts * 6 inches/5 * 2.54 cm/in
+  public boolean isAtPosition(){
+    return pid.atSetpoint();
   }
-
-  public void setPosition(double height) {
-      this.height = height;
-  }
-
-  public void setSpeed(double speed) {
-    this.speed = speed;
-  }
-
 }

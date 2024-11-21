@@ -60,7 +60,7 @@ public final class Constants {
         public static final int FLYWHEEL_TALON1 = 10;
         public static final int FLYWHEEL_TALON2 = 11;
 
-        public static final int ACTUATOR_TALON = 12;
+        public static final int ACTUATOR_SPARK = 18;
 
         public static final int PCM = 1;
 
