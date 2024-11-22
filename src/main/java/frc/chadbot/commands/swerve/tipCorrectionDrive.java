@@ -8,9 +8,10 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.chadbot.Constants;
+import frc.chadbot.subsystems.Sensors_Subsystem;
 import frc.lib2202.builder.RobotContainer;
-import frc.lib2202.subsystem.swerve.SwerveDrivetrain;
-import frc.chadbot.subsystems.ifx.DriverControls;
+
+import frc.lib2202.command.swerve.FieldCentricDrive;
 
 /* Current driving behavior:
   Starts in field centric
@@ -22,7 +23,7 @@ import frc.chadbot.subsystems.ifx.DriverControls;
 
 
 public class tipCorrectionDrive extends FieldCentricDrive {
-
+  final Sensors_Subsystem sensors;
   double log_counter = 0;
 
   PIDController tipRollPid;
@@ -50,9 +51,11 @@ public class tipCorrectionDrive extends FieldCentricDrive {
   NetworkTableEntry nt_pitch_factor;
   public final String NT_Name = "DC"; 
 
-  public tipCorrectionDrive(SwerveDrivetrain drivetrain, DriverControls dc) {
-    super(drivetrain, dc);
-    addRequirements(drivetrain);
+  public tipCorrectionDrive() {
+    super();
+    sensors = RobotContainer.getSubsystem(Sensors_Subsystem.class);
+  
+    //addRequirements(drivetrain);
     tipRollPid = new PIDController(roll_kP, roll_kI, roll_kD);
     tipPitchPid = new PIDController(pitch_kP, pitch_kI, pitch_kD);
 
@@ -74,7 +77,8 @@ public class tipCorrectionDrive extends FieldCentricDrive {
     System.out.println("***STARTING TIP CORRECTION MODE");
   }
 
-  void calculate() {
+  @Override
+  protected void calculate() {
     // Get the x speed. We are inverting this because Xbox controllers return
     // negative values when we push forward.
     //xSpeed = xspeedLimiter.calculate(dc.getVelocityX()) * DriveTrain.kMaxSpeed;
@@ -120,8 +124,8 @@ public class tipCorrectionDrive extends FieldCentricDrive {
     //NOTE: ROLL IS POSITIVE WITH CLOCKWISE ROTATION (LOOKING FROM BACK TOWARDS INTAKE)
     //Y direction is left/right, positive towards left when facing intake from back
 
-    double pitchAngleDegrees = RobotContainer.RC().sensors.getPitch();
-    double rollAngleDegrees = RobotContainer.RC().sensors.getRoll();
+    double pitchAngleDegrees = sensors.getPitch();
+    double rollAngleDegrees = sensors.getRoll();
     SmartDashboard.putNumber("Actual Pitch", pitchAngleDegrees);
     SmartDashboard.putNumber("Actual Roll", rollAngleDegrees);
 

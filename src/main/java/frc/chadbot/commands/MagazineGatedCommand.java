@@ -9,7 +9,8 @@ import frc.chadbot.RobotContainer;
 import frc.chadbot.commands.MovePositioner.PositionerMode;
 import frc.chadbot.subsystems.Intake_Subsystem;
 import frc.chadbot.subsystems.Magazine_Subsystem;
-import frc.chadbot.subsystems.ifx.DriverControls.Id;
+import frc.lib2202.command.JoystickRumble;
+import frc.lib2202.subsystem.hid.DriverControls.Id;
 
 /**
  * 
@@ -428,11 +429,11 @@ public class MagazineGatedCommand extends Command implements MagazineController 
     void rumbleMag(){
         if (ball_count==2 && last_ball_count==1){ //turn on rumble for double ball notification
             CommandScheduler.getInstance().schedule(new JoystickRumble(Id.Driver, 1, 2));
-            CommandScheduler.getInstance().schedule(new JoystickRumble(Id.Assistant, 1, 2));
+            CommandScheduler.getInstance().schedule(new JoystickRumble(Id.Operator, 1, 2));
         }
         if (ball_count==1 && last_ball_count==0){ //turn on rumble for single ball notification
             CommandScheduler.getInstance().schedule(new JoystickRumble(Id.Driver, 0.5, 1));
-            CommandScheduler.getInstance().schedule(new JoystickRumble(Id.Assistant, 0.5, 1));
+            CommandScheduler.getInstance().schedule(new JoystickRumble(Id.Operator, 0.5, 1));
         }
         last_ball_count = ball_count;
     }

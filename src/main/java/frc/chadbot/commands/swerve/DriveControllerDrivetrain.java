@@ -12,14 +12,14 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.lib2202.builder.RobotContainer;
-import frc.chadbot.RobotContainer;
 import frc.chadbot.Constants.NTStrings;
 import frc.chadbot.commands.Shoot.SolutionProvider;
-import frc.lib2202.subsystem.Limelight;
-import frc.lib2202.subsystem.swerve.SwerveDrivetrain;
-import frc.chadbot.subsystems.ifx.DriverControls;
+import frc.chadbot.subsystems.Sensors_Subsystem;
 import frc.chadbot.subsystems.shooter.Shooter_Subsystem;
+import frc.lib2202.builder.RobotContainer;
+import frc.lib2202.subsystem.Limelight;
+import frc.lib2202.subsystem.hid.HID_Xbox_Subsystem;
+import frc.lib2202.subsystem.swerve.SwerveDrivetrain;
 
 public class DriveControllerDrivetrain extends Command implements SolutionProvider {
 
@@ -37,10 +37,14 @@ public class DriveControllerDrivetrain extends Command implements SolutionProvid
     }
   }
 
+  //subsystems
   SwerveDrivetrain drivetrain;
-  DriverControls dc;
+  HID_Xbox_Subsystem dc;
   Shooter_Subsystem shooter;
   Limelight limelight;
+  Sensors_Subsystem sensors;
+
+  //commands
   RobotCentricDrive m_robotCentricDrive;
   FieldCentricDrive m_fieldCentricDrive;
   HubCentricDrive m_hubCentricDrive;
@@ -92,12 +96,13 @@ public class DriveControllerDrivetrain extends Command implements SolutionProvid
   double requested_roll_D = roll_kD;
 
   public DriveControllerDrivetrain()  {
-    this.drivetrain = RobotContainer.RC().drivetrain;
-    this.dc = RobotContainer.RC().driverControls;
-    this.limelight = RobotContainer.RC().limelight;
+    this.drivetrain = RobotContainer.getSubsystem(SwerveDrivetrain.class);
+    this.dc = RobotContainer.getSubsystem(HID_Xbox_Subsystem.class);
+    this.limelight = RobotContainer.getSubsystem(Limelight.class);
+    this.sensors = RobotContainer.getSubsystem(Sensors_Subsystem.class);
 
-    m_robotCentricDrive = new RobotCentricDrive(drivetrain, dc);
-    m_fieldCentricDrive = new FieldCentricDrive(drivetrain, dc);
+    m_robotCentricDrive = new RobotCentricDrive();
+    m_fieldCentricDrive = new FieldCentricDrive();
     m_hubCentricDrive = new HubCentricDrive(drivetrain, dc, limelight);
     m_intakeCentricDrive = new IntakeCentricDrive(drivetrain, dc);
 
@@ -249,8 +254,8 @@ public class DriveControllerDrivetrain extends Command implements SolutionProvid
     double kOffBalanceAngleThresholdDegrees = 4.0;
     double kOnBalanceAngleThresholdDegrees = 3.0;
 
-    double pitchAngleDegrees = RobotContainer.RC().sensors.getPitch();    
-    double rollAngleDegrees = RobotContainer.RC().sensors.getRoll();
+    double pitchAngleDegrees = sensors.getPitch();    
+    double rollAngleDegrees = sensors.getRoll();
 
     //enter tip correction mode if either roll or pitch is high enough
     if (!tip_correction_mode &&

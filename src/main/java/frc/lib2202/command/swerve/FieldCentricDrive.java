@@ -21,15 +21,15 @@ import frc.lib2202.subsystem.hid.HID_Xbox_Subsystem;
 */
 public class FieldCentricDrive extends Command {
 
-  final SwerveDrivetrain drivetrain;
-  final SwerveDriveKinematics kinematics;
-  final HID_Xbox_Subsystem dc;
-  final RobotLimits limits;
+  protected final SwerveDrivetrain drivetrain;
+  protected final SwerveDriveKinematics kinematics;
+  protected final HID_Xbox_Subsystem dc;
+  protected final RobotLimits limits;
 
   // output to Swerve Drivetrain
-  double xSpeed, ySpeed, rot;
-  Rotation2d currrentHeading;
-  SwerveModuleState[] output_states;
+  protected double xSpeed, ySpeed, rot;
+  protected Rotation2d currrentHeading;
+  protected SwerveModuleState[] output_states;
 
   // Slew rate limiters to make joystick inputs more gentle; 1/3 sec from 0 to 1.
   final SlewRateLimiter xspeedLimiter = new SlewRateLimiter(3);
@@ -50,7 +50,7 @@ public class FieldCentricDrive extends Command {
      SmartDashboard.putBoolean("FieldCentricDrive Enabled", true);
   }
 
-  void calculate() {
+  protected void calculate() {
     // Get the x speed. We are inverting this because Xbox controllers return
     // negative values when we push forward.
     xSpeed = xspeedLimiter.calculate(dc.getVelocityX()) * limits.kMaxSpeed;

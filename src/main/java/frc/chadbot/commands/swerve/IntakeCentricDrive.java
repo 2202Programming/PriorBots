@@ -13,8 +13,8 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import frc.chadbot.Constants;
 import frc.chadbot.Constants.DriveTrain;
+import frc.lib2202.subsystem.hid.HID_Xbox_Subsystem;
 import frc.lib2202.subsystem.swerve.SwerveDrivetrain;
-import frc.chadbot.subsystems.ifx.DriverControls;
 
 /* Current driving behavior:
   Starts in field centric
@@ -28,7 +28,7 @@ import frc.chadbot.subsystems.ifx.DriverControls;
 public class IntakeCentricDrive extends DriveCmdClass {
 
   final SwerveDrivetrain drivetrain;
-  final DriverControls dc;
+  final HID_Xbox_Subsystem dc;
   final SwerveDriveKinematics kinematics;
 
   boolean lastShootMode = false;
@@ -66,7 +66,7 @@ public class IntakeCentricDrive extends DriveCmdClass {
   private LinearFilter bearingFilter = LinearFilter.singlePoleIIR(0.1, 0.02);
   private double filteredBearing = 0;
 
-  public IntakeCentricDrive(SwerveDrivetrain drivetrain, DriverControls dc) {
+  public IntakeCentricDrive(SwerveDrivetrain drivetrain, HID_Xbox_Subsystem dc) {
     this.drivetrain = drivetrain;
     addRequirements(drivetrain);
     this.dc = dc;
