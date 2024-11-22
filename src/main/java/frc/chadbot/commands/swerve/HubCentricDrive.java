@@ -16,7 +16,7 @@ import frc.chadbot.Constants.DriveTrain;
 import frc.chadbot.Constants.Shooter;
 import frc.lib2202.subsystem.Limelight;
 import frc.lib2202.subsystem.swerve.SwerveDrivetrain;
-import frc.chadbot.subsystems.ifx.DriverControls;
+import frc.lib2202.subsystem.hid.HID_Xbox_Subsystem;
 
 /* Current driving behavior:
   Starts in field centric
@@ -30,7 +30,7 @@ import frc.chadbot.subsystems.ifx.DriverControls;
 public class HubCentricDrive extends DriveCmdClass {
 
   final SwerveDrivetrain drivetrain;
-  final DriverControls dc;
+  final HID_Xbox_Subsystem dc;
   final SwerveDriveKinematics kinematics;
   final Limelight limelight;
 
@@ -75,7 +75,7 @@ public class HubCentricDrive extends DriveCmdClass {
 
   final boolean PID_TUNING = false;
 
-  public HubCentricDrive(SwerveDrivetrain drivetrain, DriverControls dc, Limelight limelight) {
+  public HubCentricDrive(SwerveDrivetrain drivetrain, HID_Xbox_Subsystem dc, Limelight limelight) {
     this.drivetrain = drivetrain;
     addRequirements(drivetrain);
     this.dc = dc;

@@ -12,13 +12,13 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj2.command.Command;
 import frc.chadbot.Constants;
 import frc.chadbot.Constants.DriveTrain;
 import frc.lib2202.subsystem.swerve.SwerveDrivetrain;
-import frc.chadbot.subsystems.ifx.DriverControls;
+import frc.lib2202.builder.RobotContainer;
+import frc.lib2202.subsystem.hid.HID_Xbox_Subsystem;
 
-public class DriveCmd extends Command {
+public class DriveCmd extends DriveCmdClass {
 
   public enum DriveModeTypes {
     robotCentric("Robot Centric"),
@@ -38,7 +38,7 @@ public class DriveCmd extends Command {
   }
 
   final SwerveDrivetrain drivetrain;
-  final DriverControls dc;
+  final HID_Xbox_Subsystem dc;
   final SwerveDriveKinematics kinematics;
   // command behaviors
   DriveModeTypes driveMode = DriveModeTypes.fieldCentric;
@@ -90,10 +90,11 @@ public class DriveCmd extends Command {
   private LinearFilter bearingFilter = LinearFilter.singlePoleIIR(0.1, 0.02);
   private double filteredBearing = 0;
 
-  public DriveCmd(SwerveDrivetrain drivetrain, DriverControls dc2) {
-    this.drivetrain = drivetrain;
+  public DriveCmd() {
+    this.drivetrain = RobotContainer.getSubsystem(SwerveDrivetrain.class);
+    this.dc = RobotContainer.getSubsystem(HID_Xbox_Subsystem.class);
     addRequirements(drivetrain);
-    this.dc = dc2;
+  
     this.kinematics = drivetrain.getKinematics();
 
     anglePid = new PIDController(angle_kp, angle_ki, angle_kd);
@@ -114,8 +115,8 @@ public class DriveCmd extends Command {
     //NTLastDriveMode = table.getEntry("/LastDriveMode");
   }
 
-  public DriveCmd(SwerveDrivetrain drivetrain, DriverControls dc, boolean fieldRelativeMode) {
-    this(drivetrain, dc);
+  public DriveCmd(boolean fieldRelativeMode) {
+    this();
     this.fieldRelativeMode = fieldRelativeMode;
   }
 

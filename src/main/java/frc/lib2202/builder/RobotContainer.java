@@ -37,6 +37,7 @@ public class RobotContainer {
   final SendableChooser<Command> autoChooser;
   
   // support old accessor for Robot's container 
+  @Deprecated
   public static RobotContainer RC() {
     return rc;
   }

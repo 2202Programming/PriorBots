@@ -4,9 +4,8 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.lib2202.builder.RobotContainer;
 import frc.lib2202.subsystem.Limelight;
-import frc.lib2202.subsystem.swerve.SwerveDrivetrain;
-import frc.chadbot.subsystems.ifx.DriverControls;
 
 public class LimelightDriveCmd extends DriveCmd {
   PIDController limelightPid;
@@ -19,9 +18,10 @@ public class LimelightDriveCmd extends DriveCmd {
   Limelight limelight;
   SlewRateLimiter llLimiter = new SlewRateLimiter(3);
 
-  public LimelightDriveCmd(SwerveDrivetrain drivetrain, DriverControls dc, Limelight limelight) {
-    super(drivetrain, dc);
-    this.limelight = limelight;
+  public LimelightDriveCmd() {
+    super();
+
+    this.limelight = RobotContainer.getSubsystem(Limelight.class);
     limelightPid = new PIDController(limelight_kP, limelight_kI, limelight_kD);
 
     // display PID coefficients on SmartDashboard
