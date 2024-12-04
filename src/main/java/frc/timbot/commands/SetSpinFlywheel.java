@@ -29,6 +29,6 @@ public class SetSpinFlywheel extends InstantCommand {
   @Override
   public void initialize() {
     Stick.log("Starting SetSpinFlywheel2 command");
-    m_flywheel.speed(speed);
+    m_flywheel.setSpeed(speed);
   }
 }
