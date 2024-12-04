@@ -19,6 +19,7 @@ import frc.lib2202.subsystem.swerve.config.ChassisConfig;
 import frc.lib2202.subsystem.swerve.config.ModuleConfig;
 import frc.lib2202.subsystem.swerve.config.ModuleConfig.CornerID;
 import frc.robot2024.subsystems.sensors.Sensors_Subsystem;
+import frc.timbot.commands.Shoot;
 import frc.timbot.subsystem.FlywheelSubsystem;
 
 //Swerve bot aka Tim specs
@@ -124,9 +125,11 @@ public class RobotSpec_TimBot implements IRobotSpec {
 
     @Override
     public void setBindings() {
-        @SuppressWarnings("unused")
         HID_Xbox_Subsystem dc = RobotContainer.getSubsystem("DC");
         
+        var driver = dc.Driver();
+
+        driver.a().onTrue(new Shoot(1000.0));
     }
 
     @Override
@@ -155,12 +158,4 @@ public class RobotSpec_TimBot implements IRobotSpec {
             drivetrain.setDefaultCommand(cmd);
           }
     }
-
-    //BINDINGS
-
-    static void configureButtonBindings() {
-         
-    }
-
-
 }
