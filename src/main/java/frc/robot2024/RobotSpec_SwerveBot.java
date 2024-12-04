@@ -29,7 +29,7 @@ public class RobotSpec_SwerveBot implements IRobotSpec {
 
     // Robot Speed Limits
     static double maxSpeed = 15.0 * MperFT; // [m/s]
-    static double maxRotationRate = 2.0 * Math.PI; // [rad/s]
+    static double maxRotationRate = 360.0;  // [deg/s]
     static RobotLimits robotLimits = new RobotLimits(maxSpeed, maxRotationRate);
 
     // Chassis
@@ -59,7 +59,7 @@ public class RobotSpec_SwerveBot implements IRobotSpec {
         ssConfig.setRobotSpec(this);
     }
 
-    // Required method that use the specs above
+    // Required methods that use the specs above
 
     @Override
     public RobotLimits getRobotLimits() {
@@ -80,42 +80,36 @@ public class RobotSpec_SwerveBot implements IRobotSpec {
     public ModuleConfig[] getModuleConfigs() {
         // dpl 8/11/2024   posible fix for https://github.com/2202Programming/PriorBots/issues/1 
         //                 offset angles adjusted along with invert flags.
-        // from original constants
-        // WheelOffsets chadBotOffsets = new WheelOffsets(-175.60, -115.40, -162.15,
-        // 158.81); //FL BL FR BR
+        //
+        // From original 2024 Constants.java:
+        //
+        // WheelOffsets swerveBotOffsets = new WheelOffsets(-98.942, 91.33, -177.035, -28.215); //FL BL FR BR
+        // swerveBotChassisInversionSpecs = new ChassisInversionSpecs(
+        //      new ModuleInversionSpecs(true, false, false), // FR  (drvMtrInver, angMtrInvert, angCmdInvert)
+        //      new ModuleInversionSpecs(false, false, false), // FL
+        //      new ModuleInversionSpecs(true, false, false), // BR
+        //      new ModuleInversionSpecs(false, false, false)); // BL
         // CANModuleConfig swerveBotCAN_FL = new CANModuleConfig(7, 20, 21);
         // CANModuleConfig swerveBotCAN_FR = new CANModuleConfig(30, 26, 27);
         // CANModuleConfig swerveBotCAN_BL = new CANModuleConfig(28, 22, 23);
         // CANModuleConfig swerveBotCAN_BR = new CANModuleConfig(31, 24, 25);
-        // CANConfig chadBotCANConfig = new CANConfig(swerveBotCAN_FL, swerveBotCAN_FR,
-        // swerveBotCAN_BL, swerveBotCAN_BR);
-        // ChassisInversionSpecs swerveBotChassisInversionSpecs = new
-        // ChassisInversionSpecs(
-        // new ModuleInversionSpecs(true, false, false), // FR
-        // new ModuleInversionSpecs(false, false, false), // FL
-        // new ModuleInversionSpecs(true, false, false), // BR
-        // new ModuleInversionSpecs(false, false, false)); // BL
-
+       
         ModuleConfig[] modules = new ModuleConfig[4];
         modules[CornerID.FrontLeft.getIdx()] = new ModuleConfig(CornerID.FrontLeft,
-                7, 20, 21,
-               97.382) //-98.9) //possible fix was -175.60)
+                7, 20, 21, -98.942)
                 .setInversions(false, false, false);
 
         modules[CornerID.FrontRight.getIdx()] = new ModuleConfig(CornerID.FrontRight,
-                30, 26, 27,
-                176.7479) //-177.0) // was -162.15)
+                30, 26, 27, -177.035)                
                 .setInversions(true, false, false);
 
         modules[CornerID.BackLeft.getIdx()] = new ModuleConfig(CornerID.BackLeft,
-                28, 22, 23,
-                -93.515) //was -115.40)
+                28, 22, 23,  91.33) 
                 .setInversions(false, false, false);
 
         modules[CornerID.BackRight.getIdx()] = new ModuleConfig(CornerID.BackRight,
-                31, 24, 25,
-                28.7217)// was 158.81)
-                .setInversions(true, /*was true */false, false);
+                31, 24, 25, -28.215)
+                .setInversions(true, false, false);
 
         return modules;
     }
