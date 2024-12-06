@@ -10,7 +10,9 @@ import frc.lib2202.builder.IRobotSpec;
 import frc.lib2202.builder.RobotContainer;
 import frc.lib2202.builder.RobotLimits;
 import frc.lib2202.builder.SubsystemConfig;
+import frc.lib2202.command.swerve.AllianceAwareGyroReset;
 import frc.lib2202.command.swerve.FieldCentricDrive;
+import frc.lib2202.command.swerve.RobotCentricDrive;
 import frc.lib2202.subsystem.Limelight;
 import frc.lib2202.subsystem.hid.HID_Xbox_Subsystem;
 import frc.lib2202.subsystem.swerve.IHeadingProvider;
@@ -20,10 +22,6 @@ import frc.lib2202.subsystem.swerve.config.ModuleConfig;
 import frc.lib2202.subsystem.swerve.config.ModuleConfig.CornerID;
 import frc.lib2202.util.PIDFController;
 import frc.robot2024.Constants.CAN;
-import frc.robot2024.subsystems.Intake;
-import frc.robot2024.subsystems.PneumaticsControl;
-import frc.robot2024.subsystems.Shooter;
-import frc.robot2024.subsystems.Transfer;
 import frc.robot2024.subsystems.sensors.Sensors_Subsystem;
 
 public class RobotSpec_AlphaBot2024 implements IRobotSpec {
@@ -35,15 +33,18 @@ public class RobotSpec_AlphaBot2024 implements IRobotSpec {
         pdp.clearStickyFaults();
         return pdp;
       })
-      .add(PneumaticsControl.class)
+      //.add(PneumaticsControl.class)
       // .add(BlinkyLights.class, "LIGHTS")
       .add(HID_Xbox_Subsystem.class, "DC", () -> {
         return new HID_Xbox_Subsystem(0.3, 0.9, 0.05);
       })
       .add(Sensors_Subsystem.class)
       .add(Limelight.class)
-      .add(SwerveDrivetrain.class) // must be after LL and Sensors
+      .add(SwerveDrivetrain.class); // must be after LL and Sensors
+      
       // .add(Command.class, "DT_Monitor", () -> {return new DTMonitorCmd();})
+      
+      /*  ALPHABOT PARTIALLY DISSAMBLED
       .add(Intake.class)
       .add(Command.class, "IntakeWatcher", () -> {
         return RobotContainer.getSubsystem(Intake.class).getWatcher();
@@ -57,6 +58,8 @@ public class RobotSpec_AlphaBot2024 implements IRobotSpec {
       .add(Command.class, "TransferWatcher", () -> {
         return RobotContainer.getSubsystem(Transfer.class).getWatcher();
       });
+      */
+      
 
   // set this true at least once after robot hw stabilizes
   boolean burnFlash = false;
@@ -64,7 +67,7 @@ public class RobotSpec_AlphaBot2024 implements IRobotSpec {
 
   // Robot Speed Limits
   double maxSpeed = 15.0 * MperFT; // [m/s]
-  double maxRotationRate = 2.0 * Math.PI; // [rad/s]
+  double maxRotationRate = 180.0;  // [deg/s]
   RobotLimits robotLimits = new RobotLimits(maxSpeed, maxRotationRate);
 
   // Chassis
@@ -87,7 +90,6 @@ public class RobotSpec_AlphaBot2024 implements IRobotSpec {
   public RobotSpec_AlphaBot2024() {
     // finish BetaBot's drivePIDF
     chassisConfig.drivePIDF.setIZone(0.2);
-
     // add the specs to the ssconfig
     ssconfig.setRobotSpec(this);
   }
@@ -127,26 +129,33 @@ public class RobotSpec_AlphaBot2024 implements IRobotSpec {
     // new ModuleInversionSpecs(false, true, false), // FL
     // new ModuleInversionSpecs(true, true, false), // BR
     // new ModuleInversionSpecs(false, true, false)); // BL
+    
+    /*================OffsetDebug==================
+    FrontLeft: offset=0.0, internal=45.615234375 cancoder_measured=45.52734375 , if wheel zero-aligned adjust offset by -45.52734375
+    FrontRight: offset=0.0, internal=-60.468753814697266 cancoder_measured=-60.46875 , if wheel zero-aligned adjust offset by 60.46875
+    BackLeft: offset=0.0, internal=22.587890625 cancoder_measured=22.587890625 , if wheel zero-aligned adjust offset by -22.587890625
+    BackRight: offset=0.0, internal=-42.01171875 cancoder_measured=-41.923828125 , if wheel zero-aligned adjust offset by 41.923828125
+    ============OffsetDebug Done============== */
 
     ModuleConfig[] modules = new ModuleConfig[4];
     modules[CornerID.FrontLeft.getIdx()] = new ModuleConfig(CornerID.FrontLeft,
         29, 24, 25,
-        43.85746387)
+        -45.52734375) //43.85746387)
         .setInversions(false, true, false);
 
     modules[CornerID.FrontRight.getIdx()] = new ModuleConfig(CornerID.FrontRight,
         30, 26, 27,
-        -65.21481)
+        60.46875)//-65.21481)
         .setInversions(true, true, false);
 
     modules[CornerID.BackLeft.getIdx()] = new ModuleConfig(CornerID.BackLeft,
         28, 22, 23,
-        24.096825)
+       -22.587890625)// 24.096825)
         .setInversions(false, true, false);
 
     modules[CornerID.BackRight.getIdx()] = new ModuleConfig(CornerID.BackRight,
         31, 20, 21,
-        -43.066333125)
+       41.923828125)// -43.066333125)
         .setInversions(true, true, false);
 
     return modules;
@@ -156,8 +165,16 @@ public class RobotSpec_AlphaBot2024 implements IRobotSpec {
   public void setBindings() {
     HID_Xbox_Subsystem dc = RobotContainer.getSubsystem("DC");
     // pick one of the next two lines
-    BindingsCompetition.ConfigureCompetition(dc);
-    // BindingsOther.ConfigureOther(dc);
+    // cant use - parts removed from bot
+    // BindingsCompetition.ConfigureCompetition(dc);
+
+    var driver = dc.Driver();
+    //var drivetrain = RobotContainer.getSubsystem(SwerveDrivetrain.class);
+
+    // Driver buttons
+    driver.leftTrigger().whileTrue(new FieldCentricDrive());
+    driver.y().onTrue(new AllianceAwareGyroReset(true));
+    //driver.rightTrigger().whileTrue(new TargetCentricDrive(Tag_Pose.ID4, Tag_Pose.ID7));
 
   }
 
@@ -168,14 +185,16 @@ public class RobotSpec_AlphaBot2024 implements IRobotSpec {
 
   @Override
   public SendableChooser<Command> getRegisteredCommands() {
-    return RegisteredCommands.RegisterCommands();
+    // no robot parts to support thse now
+    //return RegisteredCommands.RegisterCommands();
+    return null;
   }
 
   @Override
     public void setDefaultCommands() {
        SwerveDrivetrain drivetrain = RobotContainer.getSubsystem(SwerveDrivetrain.class);
         if (drivetrain != null) {
-            drivetrain.setDefaultCommand(new FieldCentricDrive());
+            drivetrain.setDefaultCommand(new RobotCentricDrive());
           }
     }
 

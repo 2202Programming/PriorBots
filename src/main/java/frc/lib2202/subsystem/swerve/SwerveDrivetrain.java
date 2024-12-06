@@ -252,8 +252,8 @@ public class SwerveDrivetrain extends SubsystemBase {
     CANcoder canCoder = new CANcoder(cc_ID, canBusName);
     StatusSignal<Double> abspos = canCoder.getAbsolutePosition().waitForUpdate(longWaitSeconds, true);
     StatusSignal<Double> pos = canCoder.getPosition().waitForUpdate(longWaitSeconds, true);
-    System.out.println("CANCoder(" + cc_ID + ") before offset change: \n"+
-      "\tabspos = " + abspos.getValue() + " (" + abspos.getValue()*360.0+" deg)\n" +
+    System.out.println("CC(" + cc_ID + ") before: " +
+      "\tabspos = " + abspos.getValue() + " (" + abspos.getValue()*360.0+" deg)" +
       "\tpos = " + pos.getValue() + " (" + pos.getValue()*360.0 +" deg)"  );
 
     CANcoderConfiguration configs = new CANcoderConfiguration();      
@@ -277,9 +277,13 @@ public class SwerveDrivetrain extends SubsystemBase {
     abspos.waitForUpdate(longWaitSeconds, true);
     pos.waitForUpdate(longWaitSeconds, true);
 
-    System.out.println("CANCoder(" + cc_ID + ") After offset change: \n"+
-      "\tabspos = " + abspos.getValue() + " (" + abspos.getValue()*360.0+" deg)\n" +
+    System.out.println("CC(" + cc_ID + ")  after: "+
+      "\tabspos = " + abspos.getValue() + " (" + abspos.getValue()*360.0+" deg)" +
       "\tpos = " + pos.getValue() + " (" + pos.getValue()*360.0 + " deg)" );
+
+    // try setting cc pos to same as abs.
+    canCoder.setPosition(abspos.getValueAsDouble() , longWaitSeconds);
+
     return canCoder;
   }
 
@@ -292,7 +296,7 @@ public class SwerveDrivetrain extends SubsystemBase {
       double cc_measured = modules[i].m_externalAngle;
       System.out.println(mc[i].id.toString() + ": offset=" + offset + ", internal=" + measured + 
         " cancoder_measured=" + cc_measured +
-        ", if wheel zero aligned adjust offset by " + ModMath.fmod360_2(offset - measured));
+        " , if wheel zero-aligned adjust offset by " + ModMath.fmod360_2(offset - cc_measured));
     }
     System.out.println("============OffsetDebug Done==============");
   }
