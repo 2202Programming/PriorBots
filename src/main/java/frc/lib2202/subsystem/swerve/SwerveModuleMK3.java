@@ -1,8 +1,6 @@
 package frc.lib2202.subsystem.swerve;
 
 import com.ctre.phoenix6.StatusSignal;
-import com.ctre.phoenix6.configs.CANcoderConfiguration;
-import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
@@ -17,15 +15,12 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import frc.lib2202.subsystem.swerve.config.ChassisConfig;
-import frc.lib2202.util.ModMath;
-import frc.lib2202.util.PIDFController;
-
 import frc.lib2202.builder.IRobotSpec;
 import frc.lib2202.builder.RobotContainer;
 import frc.lib2202.builder.RobotLimits;
-
-//import frc.robot2024.Constants.CAN;
+import frc.lib2202.subsystem.swerve.config.ChassisConfig;
+import frc.lib2202.util.ModMath;
+import frc.lib2202.util.PIDFController;
 
 public class SwerveModuleMK3 {
   public final String NT_Name = "DT";
@@ -97,7 +92,6 @@ public class SwerveModuleMK3 {
    * 
    */
   public String myprefix;
-  private CANcoderConfiguration absEncoderConfiguration;
 
   public SwerveModuleMK3(CANSparkMax driveMtr, CANSparkMax angleMtr, CANcoder absEnc,
       boolean invertAngleMtr, boolean invertAngleCmd, boolean invertDrive, String prefix) {
