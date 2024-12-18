@@ -73,10 +73,10 @@ public class ModMath {
 
   public static double fixDiscontinuity(double x, double discontinuity) {
     if (x > discontinuity) {
-      x -= 2*discontinuity; 
+      x -= 2.0*discontinuity; 
     }
     else if ( x < -discontinuity) {
-      x += 2*discontinuity;
+      x += 2.0*discontinuity;
     }
     return x;
   }

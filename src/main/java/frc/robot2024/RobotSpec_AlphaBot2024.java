@@ -25,8 +25,8 @@ import frc.robot2024.Constants.CAN;
 import frc.robot2024.subsystems.sensors.Sensors_Subsystem;
 
 public class RobotSpec_AlphaBot2024 implements IRobotSpec {
-  // Subsystems and other hardware on 2024 Robot
-  final SubsystemConfig ssconfig = new SubsystemConfig("CompetitionBotAlpha2024", "032381BF")
+  // Subsystems and other hardware on 2024 Robot rev Alpha
+  final SubsystemConfig ssconfig = new SubsystemConfig("AlphaBot2024", "032381BF")
       // deferred construction via Supplier<Object> lambda
       .add(PowerDistribution.class, "PDP", () -> {
         var pdp = new PowerDistribution(CAN.PDP, ModuleType.kRev);
@@ -113,49 +113,25 @@ public class RobotSpec_AlphaBot2024 implements IRobotSpec {
 
   @Override
   public ModuleConfig[] getModuleConfigs() {
-    // from original constants Alpha and Beta (comp) have same CAN ID for swerve
-    // comp2024AlphaBotOffsets = new WheelOffsets(43.85746387, 24.096825, -65.21481,
-    // -43.066333125); //FL BL FR BR
-    // final ModuleConfig comp2024CAN_FL = new ModuleConfig(29, 24, 25);
-    // final ModuleConfig comp2024CAN_FR = new ModuleConfig(30, 26, 27);
-    // final ModuleConfig comp2024CAN_BL = new ModuleConfig(28, 22, 23);
-    // final ModuleConfig comp2024CAN_BR = new ModuleConfig(31, 20, 21);
-    // final CANConfig comp2024BotCANConfig = new CANConfig(comp2024CAN_FL,
-    // comp2024CAN_FR, comp2024CAN_BL, comp2024CAN_BR);
-
-    // public static final ChassisInversionSpecs comp2024BotAlphaInversionSpecs =
-    // new ChassisInversionSpecs(
-    // new ModuleInversionSpecs(true, true, false), // FR
-    // new ModuleInversionSpecs(false, true, false), // FL
-    // new ModuleInversionSpecs(true, true, false), // BR
-    // new ModuleInversionSpecs(false, true, false)); // BL
-    
-    /*================OffsetDebug==================
-    FrontLeft: offset=0.0, internal=45.615234375 cancoder_measured=45.52734375 , if wheel zero-aligned adjust offset by -45.52734375
-    FrontRight: offset=0.0, internal=-60.468753814697266 cancoder_measured=-60.46875 , if wheel zero-aligned adjust offset by 60.46875
-    BackLeft: offset=0.0, internal=22.587890625 cancoder_measured=22.587890625 , if wheel zero-aligned adjust offset by -22.587890625
-    BackRight: offset=0.0, internal=-42.01171875 cancoder_measured=-41.923828125 , if wheel zero-aligned adjust offset by 41.923828125
-    ============OffsetDebug Done============== */
-
     ModuleConfig[] modules = new ModuleConfig[4];
     modules[CornerID.FrontLeft.getIdx()] = new ModuleConfig(CornerID.FrontLeft,
         29, 24, 25,
-        -45.52734375) //43.85746387)
+        41.484) //43.85746387)
         .setInversions(false, true, false);
 
     modules[CornerID.FrontRight.getIdx()] = new ModuleConfig(CornerID.FrontRight,
         30, 26, 27,
-        60.46875)//-65.21481)
+        -66.621) //-65.21481)
         .setInversions(true, true, false);
 
     modules[CornerID.BackLeft.getIdx()] = new ModuleConfig(CornerID.BackLeft,
         28, 22, 23,
-       -22.587890625)// 24.096825)
+        24.785) // 24.096825)
         .setInversions(false, true, false);
 
     modules[CornerID.BackRight.getIdx()] = new ModuleConfig(CornerID.BackRight,
         31, 20, 21,
-       41.923828125)// -43.066333125)
+        -40.781) // -43.066333125)
         .setInversions(true, true, false);
 
     return modules;
