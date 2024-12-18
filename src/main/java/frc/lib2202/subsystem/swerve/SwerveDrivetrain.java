@@ -73,7 +73,6 @@ public class SwerveDrivetrain extends SubsystemBase {
 
   final private SwerveDriveOdometry m_odometry;
   Pose2d m_pose;
-  @SuppressWarnings("unused")
   Pose2d old_pose;
   final VisionWatchdog watchdog;
 
@@ -137,8 +136,8 @@ public class SwerveDrivetrain extends SubsystemBase {
     // Coords checked: Left +Y offset, right -Y offset, +X, front -x back.
     //See https://docs.wpilib.org/en/stable/docs/software/basic-programming/coordinate-system.html
     kinematics = new SwerveDriveKinematics(
-      //match order to ModuleConfig.java 
-      new Translation2d(cc.XwheelOffset, cc.YwheelOffset), // Front Left 
+      //match order to ModuleConfig[] in RobotSpec_<robot name>.java
+      new Translation2d(cc.XwheelOffset, cc.YwheelOffset),  // Front Left 
       new Translation2d(cc.XwheelOffset, -cc.YwheelOffset), // Front Right
       new Translation2d(-cc.XwheelOffset, cc.YwheelOffset), // Back Left
       new Translation2d(-cc.XwheelOffset, -cc.YwheelOffset) // Back Right
@@ -252,14 +251,15 @@ public class SwerveDrivetrain extends SubsystemBase {
     CANcoder canCoder = new CANcoder(cc_ID, canBusName);
     StatusSignal<Double> abspos = canCoder.getAbsolutePosition().waitForUpdate(longWaitSeconds, true);
     StatusSignal<Double> pos = canCoder.getPosition().waitForUpdate(longWaitSeconds, true);
-    System.out.println("CANCoder(" + cc_ID + ") before offset change: \n"+
-      "\tabspos = " + abspos.getValue() + " (" + abspos.getValue()*360.0+" deg)\n" +
+    /*
+    System.out.println("CC(" + cc_ID + ") before: " +
+      "\tabspos = " + abspos.getValue() + " (" + abspos.getValue()*360.0+" deg)" +
       "\tpos = " + pos.getValue() + " (" + pos.getValue()*360.0 +" deg)"  );
-
+    */
     CANcoderConfiguration configs = new CANcoderConfiguration();      
     configs.MagnetSensor.AbsoluteSensorRange = AbsoluteSensorRangeValue.Signed_PlusMinusHalf;
     configs.MagnetSensor.MagnetOffset = cc_offset_deg/360.0; // put offset deg on +/- 0.5 range
-    configs.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive;
+    configs.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive; 
     canCoder.clearStickyFaults(longWaitSeconds);
 
     //update mag offset and check status, report errors
@@ -276,10 +276,11 @@ public class SwerveDrivetrain extends SubsystemBase {
     //Re-read sensor, blocking calls
     abspos.waitForUpdate(longWaitSeconds, true);
     pos.waitForUpdate(longWaitSeconds, true);
-
-    System.out.println("CANCoder(" + cc_ID + ") After offset change: \n"+
-      "\tabspos = " + abspos.getValue() + " (" + abspos.getValue()*360.0+" deg)\n" +
+    /*
+    System.out.println("CC(" + cc_ID + ")  after: "+
+      "\tabspos = " + abspos.getValue() + " (" + abspos.getValue()*360.0+" deg)" +
       "\tpos = " + pos.getValue() + " (" + pos.getValue()*360.0 + " deg)" );
+    */
     return canCoder;
   }
 
@@ -291,8 +292,8 @@ public class SwerveDrivetrain extends SubsystemBase {
       double measured = modules[i].m_internalAngle;
       double cc_measured = modules[i].m_externalAngle;
       System.out.println(mc[i].id.toString() + ": offset=" + offset + ", internal=" + measured + 
-        " cancoder_measured=" + cc_measured +
-        ", if wheel zero aligned adjust offset by " + ModMath.fmod360_2(offset - measured));
+        " cc_meas=" + cc_measured + ", if zero-aligned, set mag offset = " + 
+        ModMath.fmod360_2(offset - cc_measured));
     }
     System.out.println("============OffsetDebug Done==============");
   }
@@ -339,34 +340,6 @@ public class SwerveDrivetrain extends SubsystemBase {
     }
 
     updateOdometry();
-
-    /*
-     * BEARING STUFFS FROM HERE
-     * 
-     * // from -PI to +PI (radians)
-     * // -dpl - I am not sure this is right way to get a tolerance/filterd
-     * // bearing
-     * // It is a small change in x/y that needs to be checked for valid atan2()
-     * // really should use Vy/Vx.
-     * double temp = Math.atan2(m_pose.getY() - old_pose.getY(), m_pose.getX() - *
-     * old_pose.getX());
-     * // Changed from !=0 to include tol variable
-     * if (Math.abs(temp) < Bearing_Tol) { // remove singularity when moving too
-     * slow - otherwise lots of jitter
-     * currentBearing = temp;
-     * // convert this to degrees in the range -180 to 180
-     * currentBearing = Math.toDegrees(currentBearing);
-     * }
-     * // run bearing through low pass filter
-     * filteredBearing = bearingFilter.calculate(currentBearing);
-     * 
-     * // velocity assuming period is 0.02 seconds - this is the standard FRC main
-     * loop
-     * // period
-     * filteredVelocity = velocityFilter.calculate(PoseMath.poseDistance(m_pose,
-     * old_pose) / 0.02);
-     * 
-     */
     m_field.setRobotPose(m_odometry.getPoseMeters());
   }
 
@@ -453,8 +426,7 @@ public class SwerveDrivetrain extends SubsystemBase {
   }
 
   /**
-   * stop() - zero the current state's velocity component and leave angles as they
-   * are
+   * stop() zero the current state's velocity component and leave angles as they are
    */
   public void stop() {
     SwerveModuleState state = new SwerveModuleState();

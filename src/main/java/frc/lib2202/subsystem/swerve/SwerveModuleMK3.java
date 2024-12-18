@@ -66,6 +66,7 @@ public class SwerveModuleMK3 {
   // m_ -> measurements made every period - public so they can be pulled for
   // network tables...
   double m_internalAngle; // measured Neo unbounded [deg]
+  double m_internalAngleMod;  //modulo
   double m_externalAngle; // measured CANCoder bounded +/-180 [deg]
   double m_velocity; // measured velocity [wheel's-units/s] [m/s]
   double m_position; // measure wheel positon for calibraiton [m]
@@ -119,8 +120,7 @@ public class SwerveModuleMK3 {
 
     // account for command sign differences if needed
     angleCmdInvert = (invertAngleCmd) ? -1.0 : 1.0;
-    //dpl removed, set in parent setMagOffset(offsetDegrees);
-
+    
     // Drive Motor config
     driveMotor.setInverted(invertDrive);
     driveMotor.setIdleMode(IdleMode.kBrake);
@@ -129,10 +129,11 @@ public class SwerveModuleMK3 {
     // set driveEncoder to use units of the wheelDiameter, meters
     driveEncoder.setPositionConversionFactor(Math.PI * cc.wheelDiameter / cc.kDriveGR); // mo-rot to wheel units
     driveEncoder.setVelocityConversionFactor((Math.PI * cc.wheelDiameter / cc.kDriveGR) / 60.0); // mo-rpm wheel units
+    driveEncoder.setPosition(0.0);
     sleep(100);
     // Angle Motor config
     angleMotor.setInverted(invertAngleMtr);
-    angleMotor.setIdleMode(IdleMode.kBrake);
+    angleMotor.setIdleMode(IdleMode.kCoast); 
     angleMotorPID = angleMotor.getPIDController();
     angleEncoder = angleMotor.getEncoder();
 
@@ -182,18 +183,12 @@ public class SwerveModuleMK3 {
     } else {
       System.out.println("Skipped burning flash.");
     }
-    /*
-     * setNTPrefix - causes the network table entries to be created and updated on
-     * the periodic() call.
-     * 
-     * Use a short string to indicate which MK unit this is.
-     */
-    NTPrefix = "/MK3-" + prefix;
-    myprefix = prefix;
+  
+    // setNTPrefix - causes the network table entries to be created and updated on
+    // the periodic() call.
+    NTPrefix = "/MK3-" + myprefix;
     NTConfig();
-
     calibrate();
-
   }
 
   // PID accessor for use in Test/Tune Commands
@@ -203,37 +198,6 @@ public class SwerveModuleMK3 {
 
   public void setAnglePID(PIDFController temp) {
     temp.copyTo(angleMotorPID, kSlot);
-  }
-
-  /**
-   * This adjusts the absEncoder with the given offset to correct for CANCoder
-   * mounting position. This value should be persistent accross power cycles.
-   * 
-   * Warning, we had to sleep afer setting configs before the absolute position
-   * could be read in calibrate.
-   * 
-   * Deprecated, cancoder fully calibrated in SwerveDrivetrain initCANcoder() now. 8/18/24
-   * 
-   * @param offsetDegrees
-   */
-  @Deprecated
-  void setMagOffset(double offsetDegrees) {
-    // adjust magnetic offset in absEncoder, measured constants.
-    absEncoderConfiguration = new CANcoderConfiguration();
-    absEncoderConfiguration.withMagnetSensor(new MagnetSensorConfigs());
-    absEncoderConfiguration.MagnetSensor.MagnetOffset = offsetDegrees / 360.0;
-    absEncoder.getConfigurator().apply(absEncoderConfiguration);
-
-    System.out.println("Module " + myprefix + ": Set Offset=" + offsetDegrees + ". Initial CANCODER absolute angle="
-        + absEncoder.getAbsolutePosition() + ", Initial CANCODER angle=" + absEncoder.getPosition());
-
-    // if different, update
-    //if (offsetDegrees != absEncoderConfiguration.MagnetSensor.MagnetOffset) {
-    //  absEncoderConfiguration.MagnetSensor.MagnetOffset = offsetDegrees;
-    //  absEncoder.getConfigurator().apply(absEncoderConfiguration);
-    //}
-
-    System.out.println("Module " + myprefix + ": CANCODER Angle after offset programmed=" + absEncoder.getPosition());
   }
 
   /**
@@ -253,36 +217,21 @@ public class SwerveModuleMK3 {
     // read absEncoder position, set internal angleEncoder to that value adjust for cmd inversion.
     StatusSignal<Double> abspos_deg = absEncoder.getAbsolutePosition().waitForUpdate(1.0);
     double cc_pos = angleCmdInvert * abspos_deg.getValue() * 360.0;
-    
-    //set the angleEncoder to value from absEncoder
-    REVLibError angEncErr =  angleEncoder.setPosition(cc_pos);
-
-    //read back the internal angle from the sparkmax
-    sleep(100); // sparkmax gremlins
-    double angle_pos = angleEncoder.getPosition();
-    sleep(100); // sparkmax gremlins
- 
-    // keep trying to set encoder angle if it's not matching      
-    int counter = 0;
-    while (Math.abs(cc_pos - angle_pos) > 0.1) {
-      angEncErr = angleEncoder.setPosition(cc_pos);
+    double after = -9999.0;
+    double before = -9999.9;
+    int count = 0;
+    REVLibError angEncErr = REVLibError.kError;
+    while ( (angEncErr != REVLibError.kOk) && Math.abs(after - cc_pos ) > 0.1 && count < 5)
+    {
+      before = angleEncoder.getPosition();
+      angEncErr =  angleEncoder.setPosition(cc_pos);
       sleep(100); // sparkmax gremlins
-      angle_pos = angleEncoder.getPosition();
-      if (angEncErr != REVLibError.kOk) {
-        System.out.println("Warning internal angle Encoder(" + this.myprefix+") returned "+angEncErr.toString() + 
-          " on setPosition(). Retrying");
-        System.out.println("\tcc_pos="+cc_pos);
-        System.out.println("\tangle_pos="+angle_pos);
-      }
-      sleep(100); // sparkmax gremlins
-      if (counter++ > 20) {
-        System.out.println("*** Angle position set failed after 20 tries ***");
-        break;
-      }
+      after = angleEncoder.getPosition();
+      System.out.println("  calibrate("+this.myprefix+") pass("+count+ ") absEnc= " +  cc_pos + 
+        " before="+before +"  after=" + after );
+      count++;
     }
-
-    realityCheckSparkMax(cc_pos, angle_pos);
-    System.out.println("Module " + myprefix + ": SparkMax post-calibrate angle=" + angleEncoder.getPosition());
+    realityCheckSparkMax(cc_pos, after);
   }
 
   void realityCheckSparkMax(double angle_cancoder, double internal_angle) {
@@ -346,7 +295,6 @@ public class SwerveModuleMK3 {
    * 
    * Use a short string to indicate which MK unit this is.
    * 
-   *
    * public SwerveModuleMK3 setNTPrefix(String prefix) { NTPrefix = "/MK3-" +
    * prefix; myprefix = prefix; NTConfig(); return this; }
    */
@@ -358,6 +306,7 @@ public class SwerveModuleMK3 {
   public void periodic() {
     // measure everything at same time; these get updated every cycle
     m_internalAngle = angleEncoder.getPosition() * angleCmdInvert;
+    m_internalAngleMod = ModMath.fmod360(m_internalAngle );
     m_velocity = driveEncoder.getVelocity();
     m_position = driveEncoder.getPosition();
     m_externalAngle = absEncoder.getAbsolutePosition().getValueAsDouble() * 360.0;
@@ -429,12 +378,8 @@ public class SwerveModuleMK3 {
    *                     of the module
    */
   public void setDesiredState(SwerveModuleState state) {
-    SwerveModuleState m_state = SwerveModuleState.optimize(state, Rotation2d.fromDegrees(m_internalAngle)); // should
-                                                                                                            // favor
-                                                                                                            // reversing
-                                                                                                            // direction
-                                                                                                            // over
-    // turning > 90 degrees
+     // should favor reversing direction over turning > 90 degrees
+    SwerveModuleState m_state = SwerveModuleState.optimize(state, Rotation2d.fromDegrees(m_internalAngle));
     state = m_state; // uncomment to use optimized angle command
     // use position control on angle with INTERNAL encoder, scaled internally for
     // degrees
@@ -465,6 +410,7 @@ public class SwerveModuleMK3 {
    */
   private NetworkTable table;
   private NetworkTableEntry nte_angle;
+  private NetworkTableEntry nte_angleMod;
   private NetworkTableEntry nte_external_angle;
   private NetworkTableEntry nte_velocity;
   private NetworkTableEntry nte_position;
@@ -477,6 +423,7 @@ public class SwerveModuleMK3 {
     // direct networktables logging
     table = NetworkTableInstance.getDefault().getTable(NT_Name);
     nte_angle = table.getEntry(NTPrefix + "/angle");
+    nte_angleMod = table.getEntry(NTPrefix + "/angleMod");
     nte_external_angle = table.getEntry(NTPrefix + "/angle_ext");
     nte_velocity = table.getEntry(NTPrefix + "/velocity");
     nte_angle_target = table.getEntry(NTPrefix + "/angle_target");
@@ -490,6 +437,7 @@ public class SwerveModuleMK3 {
     if (table == null)
       return; // not initialized, punt
     nte_angle.setDouble(m_internalAngle);
+    nte_angleMod.setDouble(m_internalAngleMod);
     nte_external_angle.setDouble(m_externalAngle);
     nte_velocity.setDouble(m_velocity);
     nte_position.setDouble(m_position);
