@@ -14,6 +14,7 @@ import frc.lib2202.command.swerve.AllianceAwareGyroReset;
 import frc.lib2202.command.swerve.FieldCentricDrive;
 import frc.lib2202.command.swerve.RobotCentricDrive;
 import frc.lib2202.subsystem.Limelight;
+import frc.lib2202.subsystem.VisionPoseEstimator;
 import frc.lib2202.subsystem.hid.HID_Xbox_Subsystem;
 import frc.lib2202.subsystem.swerve.IHeadingProvider;
 import frc.lib2202.subsystem.swerve.SwerveDrivetrain;
@@ -40,8 +41,8 @@ public class RobotSpec_AlphaBot2024 implements IRobotSpec {
       })
       .add(Sensors_Subsystem.class)
       .add(Limelight.class)
-      .add(SwerveDrivetrain.class); // must be after LL and Sensors
-      
+      .add(SwerveDrivetrain.class) // must be after LL and Sensors
+      .add(VisionPoseEstimator.class);
       // .add(Command.class, "DT_Monitor", () -> {return new DTMonitorCmd();})
       
       /*  ALPHABOT PARTIALLY DISSAMBLED

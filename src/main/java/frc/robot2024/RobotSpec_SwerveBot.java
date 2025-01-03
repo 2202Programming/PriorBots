@@ -12,6 +12,7 @@ import frc.lib2202.command.swerve.FieldCentricDrive;
 import frc.lib2202.command.swerve.RobotCentricDrive;
 import frc.lib2202.command.swerve.calibrate.TestRotateVelocity;
 import frc.lib2202.subsystem.Limelight;
+import frc.lib2202.subsystem.VisionPoseEstimator;
 import frc.lib2202.subsystem.hid.HID_Xbox_Subsystem;
 import frc.lib2202.subsystem.swerve.IHeadingProvider;
 import frc.lib2202.subsystem.swerve.SwerveDrivetrain;
@@ -51,6 +52,7 @@ public class RobotSpec_SwerveBot implements IRobotSpec {
             .add(Sensors_Subsystem.class)
             .add(Limelight.class)
             .add(SwerveDrivetrain.class)
+            .add(VisionPoseEstimator.class)
             .add(HID_Xbox_Subsystem.class, "DC", () -> {
                 return new HID_Xbox_Subsystem(0.3, 0.9, 0.05);
             });
