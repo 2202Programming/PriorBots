@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -65,11 +66,27 @@ public class BindingsOther {
         OperatorBindings(dc);
     }
 
+    // wrap the pathloading with try/catch
+    static PathPlannerPath loadFromFile(String pathName) {
+        try{
+            // Load the path you want to follow using its name in the GUI
+            return PathPlannerPath.fromPathFile(pathName);
+        } catch (Exception e) {
+            DriverStation.reportError("Big oops loading pn="+ pathName + ":" + e.getMessage(), e.getStackTrace());
+            return null;
+        }
+    }
+
     static void DriverBinding(HID_Xbox_Subsystem dc) {
         var driver = dc.Driver();
 
         var drivetrain = RobotContainer.getSubsystem(SwerveDrivetrain.class);
         var intake = RobotContainer.getSubsystem(Intake.class);
+
+        PathPlannerPath blue1 = loadFromFile("blue1");
+        PathPlannerPath red1 = loadFromFile("red1");
+        PathPlannerPath path_test_1m = loadFromFile("test_1m");
+        
 
         switch (bindings) {
 
@@ -79,17 +96,18 @@ public class BindingsOther {
 
                 // This appears to break if initial pose is too close to path start pose
                 // (zero-length path?)
-                driver.x().onTrue(new SequentialCommandGroup(
+                if (blue1 != null)
+                    driver.x().onTrue(new SequentialCommandGroup(
                         new InstantCommand(drivetrain::printPose),
-                        AutoBuilder.pathfindThenFollowPath(PathPlannerPath.fromPathFile("blue1"),
+                        AutoBuilder.pathfindThenFollowPath(blue1,
                                 new PathConstraints(3.0, 3.0,
                                         Units.degreesToRadians(540),
                                         Units.degreesToRadians(720))),
                         new InstantCommand(drivetrain::printPose)));
-
-                driver.b().onTrue(new SequentialCommandGroup(
+                if (red1 != null)
+                    driver.b().onTrue(new SequentialCommandGroup(
                         new InstantCommand(drivetrain::printPose),
-                        AutoBuilder.pathfindThenFollowPath(PathPlannerPath.fromPathFile("red1"),
+                        AutoBuilder.pathfindThenFollowPath(red1,
                                 new PathConstraints(3.0, 3.0,
                                         Units.degreesToRadians(540),
                                         Units.degreesToRadians(720))),
@@ -97,12 +115,14 @@ public class BindingsOther {
 
                 // Start any watcher commands
                 new PDPMonitorCmd(); // auto scheduled, runs when disabled
+                
                 driver.leftTrigger().onTrue(new ShooterSequence(true, 1200.0));
                 // This appears to break if initial pose is too close to path start pose
                 // (zero-length path?)
-                driver.a().onTrue(new SequentialCommandGroup(
+                if (path_test_1m != null)
+                    driver.a().onTrue(new SequentialCommandGroup(
                         new InstantCommand(drivetrain::printPose),
-                        AutoBuilder.pathfindThenFollowPath(PathPlannerPath.fromPathFile("test_1m"),
+                        AutoBuilder.pathfindThenFollowPath(path_test_1m,
                                 new PathConstraints(3.0, 3.0, Units.degreesToRadians(540),
                                         Units.degreesToRadians(720))),
                         new InstantCommand(drivetrain::printPose)));
@@ -197,6 +217,7 @@ public class BindingsOther {
                 break;
         }
     }
+
 
     static void OperatorBindings(HID_Xbox_Subsystem dc) {
         var operator = dc.Operator();

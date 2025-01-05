@@ -4,11 +4,15 @@
 
 package frc.robot2024.subsystems;
 
-import com.revrobotics.CANSparkBase.ControlType;
-import com.revrobotics.CANSparkBase.IdleMode;
-import com.revrobotics.CANSparkMax;
+import com.revrobotics.spark.SparkBase.ControlType;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.SparkMax;
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkPIDController;
+import com.revrobotics.spark.ClosedLoopSlot;
+import com.revrobotics.spark.SparkClosedLoopController;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -22,10 +26,12 @@ import frc.lib2202.util.PIDFController;
 
 public class Shooter extends SubsystemBase {
 
-  final CANSparkMax leftMtr = new CANSparkMax(CAN.SHOOTER_L, CANSparkMax.MotorType.kBrushless);
-  final CANSparkMax rightMtr = new CANSparkMax(CAN.SHOOTER_R, CANSparkMax.MotorType.kBrushless);
-  final SparkPIDController hw_leftPid;
-  final SparkPIDController hw_rightPid;
+  final SparkMax leftMtr = new SparkMax(CAN.SHOOTER_L, SparkMax.MotorType.kBrushless);
+  final SparkMaxConfig leftMtrCfg = new SparkMaxConfig();
+  final SparkMax rightMtr = new SparkMax(CAN.SHOOTER_R, SparkMax.MotorType.kBrushless);
+  final SparkMaxConfig rightMtrCfg = new SparkMaxConfig();
+  final SparkClosedLoopController hw_leftPid;
+  final SparkClosedLoopController hw_rightPid;
   final RelativeEncoder leftEncoder;
   final RelativeEncoder rightEncoder;
   final double FACTOR = 1.0;
@@ -50,10 +56,13 @@ public class Shooter extends SubsystemBase {
   }
 
   public Shooter(boolean HasSolenoid) {
-    hw_leftPid = motor_config(leftMtr, leftPidConsts, false);
-    hw_rightPid = motor_config(rightMtr, rightPidConsts, true);
-    leftEncoder = config_encoder(leftMtr);
-    rightEncoder = config_encoder(rightMtr);
+    motor_config(leftMtr, leftMtrCfg, leftPidConsts, false);
+    motor_config(rightMtr, rightMtrCfg, rightPidConsts, true);
+
+    hw_leftPid = leftMtr.getClosedLoopController();
+    hw_rightPid = rightMtr.getClosedLoopController();
+    leftEncoder = leftMtr.getEncoder();
+    rightEncoder = rightMtr.getEncoder();
     if (HasSolenoid) {
       shooterAngle = new DoubleSolenoid(CAN.PCM1, PneumaticsModuleType.REVPH, PCM1.Forward, PCM1.Reverse);
       retract();
@@ -74,11 +83,11 @@ public class Shooter extends SubsystemBase {
 
   public void setRPM(double leftRPM, double rightRPM) {
     // slot 0 --> normal op, slot 1 --> free spin
-    int slot =0; // (leftRPM == 0.0 && rightRPM == 0.0) ? 1 : 0;
+    ClosedLoopSlot slot = ClosedLoopSlot.kSlot0; // (leftRPM == 0.0 && rightRPM == 0.0) ? 1 : 0;
     if (leftRPM == 0.0 && rightRPM == 0.0) {
       hw_leftPid.setIAccum(0.0);
       hw_rightPid.setIAccum(0.0);
-      slot = 1;
+      slot = ClosedLoopSlot.kSlot1;
     } 
     
     hw_leftPid.setReference(leftRPM, ControlType.kVelocity, slot);
@@ -114,26 +123,27 @@ public class Shooter extends SubsystemBase {
     return new ShooterWatcherCmd();
   }
 
-  SparkPIDController motor_config(CANSparkMax mtr, PIDFController hwPidConsts, boolean inverted) {
+  void motor_config(SparkMax mtr, SparkMaxConfig cfg, PIDFController hwPidConsts, boolean inverted) {
     mtr.clearFaults();
-    mtr.restoreFactoryDefaults();
-    var mtrpid = mtr.getPIDController();
-    hwPidConsts.copyTo(mtrpid, 0);
-    mtrpid.setIZone(750.0, 0);
-    pidConsts_freeSpin.copyTo(mtrpid, 1); 
-    mtrpid.setIMaxAccum(0.0, 1);
-    mtr.setInverted(inverted);
-    mtr.setIdleMode(IdleMode.kBrake);
-    return mtrpid;
+    cfg
+      .idleMode(IdleMode.kBrake)
+      .inverted(inverted);
+  
+    cfg.encoder
+      .positionConversionFactor(FACTOR)
+      .velocityConversionFactor(FACTOR /* / 60.0 */);
+
+    cfg.closedLoop
+      .iZone(750.0, ClosedLoopSlot.kSlot0);
+    hwPidConsts.copyTo(mtr, cfg, ClosedLoopSlot.kSlot0);
+   
+    pidConsts_freeSpin.copyTo(mtr, cfg, ClosedLoopSlot.kSlot1); 
+    cfg.closedLoop.iMaxAccum(0.0, ClosedLoopSlot.kSlot1);
+
+    mtr.configure(cfg, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
   }
 
-  RelativeEncoder config_encoder(CANSparkMax mtr) {
-    RelativeEncoder enc = mtr.getEncoder();
-    enc.setPositionConversionFactor(FACTOR);
-    enc.setVelocityConversionFactor(FACTOR /* / 60.0 */);
-    return enc;
-  }
-
+  
   // Network tables
   class ShooterWatcherCmd extends WatcherCmd {
     NetworkTableEntry nt_cmdLeftMotorRPM;
@@ -164,8 +174,8 @@ public class Shooter extends SubsystemBase {
       nt_measLeftMotorRPM.setDouble(measLeftRPM);
       nt_cmdRightMotorRPM.setDouble(cmdRightRPM);
       nt_measRightMotorRPM.setDouble(measRightRPM);
-      nt_kP.setDouble(hw_leftPid.getP());
-      nt_kF.setDouble(hw_leftPid.getFF());
+      nt_kP.setDouble(leftMtr.configAccessor.closedLoop.getP(ClosedLoopSlot.kSlot0));  
+      nt_kF.setDouble(leftMtr.configAccessor.closedLoop.getFF(ClosedLoopSlot.kSlot0));
     }
   }
 }

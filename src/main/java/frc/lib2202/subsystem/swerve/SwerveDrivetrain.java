@@ -8,13 +8,14 @@ import com.ctre.phoenix6.StatusSignal;
 //wip import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.hardware.CANcoder;
-import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
+//import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
+
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
-import com.pathplanner.lib.util.PIDConstants;
-import com.pathplanner.lib.util.ReplanningConfig;
-import com.revrobotics.CANSparkMax;
+import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -24,11 +25,11 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib2202.builder.RobotContainer;
-import frc.lib2202.builder.RobotLimits;
 import frc.lib2202.subsystem.swerve.config.ChassisConfig;
 import frc.lib2202.subsystem.swerve.config.ModuleConfig;
 import frc.lib2202.util.ModMath;
@@ -70,7 +71,9 @@ public class SwerveDrivetrain extends SubsystemBase {
 
   // pose/field measurements
   public final Field2d m_field; // Field2d based on odometry only
-  
+  private RobotConfig GUIconfig;
+
+
   public SwerveDrivetrain() {
     m_field = new Field2d();
 
@@ -102,8 +105,8 @@ public class SwerveDrivetrain extends SubsystemBase {
     for (int i = 0; i < mc.length; i++) {
       canCoders[i] = initCANcoder(mc[i].CANCODER_ID, mc[i].kAngleOffset);
       modules[i] = new SwerveModuleMK3(
-          new CANSparkMax(mc[i].DRIVE_MOTOR_ID, CANSparkMax.MotorType.kBrushless),
-          new CANSparkMax(mc[i].ANGLE_MOTOR_ID, CANSparkMax.MotorType.kBrushless),
+          new SparkMax(mc[i].DRIVE_MOTOR_ID, SparkMax.MotorType.kBrushless),
+          new SparkMax(mc[i].ANGLE_MOTOR_ID, SparkMax.MotorType.kBrushless),
           canCoders[i],
           mc[i].kAngleMotorInvert,
           mc[i].kAngleCmdInvert,
@@ -136,15 +139,15 @@ public class SwerveDrivetrain extends SubsystemBase {
    */
   private CANcoder initCANcoder(int cc_ID, double cc_offset_deg) {
     CANcoder canCoder = new CANcoder(cc_ID, canBusName);
-    StatusSignal<Double> abspos = canCoder.getAbsolutePosition().waitForUpdate(longWaitSeconds, true);
-    StatusSignal<Double> pos = canCoder.getPosition().waitForUpdate(longWaitSeconds, true);
+    StatusSignal<Angle> abspos = canCoder.getAbsolutePosition().waitForUpdate(longWaitSeconds, true);
+    StatusSignal<Angle> pos = canCoder.getPosition().waitForUpdate(longWaitSeconds, true);
     /*
      * System.out.println("CC(" + cc_ID + ") before: " +
      * "\tabspos = " + abspos.getValue() + " (" + abspos.getValue()*360.0+" deg)" +
      * "\tpos = " + pos.getValue() + " (" + pos.getValue()*360.0 +" deg)" );
      */
     CANcoderConfiguration configs = new CANcoderConfiguration();
-    configs.MagnetSensor.AbsoluteSensorRange = AbsoluteSensorRangeValue.Signed_PlusMinusHalf;
+    configs.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.5; //AbsoluteSensorRangeValue.Signed_PlusMinusHalf;
     configs.MagnetSensor.MagnetOffset = cc_offset_deg / 360.0; // put offset deg on +/- 0.5 range
     configs.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
     canCoder.clearStickyFaults(longWaitSeconds);
@@ -233,22 +236,21 @@ public class SwerveDrivetrain extends SubsystemBase {
 
   // AutoBuilder for PathPlanner - uses internal static vars in AutoBuilder
   void configureAutoBuilder() {
-    // used to limit path speeds
-    RobotLimits limits = RobotContainer.getRobotSpecs().getRobotLimits();
+    try{
+      GUIconfig = RobotConfig.fromGUISettings();
 
     // Configure the AutoBuilder last
-    AutoBuilder.configureHolonomic(
+    AutoBuilder.configure(
         this::getPose, // Robot pose supplier
         this::autoPoseSet, // Method to reset odometry (will be called if your auto has a starting pose)
         this::getChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
         this::driveRobotRelative, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
-        new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your
+        new PPHolonomicDriveController( // HolonomicPathFollowerConfig, this should likely live in your
                                          // Constants class
             new PIDConstants(7.0, 0.0, 0.0), // Translation PID constants
-            new PIDConstants(7.0, 0.0, 0.0), // Rotation PID constants
-            limits.kMaxSpeed, // Max module speed, in m/s
-            0.4, // Drive base radius in meters. Distance from robot center to furthest module.
-            new ReplanningConfig()), // Default path replanning config. See the API for the options here
+            new PIDConstants(7.0, 0.0, 0.0)
+        ), // Rotation PID constants    
+        GUIconfig,
         () -> {
           // Boolean supplier that controls when the path will be mirrored for the red
           // alliance
@@ -263,6 +265,15 @@ public class SwerveDrivetrain extends SubsystemBase {
         },
         this // Reference to this subsystem to set requirements
     );
+
+  } catch (Exception e) {
+    // Handle exception as needed
+    System.out.println("PATHING - Could not initialize PathPlanner check for ~/deploy/pathplanner/settings.json");
+    e.printStackTrace();
+    System.out.println("PATHING - End of stack trace --------------");
+  }
+
+
   }
 
   public void simulationInit() {

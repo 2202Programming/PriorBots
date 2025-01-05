@@ -48,7 +48,7 @@ public class ShooterServo extends Shooter {
     extension = new NeoServo(CAN.SHOOTER_ANGLE, shooterPos, hwShooterVelPID, false);
 
     // Servo setup for angle_servo
-    hwShooterVelPID.copyTo(extension.getController().getPIDController(), 0);
+    // should be done in NeoServo - hwShooterVelPID.copyTo(extension.getController().getClosedLoopController(), kSlot0);
     extension.setConversionFactor(ShooterAngleRadius / ShooterAngleGearRatio) // [cm/rot]
         .setSmartCurrentLimit(STALL_CURRENT, FREE_CURRENT)
         .setVelocityHW_PID(maxVel, maxAccel)

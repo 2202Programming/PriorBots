@@ -2,12 +2,16 @@ package frc.lib2202.subsystem.swerve;
 
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.hardware.CANcoder;
-import com.revrobotics.CANSparkBase.ControlType;
-import com.revrobotics.CANSparkBase.IdleMode;
-import com.revrobotics.CANSparkMax;
+import com.revrobotics.spark.SparkBase.ControlType;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.ClosedLoopSlot;
+import com.revrobotics.spark.SparkMax;
 import com.revrobotics.REVLibError;
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkPIDController;
+import com.revrobotics.spark.SparkClosedLoopController;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -15,6 +19,8 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.units.BaseUnits;
+import edu.wpi.first.units.measure.Angle;
 import frc.lib2202.builder.IRobotSpec;
 import frc.lib2202.builder.RobotContainer;
 import frc.lib2202.builder.RobotLimits;
@@ -26,7 +32,7 @@ public class SwerveModuleMK3 {
   public final String NT_Name = "DT";
 
   // PID slot for angle and drive pid on SmartMax controller
-  final int kSlot = 0;
+  final ClosedLoopSlot kSlot = ClosedLoopSlot.kSlot0;
 
   private int frameCounter = 0;
 
@@ -34,10 +40,12 @@ public class SwerveModuleMK3 {
   private final ChassisConfig cc;
 
   // Rev devices
-  private final CANSparkMax driveMotor;
-  private final CANSparkMax angleMotor;
-  private final SparkPIDController driveMotorPID;
-  private final SparkPIDController angleMotorPID; // sparkmax PID can only use internal NEO encoders
+  private final SparkMax driveMotor;
+  private final SparkMaxConfig driveCfg;
+  private final SparkMax angleMotor;
+  private final SparkMaxConfig angleCfg;
+  private final SparkClosedLoopController driveMotorPID;
+  private final SparkClosedLoopController angleMotorPID; // sparkmax PID can only use internal NEO encoders
   private final RelativeEncoder angleEncoder; // aka internalAngle
   private final RelativeEncoder driveEncoder;
   
@@ -93,7 +101,7 @@ public class SwerveModuleMK3 {
    */
   public String myprefix;
 
-  public SwerveModuleMK3(CANSparkMax driveMtr, CANSparkMax angleMtr, CANcoder absEnc,
+  public SwerveModuleMK3(SparkMax driveMtr, SparkMax angleMtr, CANcoder absEnc,
       boolean invertAngleMtr, boolean invertAngleCmd, boolean invertDrive, String prefix) {
     driveMotor = driveMtr;
     angleMotor = angleMtr;
@@ -106,80 +114,48 @@ public class SwerveModuleMK3 {
     // cc is the chassis config for all our pathing math
     cc = specs.getChassisConfig();
 
+    /********************* not needed with new lib2025 
     // Always restore factory defaults at least once for new sparks - it removes gremlins
     driveMotor.restoreFactoryDefaults(specs.burnFlash());
     sleep(specs.burnFlash() ? 1000 : 0); // only need if flash is true
     angleMotor.restoreFactoryDefaults(specs.burnFlash());
     sleep(specs.burnFlash() ? 1000 : 0); // only need if flash is true
-
-    // account for command sign differences if needed
+      *********************************/
+    
+      // account for command sign differences if needed
     angleCmdInvert = (invertAngleCmd) ? -1.0 : 1.0;
     
+    driveCfg = new SparkMaxConfig();
     // Drive Motor config
-    driveMotor.setInverted(invertDrive);
-    driveMotor.setIdleMode(IdleMode.kBrake);
-    driveMotorPID = driveMotor.getPIDController();
-    driveEncoder = driveMotor.getEncoder();
-    // set driveEncoder to use units of the wheelDiameter, meters
-    driveEncoder.setPositionConversionFactor(Math.PI * cc.wheelDiameter / cc.kDriveGR); // mo-rot to wheel units
-    driveEncoder.setVelocityConversionFactor((Math.PI * cc.wheelDiameter / cc.kDriveGR) / 60.0); // mo-rpm wheel units
+    driveCfg.inverted(invertDrive)
+            .idleMode(IdleMode.kBrake)
+            .smartCurrentLimit(limits.driveStallAmp, limits.freeAmp)
+            .encoder   // set driveEncoder to use units of the wheelDiameter, meters
+              .positionConversionFactor(Math.PI * cc.wheelDiameter / cc.kDriveGR) // mo-rot to wheel units
+              .velocityConversionFactor((Math.PI * cc.wheelDiameter / cc.kDriveGR) / 60.0); // mo-rpm wheel units
+    
+    // finish pid and config 
+    cc.drivePIDF.copyTo(driveMtr, driveCfg, kSlot); // velocity mode
+    driveMotor.configure(driveCfg, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    driveMotorPID = driveMotor.getClosedLoopController();
+    driveEncoder = driveMotor.getEncoder();   
     driveEncoder.setPosition(0.0);
+    
     sleep(100);
     // Angle Motor config
-    angleMotor.setInverted(invertAngleMtr);
-    angleMotor.setIdleMode(IdleMode.kCoast); 
-    angleMotorPID = angleMotor.getPIDController();
+    angleCfg = new SparkMaxConfig();
+    angleCfg.inverted(invertAngleMtr)
+            .idleMode(IdleMode.kCoast)
+            .smartCurrentLimit(limits.angleStallAmp, limits.freeAmp)
+            .encoder // set angle endcoder to return values in deg and deg/s
+              .positionConversionFactor(360.0 / cc.kSteeringGR) // mo-rotations to degrees
+              .velocityConversionFactor(360.0 / cc.kSteeringGR / 60.0); // rpm to deg/s  
+    //finish angle controller
+    cc.anglePIDF.copyTo(angleMtr, angleCfg, kSlot); // position mode
+    angleMotor.configure(angleCfg, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    angleMotorPID = angleMotor.getClosedLoopController();
     angleEncoder = angleMotor.getEncoder();
 
-    // set angle endcoder to return values in deg and deg/s
-    angleEncoder.setPositionConversionFactor(360.0 / cc.kSteeringGR); // mo-rotations to degrees
-    angleEncoder.setVelocityConversionFactor(360.0 / cc.kSteeringGR / 60.0); // rpm to deg/s
-
-    // SparkMax PID values
-    cc.anglePIDF.copyTo(angleMotorPID, kSlot); // position mode
-    cc.drivePIDF.copyTo(driveMotorPID, kSlot); // velocity mode
-
-    // new current limits
-    driveMotor.setSmartCurrentLimit(limits.driveStallAmp, limits.freeAmp);
-    angleMotor.setSmartCurrentLimit(limits.angleStallAmp, limits.freeAmp);
-    sleep(100);
-
-    // burn the motor flash if BURN_FLASH is true in frc.robot.Constants.CAN
-    if (specs.burnFlash()) {
-      REVLibError angleError = angleMotor.burnFlash();
-      sleep(1500); // takes 1 sec to burn per Dean
-
-      int counter = 0;
-      while (angleError.value != 0) {
-        System.out.println(prefix + " angle error: " + angleError.value);
-        counter++;
-        if (counter > 20) {
-          System.out.println("*** ERROR *** " + prefix + " Angle Motor Flash Failed.");
-          break;
-        }
-        sleep(100);
-      }
-      System.out.println(myprefix + " Angle motor flash success.");
-
-      REVLibError driveError = driveMotor.burnFlash();
-      sleep(1500); // takes 1 sec to burn per Dean
-      counter = 0;
-      while (driveError.value != 0) {
-        System.out.println(prefix + " drive error: " + driveError.value);
-        counter++;
-        if (counter > 20) {
-          System.out.println("*** ERROR *** " + prefix + " Drive Motor Flash Failed.");
-          break;
-        }
-        sleep(100);
-      }
-      System.out.println(myprefix + " Drive motor flash success.");
-    } else {
-      System.out.println("Skipped burning flash.");
-    }
-  
-    // setNTPrefix - causes the network table entries to be created and updated on
-    // the periodic() call.
     NTPrefix = "/MK3-" + myprefix;
     NTConfig();
     calibrate();
@@ -187,11 +163,11 @@ public class SwerveModuleMK3 {
 
   // PID accessor for use in Test/Tune Commands
   public void setDrivePID(PIDFController temp) {
-    temp.copyTo(driveMotorPID, kSlot);
+    temp.copyTo(driveMotor, driveCfg, kSlot);
   }
 
   public void setAnglePID(PIDFController temp) {
-    temp.copyTo(angleMotorPID, kSlot);
+    temp.copyTo(angleMotor, angleCfg, kSlot);
   }
 
   /**
@@ -209,8 +185,12 @@ public class SwerveModuleMK3 {
    */
   void calibrate() {
     // read absEncoder position, set internal angleEncoder to that value adjust for cmd inversion.
-    StatusSignal<Double> abspos_deg = absEncoder.getAbsolutePosition().waitForUpdate(1.0);
-    double cc_pos = angleCmdInvert * abspos_deg.getValue() * 360.0;
+    StatusSignal<Angle> abspos_deg = absEncoder.getAbsolutePosition().waitForUpdate(1.0);
+    ///debugging/test angle unit 
+    Angle ang =   abspos_deg.getValue();  //TODO - figure out what we really get now rots,rads, or degs????? PITA
+    double t1 = ang.magnitude()*360.0;
+    double t2 = ang.in(BaseUnits.AngleUnit)*57.39577951;
+    double cc_pos = angleCmdInvert * abspos_deg.getValue().in(BaseUnits.AngleUnit) * 360.0;
     double after = -9999.0;
     double before = -9999.9;
     int count = 0;
@@ -230,31 +210,31 @@ public class SwerveModuleMK3 {
 
   void realityCheckSparkMax(double angle_cancoder, double internal_angle) {
     boolean result = true;
-
+    var d_enc =  driveMotor.configAccessor.encoder;
     if (Math.abs(
-        driveEncoder.getPositionConversionFactor() - Math.PI * cc.wheelDiameter / cc.kDriveGR) > 0.1) {
+      d_enc.getPositionConversionFactor() - Math.PI * cc.wheelDiameter / cc.kDriveGR) > 0.1) {
       System.out.println("*** ERROR *** " + myprefix + " position conversion factor incorrect for drive");
       System.out.println("Expected Position CF: " + Math.PI * cc.wheelDiameter / cc.kDriveGR);
-      System.out.println("Returned Position CF: " + driveEncoder.getPositionConversionFactor());
+      System.out.println("Returned Position CF: " + d_enc.getPositionConversionFactor());
       result = false;
     }
-    if (Math.abs(driveEncoder.getVelocityConversionFactor()
-        - Math.PI * cc.wheelDiameter / cc.kDriveGR / 60.0) > 0.1) {
+    if (Math.abs(d_enc.getVelocityConversionFactor() - Math.PI * cc.wheelDiameter / cc.kDriveGR / 60.0) > 0.1) {
       System.out.println("*** ERROR *** " + myprefix + " velocity conversion factor incorrect for drive");
       System.out.println("Expected Vel CF: " + Math.PI * cc.wheelDiameter / cc.kDriveGR / 60.0);
-      System.out.println("Returned Vel CF: " + driveEncoder.getVelocityConversionFactor());
+      System.out.println("Returned Vel CF: " + d_enc.getVelocityConversionFactor());
       result = false;
     }
-    if (Math.abs(angleEncoder.getPositionConversionFactor() - (360.0 / cc.kSteeringGR)) > 0.1) {
+    var a_enc = angleMotor.configAccessor.encoder;
+    if (Math.abs(a_enc.getPositionConversionFactor() - (360.0 / cc.kSteeringGR)) > 0.1) {
       System.out.println("*** ERROR *** " + myprefix + " position conversion factor incorrect for angle");
       System.out.println("Expected Angle Pos CF: " + 360.0 / cc.kSteeringGR);
-      System.out.println("Returned Angle Pos CF: " + angleEncoder.getPositionConversionFactor());
+      System.out.println("Returned Angle Pos CF: " + a_enc.getPositionConversionFactor());
       result = false;
     }
-    if (Math.abs(angleEncoder.getVelocityConversionFactor() - (360.0 / cc.kSteeringGR / 60)) > 0.1) {
+    if (Math.abs(a_enc.getVelocityConversionFactor() - (360.0 / cc.kSteeringGR / 60)) > 0.1) {
       System.out.println("*** ERROR *** " + myprefix + " velocity conversion factor incorrect for angle");
       System.out.println("Expected Angle Vel CF: " + (360.0 / cc.kSteeringGR / 60));
-      System.out.println("Returned Angle Vel CF: " + angleEncoder.getVelocityConversionFactor());
+      System.out.println("Returned Angle Vel CF: " + a_enc.getVelocityConversionFactor());
       result = false;
     }
     if (Math.abs(angle_cancoder - internal_angle) > 0.1) {
@@ -269,19 +249,21 @@ public class SwerveModuleMK3 {
     return;
   }
 
+  /*******************************************lib2025 removed 
   // _set<> for testing during bring up.
-  public void _setInvertAngleCmd(boolean invert) {
+   void _setInvertAngleCmd(boolean invert) {
     angleCmdInvert = (invert) ? -1.0 : 1.0;
     calibrate();
   }
 
-  public void _setInvertAngleMotor(boolean invert) {
+  void _setInvertAngleMotor(boolean invert) {
     angleMotor.setInverted(invert);
   }
 
-  public void _setInvertDriveMotor(boolean invert) {
+  void _setInvertDriveMotor(boolean invert) {
     driveMotor.setInverted(invert);
   }
+  **************************************************************/
 
   /**
    * setNTPrefix - causes the network table entries to be created and updated on
@@ -373,26 +355,32 @@ public class SwerveModuleMK3 {
    */
   public void setDesiredState(SwerveModuleState state) {
      // should favor reversing direction over turning > 90 degrees
+    // 1/4/2025 
+    //this call was deprecated, use instance version preferred
+    /* 
     SwerveModuleState m_state = SwerveModuleState.optimize(state, Rotation2d.fromDegrees(m_internalAngle));
     state = m_state; // uncomment to use optimized angle command
+    */
+    state.optimize(Rotation2d.fromDegrees(m_internalAngle));
+    
+    
     // use position control on angle with INTERNAL encoder, scaled internally for
     // degrees
-    m_angle_target = m_state.angle.getDegrees();
+    m_angle_target = state.angle.getDegrees();
 
     // figure out how far we need to move, target - current, bounded +/-180
     double delta = ModMath.delta360(m_angle_target, m_internalAngle);
     // if we aren't moving, keep the wheels pointed where they are
-    if (Math.abs(m_state.speedMetersPerSecond) < .01)
-      delta = 0;
+    delta = (Math.abs(state.speedMetersPerSecond) < .01) ? 0.0 : delta;
 
     // now add that delta to unbounded Neo angle, m_internal isn't range bound
     angleMotorPID.setReference(angleCmdInvert * (m_internalAngle + delta), ControlType.kPosition);
 
     //save target vel for plots
-    m_vel_target =m_state.speedMetersPerSecond;
+    m_vel_target =state.speedMetersPerSecond;
     
     // use velocity control
-    driveMotorPID.setReference(m_state.speedMetersPerSecond, ControlType.kVelocity);
+    driveMotorPID.setReference(state.speedMetersPerSecond, ControlType.kVelocity);
   }
 
   /**
@@ -448,22 +436,26 @@ public class SwerveModuleMK3 {
     }
   }
 
-  SparkPIDController getDrivePID() {
+  SparkClosedLoopController getDrivePID() {
     return driveMotorPID;
   }
 
-  SparkPIDController getAnglePID() {
+  SparkClosedLoopController getAnglePID() {
     return angleMotorPID;
   }
 
   public void setBrakeMode() {
-    driveMotor.setIdleMode(IdleMode.kBrake);
-    angleMotor.setIdleMode(IdleMode.kBrake);
+    SparkMaxConfig cfg = new SparkMaxConfig();
+    cfg.idleMode(IdleMode.kBrake);
+    driveMotor.configureAsync(cfg, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+    angleMotor.configureAsync(cfg, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
   }
 
   public void setCoastMode() {
-    driveMotor.setIdleMode(IdleMode.kCoast);
-    angleMotor.setIdleMode(IdleMode.kCoast);
+    SparkMaxConfig cfg = new SparkMaxConfig();
+    cfg.idleMode(IdleMode.kCoast);
+    driveMotor.configureAsync(cfg, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+    angleMotor.configureAsync(cfg, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
   }
 
 }

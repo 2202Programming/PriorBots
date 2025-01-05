@@ -4,10 +4,15 @@
 
 package frc.robot2024.subsystems;
 
-import com.revrobotics.CANSparkBase.ControlType;
-import com.revrobotics.CANSparkMax;
+import com.revrobotics.spark.SparkBase.ControlType;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.SparkMax;
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkPIDController;
+import com.revrobotics.spark.ClosedLoopSlot;
+import com.revrobotics.spark.SparkClosedLoopController;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -34,8 +39,10 @@ public class Transfer extends SubsystemBase {
   final PIDFController transferPID = new PIDFController(0.015, 0.0, 0.0, Kff);
 
   DigitalInput lightgate = new DigitalInput(DigitalIO.Transfer_LightGate);
-  CANSparkMax transferMtr;
-  final SparkPIDController transferMtrPid;
+  final SparkMax transferMtr;
+  final SparkMaxConfig transferMtrCfg;
+
+  final SparkClosedLoopController transferMtrPid;
   final RelativeEncoder transferMtrEncoder;
 
   // state vars
@@ -45,18 +52,24 @@ public class Transfer extends SubsystemBase {
 
   /** Creates a new Transfer. */
   public Transfer() {
-    transferMtr = new CANSparkMax(CAN.TRANSFER_MOTOR, CANSparkMax.MotorType.kBrushless);
+    transferMtr = new SparkMax(CAN.TRANSFER_MOTOR, SparkMax.MotorType.kBrushless);
     transferMtr.clearFaults();
-    transferMtr.restoreFactoryDefaults();
-    transferMtr.setInverted(true);
-    transferMtrPid = transferMtr.getPIDController();
+    transferMtrCfg = new SparkMaxConfig();
+    transferMtrCfg
+      .idleMode(IdleMode.kCoast)
+      .inverted(true)
+      .encoder
+        .positionConversionFactor(conversionFactor)
+        .velocityConversionFactor(conversionFactor / 60.0);
+    transferMtrCfg.closedLoop
+      .outputRange(MIN_SPEED, MAX_SPEED, ClosedLoopSlot.kSlot0);
+    
+    transferPID.copyTo(transferMtr, transferMtrCfg, ClosedLoopSlot.kSlot0);
+    
+    transferMtr.configure(transferMtrCfg, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    transferMtrPid = transferMtr.getClosedLoopController();
     transferMtrEncoder = transferMtr.getEncoder();
-    transferMtrEncoder.setPositionConversionFactor(conversionFactor);
-    transferMtrEncoder.setVelocityConversionFactor(conversionFactor / 60.0); // min to sec
-    transferPID.copyTo(transferMtrPid, 0);
-    transferMtrPid.setOutputRange(MIN_SPEED, MAX_SPEED, 0);
-    transferMtr.burnFlash();
-
+    
     transferMtrEncoder.setPosition(0.0);
   }
 
@@ -88,7 +101,7 @@ public class Transfer extends SubsystemBase {
    * speed [cm/s]
    */
   public void setSpeed(double speed) {
-    transferMtrPid.setReference(speed, ControlType.kVelocity, 0);
+    transferMtrPid.setReference(speed, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
     this.speed_cmd = speed;
     // transferMtr.set(Transfer_Constants.TRANSFER_MOTOR_ON);
   }
@@ -120,7 +133,6 @@ public class Transfer extends SubsystemBase {
 }
 
   class TransferWatcherCmd extends WatcherCmd {
-    // NetworkTableEntry nt_lightgate;
     NetworkTableEntry nt_lightgate;
     NetworkTableEntry nt_Vel;
     NetworkTableEntry nt_velcmd;
