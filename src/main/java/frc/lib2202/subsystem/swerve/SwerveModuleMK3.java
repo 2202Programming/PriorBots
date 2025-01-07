@@ -27,6 +27,7 @@ import frc.lib2202.builder.RobotLimits;
 import frc.lib2202.subsystem.swerve.config.ChassisConfig;
 import frc.lib2202.util.ModMath;
 import frc.lib2202.util.PIDFController;
+import static frc.lib2202.Constants.DEGperRAD;
 
 public class SwerveModuleMK3 {
   public final String NT_Name = "DT";
@@ -186,11 +187,7 @@ public class SwerveModuleMK3 {
   void calibrate() {
     // read absEncoder position, set internal angleEncoder to that value adjust for cmd inversion.
     StatusSignal<Angle> abspos_deg = absEncoder.getAbsolutePosition().waitForUpdate(1.0);
-    ///debugging/test angle unit 
-    Angle ang =   abspos_deg.getValue();  //TODO - figure out what we really get now rots,rads, or degs????? PITA
-    double t1 = ang.magnitude()*360.0;
-    double t2 = ang.in(BaseUnits.AngleUnit)*57.39577951;
-    double cc_pos = angleCmdInvert * abspos_deg.getValue().in(BaseUnits.AngleUnit) * 360.0;
+    double cc_pos = angleCmdInvert * abspos_deg.getValue().in(BaseUnits.AngleUnit) * DEGperRAD;
     double after = -9999.0;
     double before = -9999.9;
     int count = 0;

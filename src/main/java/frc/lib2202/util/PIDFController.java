@@ -121,7 +121,10 @@ public class PIDFController extends PIDController {
         //need to check - if we just update a few parameters in SparkMaxConfig, do the rest stay the same as previously set?
         //otherwise do we need to pull all the prior parameters out of the motorController's sparkmaxconfig and reapply them?
         motorConfig.closedLoop.pidf(this.getP(), this.getI(), this.getD(), this.getF(), slot);
-        motorConfig.closedLoop.iZone(this.getIZone(), slot);
+        // sparkmax does not like POSITIVE_INFINITY, thows param erron on id 17...  0.0 should workaround
+        // minor hack: if izone is not set, base class defaults to POSITIVITE_INFINITY
+        double izone = (this.getIZone() == Double.POSITIVE_INFINITY) ? 0.0 : this.getIZone();
+        motorConfig.closedLoop.iZone(izone, slot);
         motorConfig.closedLoop.maxMotion.maxAcceleration(smartMaxAccel, slot);
         motorConfig.closedLoop.maxMotion.maxVelocity(smartMaxVel, slot);
 
