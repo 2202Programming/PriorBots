@@ -7,7 +7,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib2202.subsystem.swerve.IHeadingProvider;
 import frc.lib2202.subsystem.swerve.config.ChassisConfig;
 import frc.lib2202.subsystem.swerve.config.ModuleConfig;
-import frc.robot2024.subsystems.sensors.Sensors_Subsystem;
 
 //copy or extend this code for your robot - remember to override:
 // TBD
@@ -45,9 +44,9 @@ public class RobotSpecDefault implements IRobotSpec {
 
     @Override
     public IHeadingProvider getHeadingProvider() {
-        return RobotContainer.getSubsystem(Sensors_Subsystem.class);
+        return null;  // no sensors in default, example for your bot's Spec:
+        //return RobotContainer.getSubsystem(Sensors_Subsystem.class);
     }
-
 
     @Override
     public ChassisConfig getChassisConfig() {
