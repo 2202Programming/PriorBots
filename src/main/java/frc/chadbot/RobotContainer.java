@@ -89,22 +89,22 @@ public class RobotContainer {
     m_robotSpecs = new RobotSpec_ChadBot(System.getenv("serialnum"));
 
     // These are hardware specific
-    if (m_robotSpecs.getSubsystemConfig().HAS_DRIVETRAIN)
+    if (m_robotSpecs.getSubsystemConfig().has("Drivetrain"))
       drivetrain = new SwerveDrivetrain();
-    if (m_robotSpecs.getSubsystemConfig().HAS_SHOOTER)
+    if (m_robotSpecs.getSubsystemConfig().has("Shooter"))
       shooter = new Shooter_Subsystem();
-    if (m_robotSpecs.getSubsystemConfig().HAS_MAGAZINE)
+    if (m_robotSpecs.getSubsystemConfig().has("Magazine"))
       magazine = new Magazine_Subsystem();
-    if (m_robotSpecs.getSubsystemConfig().HAS_POSITIONER)
+    if (m_robotSpecs.getSubsystemConfig().has("Positioner"))
       positioner = new Positioner_Subsystem();
-    if (m_robotSpecs.getSubsystemConfig().HAS_INTAKE)
+    if (m_robotSpecs.getSubsystemConfig().has("Intake"))
       intake = new Intake_Subsystem();
 //    if (m_robotSpecs.getSubsystemConfig().HAS_CLIMBER)
 //      climber = new Climber();
-    if (m_robotSpecs.getSubsystemConfig().HAS_LIMELIGHT)
+    if (m_robotSpecs.getSubsystemConfig().has("Limelight"))
       limelight = new Limelight();
 
-    if (m_robotSpecs.getSubsystemConfig().HAS_DRIVETRAIN && m_robotSpecs.getSubsystemConfig().HAS_SHOOTER && m_robotSpecs.getSubsystemConfig().HAS_MAGAZINE) {
+    if (m_robotSpecs.getSubsystemConfig().has("Limelight") && m_robotSpecs.getSubsystemConfig().has("Shooter") && m_robotSpecs.getSubsystemConfig().has("Magazine")) {
        // set default commands
       mag_default_cmd = new MagazineGatedCommand(1.0);
       magazine.setDefaultCommand(mag_default_cmd);
@@ -113,9 +113,7 @@ public class RobotContainer {
       m_driveController = new DriveControllerWithShooter(mag_default_cmd);
       // drivetrain.setDefaultCommand(m_driveController);
       drivetrainCommand = m_driveController;
-    }
-
-    else if(!m_robotSpecs.getSubsystemConfig().IS_COMPETITION_BOT){ //set up driveController version for swervebot
+    } else { //set up driveController version for swervebot
       m_driveControllerDrivetrain = new DriveControllerDrivetrain();
       drivetrainCommand = m_driveControllerDrivetrain;
     }
@@ -161,7 +159,7 @@ public class RobotContainer {
    */
   void setDriverButtons() {
     // B - Toggle drive mode
-    if (m_robotSpecs.getSubsystemConfig().HAS_DRIVETRAIN && m_robotSpecs.getSubsystemConfig().IS_COMPETITION_BOT) {
+    if (m_robotSpecs.getSubsystemConfig().has("Drivetrain") && m_robotSpecs.getSubsystemConfig().IS_COMPETITION_BOT) {
       driverController.b().onTrue(new InstantCommand(() -> {m_driveController.cycleDriveMode();}));
       driverController.y().onTrue(new InstantCommand(() -> { drivetrain.resetAnglePose(Rotation2d.fromDegrees(-180)); })); //-180 reset if intake faces drivers
       driverController.leftTrigger().onTrue(new InstantCommand(() -> {m_driveController.setRobotCentric();}));
@@ -173,7 +171,7 @@ public class RobotContainer {
       //driverController.rightTrigger().onTrue(new InstantCommand(() -> {m_driveController.turnOnShootingMode();}));
       //driverController.rightTrigger().onFalse(new InstantCommand(() -> {m_driveController.turnOffShootingMode();}));
     }
-    if (m_robotSpecs.getSubsystemConfig().HAS_DRIVETRAIN && !m_robotSpecs.getSubsystemConfig().IS_COMPETITION_BOT) {
+    if (m_robotSpecs.getSubsystemConfig().has("Drivetrain") && !m_robotSpecs.getSubsystemConfig().IS_COMPETITION_BOT) {
       driverControls.bind(Id.Driver, XboxButton.B).onTrue(new InstantCommand(() -> 
             { m_driveControllerDrivetrain.cycleDriveMode(); } ));
       driverControls.bind(Id.Driver, XboxButton.Y).onTrue(new InstantCommand(() -> 
@@ -190,7 +188,7 @@ public class RobotContainer {
 
 
     // RB limelight toggle
-    if (m_robotSpecs.getSubsystemConfig().HAS_LIMELIGHT)
+    if (m_robotSpecs.getSubsystemConfig().has("Limelight"))
       driverController.x().onTrue(new InstantCommand(limelight::toggleLED));
 
     //temporary for navx/pigeon testing
@@ -216,7 +214,7 @@ public class RobotContainer {
       driverControls.bind(Id.SwitchBoard, SBButton.Sw13).onTrue(new ResetPosition(Autonomous.startPose3));
     }
     
-    if (m_robotSpecs.getSubsystemConfig().HAS_INTAKE) {
+    if (m_robotSpecs.getSubsystemConfig().has("Intake")) {
       opController.leftBumper().onTrue(new MoveIntake(DeployMode.Toggle));
       //driverControls.bind(Id.Assistant, XboxButton.LB).onTrue(new MoveIntake(DeployMode.Toggle));
       //vertical intake controls - manual control of intake and side rollers,not the magazine
@@ -224,7 +222,7 @@ public class RobotContainer {
       opController.b().whileTrue(new IntakeCommand((() -> 0.35), () -> 0.5, IntakeMode.ExpellCargo));
     }
 
-    if (m_robotSpecs.getSubsystemConfig().HAS_MAGAZINE && m_robotSpecs.getSubsystemConfig().HAS_SHOOTER) {
+    if (m_robotSpecs.getSubsystemConfig().has("Magazine") && m_robotSpecs.getSubsystemConfig().has("Shooter")) {
       // Positioner binds :)
       opController.rightBumper().onTrue(new MovePositioner(PositionerMode.Toggle));
 
