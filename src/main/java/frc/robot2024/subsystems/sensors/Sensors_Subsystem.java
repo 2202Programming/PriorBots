@@ -7,11 +7,7 @@
 
 package frc.robot2024.subsystems.sensors;
 
-import com.ctre.phoenix6.configs.CANcoderConfiguration;
-import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.Pigeon2;
-import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
-import com.ctre.phoenix6.signals.SensorDirectionValue;
 
 import edu.wpi.first.hal.can.CANJNI;
 import edu.wpi.first.hal.can.CANStatus;
@@ -351,33 +347,16 @@ public class Sensors_Subsystem extends SubsystemBase implements IHeadingProvider
   }
 **********/
 
-  /**
-   * init() - setup cancoder the way we need them.
-   * This CANcoder returns value in rotation with phoenix 6 [-0.5, 0.5)
-   * 
-   * @param c
-   * @return CANcoder just initialized
-   */
-  CANcoder init(CANcoder c) {
-    CANcoderConfiguration configs = new CANcoderConfiguration();
-    // According to doc this should report absolute position from [-0.5, 0.5)
-    // rotations
-    // (clock wise is positive)
-    configs.MagnetSensor.AbsoluteSensorRange = AbsoluteSensorRangeValue.Signed_PlusMinusHalf;
-    configs.MagnetSensor.MagnetOffset = 0.0;
-    configs.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive;
-    c.getConfigurator().apply(configs);
-    c.clearStickyFaults();
-    return c;
-  }
 
-  public void setAutoStartPose(Pose2d pose) {
+  // below 2 funcs made protected, were public, but I suspect they aren't used. -dpl 
+  
+  protected  void setAutoStartPose(Pose2d pose) {
     autoStartPose = new Pose2d(pose.getTranslation(), pose.getRotation());
     setYaw(pose.getRotation()); // set gyro to starting heading so it's in field coordinates.
     System.out.println("***Auto Start Pose set: " + pose);
   }
 
-  public void setAutoEndPose(Pose2d pose) {
+  protected  void setAutoEndPose(Pose2d pose) {
     autoEndPose = new Pose2d(pose.getTranslation(), pose.getRotation());
 
     // expected difference in heading from start of auto to end

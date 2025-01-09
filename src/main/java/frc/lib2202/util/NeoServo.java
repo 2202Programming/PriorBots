@@ -4,21 +4,26 @@
 
 package frc.lib2202.util;
 
-import com.revrobotics.CANSparkMax;
 import com.revrobotics.REVLibError;
-import com.revrobotics.CANSparkBase.ControlType;
-import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkMaxAlternateEncoder.Type;
-import com.revrobotics.SparkPIDController;
-import com.revrobotics.SparkPIDController.ArbFFUnits;
+import com.revrobotics.spark.ClosedLoopSlot;
+import com.revrobotics.spark.SparkBase.ControlType;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.spark.SparkClosedLoopController;
+import com.revrobotics.spark.SparkClosedLoopController.ArbFFUnits;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.AlternateEncoderConfig.Type;
+import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib2202.Constants;
@@ -53,11 +58,12 @@ public class NeoServo implements VelocityControlled {
     final PIDController positionPID;
     final public PIDFController hwVelPIDcfg; // matches hardware setting
     final PIDFController prevVelPIDcfg; // soft copy to edit /w NT and compare with hwVelPIDcfg
-    final int hwVelSlot;
+    final ClosedLoopSlot hwVelSlot;
 
     // hardware
-    final CANSparkMax ctrl;
-    final SparkPIDController pid;
+    final SparkMax ctrl;
+    final SparkMaxConfig ctrlCfg;
+    final SparkClosedLoopController pid;
     final RelativeEncoder encoder;
     RelativeEncoder posEncoder = null;
 
@@ -68,30 +74,43 @@ public class NeoServo implements VelocityControlled {
     private NeoServo(int canID, MotorType motorType,
             PIDController positionPID,
             PIDFController hwVelPIDcfg,
-            boolean inverted, int hwVelSlot,
+            boolean inverted, ClosedLoopSlot hwVelSlot,
             Type encType, int kCPR) {
     
         setName("NeoServo-" + canID);  //until a better name is selected
-        ctrl = new CANSparkMax(canID, motorType);
+        ctrl = new SparkMax(canID, motorType);
         ctrl.setCANTimeout(50); //enter blocking mode for config
         ctrl.clearFaults();
-        ctrl.restoreFactoryDefaults();
-        ctrl.setInverted(inverted);
-        ctrl.setIdleMode(CANSparkMax.IdleMode.kBrake);
-        
+        //not used libs2025 update  ctrl.restoreFactoryDefaults();
+        ctrlCfg = new SparkMaxConfig();
+        ctrlCfg.inverted(inverted)
+               .idleMode(IdleMode.kBrake);
+       
         if (encType == null) {
-            //normal, internal encoder based on motor counts
-            encoder = ctrl.getEncoder();
-            pid = ctrl.getPIDController();
-            posEncoder = encoder;
+            //normal, internal encoder based on motor counts                      
+            ctrlCfg.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder) 
+                .outputRange(-1.0, 1.0);                      
+        }
+        else if (encType == Type.kQuadrature) {
+            ctrlCfg.closedLoop.feedbackSensor(FeedbackSensor.kAlternateOrExternalEncoder)
+                .outputRange(-1.0, 1.0);
+            
+            // dpl 1/4/2025 looks like only kQuadrature is only type supported.
+            ctrlCfg.alternateEncoder
+                .countsPerRevolution(kCPR)
+                .inverted(false);
+                /*******************  may need these 
+                .averageDepth(tbd)
+                .positionConversionFactor(tbd)
+                .velocityConversionFactor(tbd)
+                .setSparkMaxDataPortConfig()
+                ***********************************/
         }
         else {
-            //alternate encoder - relative, external
-            encoder = ctrl.getAlternateEncoder(encType, kCPR);
-            pid = ctrl.getPIDController();                    
-            pid.setFeedbackDevice(encoder);
-            posEncoder = encoder;
+            System.out.println("NEO SERVO config error ... STOPPING with NPE");
+            throw new NullPointerException();
         }
+       
         // copy rest of inputs
         this.positionPID = positionPID;
         this.hwVelSlot = hwVelSlot;
@@ -99,19 +118,25 @@ public class NeoServo implements VelocityControlled {
         this.prevVelPIDcfg = new PIDFController(hwVelPIDcfg);
         
         //Setup pid on hardware with give config and full output range
-        pid.setOutputRange(-1.0, 1.0);
-        this.hwVelPIDcfg.copyTo(pid, this.hwVelSlot);
+        this.hwVelPIDcfg.copyTo(ctrl, ctrlCfg, this.hwVelSlot); 
+        
+         // apply ctrlCfg
+        ctrl.configure(ctrlCfg, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    
+         // now that ctrl is fully spec'd get support devices
+        posEncoder = encoder = ctrl.getEncoder(); 
+        pid = ctrl.getClosedLoopController(); 
 
         errorCheck();
         ctrl.setCANTimeout(0); //leave blocking mode
     }
 
-    /* default slot=0 for pid slot */
+    /* default slot0 for pid slot */
     public NeoServo(int canID, PIDController positionPID, PIDFController hwVelPIDcfg, boolean inverted) {
-        this(canID, positionPID, hwVelPIDcfg, inverted, 0);
+        this(canID, positionPID, hwVelPIDcfg, inverted, ClosedLoopSlot.kSlot0);
     }
 
-    public NeoServo(int canID, PIDController positionPID, PIDFController hwVelPIDcfg, boolean inverted, int hwVelSlot) {
+    public NeoServo(int canID, PIDController positionPID, PIDFController hwVelPIDcfg, boolean inverted, ClosedLoopSlot hwVelSlot) {
         this(canID, MotorType.kBrushless, positionPID, hwVelPIDcfg, inverted,  hwVelSlot, 
             null, 0);        
     }
@@ -121,7 +146,7 @@ public class NeoServo implements VelocityControlled {
             PIDController positionPID,
             PIDFController hwVelPIDcfg,
             Type extEncoderType, int kCPR,  
-            boolean inverted, int hwVelSlot) {
+            boolean inverted, ClosedLoopSlot hwVelSlot) {
         this(canID, MotorType.kBrushless, positionPID, hwVelPIDcfg, inverted,  hwVelSlot, 
             extEncoderType, kCPR);        
     }
@@ -151,16 +176,20 @@ public class NeoServo implements VelocityControlled {
      * scale_rotation - [units/rotation]
      */
     public NeoServo addAltPositionEncoder(Type encType, int CPR, double scale_rotations){
-        posEncoder  = ctrl.getAlternateEncoder(encType, CPR);
-        posEncoder.setPositionConversionFactor(scale_rotations);
-        posEncoder.setVelocityConversionFactor(scale_rotations/60.0);
+        ctrlCfg.alternateEncoder
+            .countsPerRevolution(CPR)
+            .positionConversionFactor(scale_rotations)
+            .velocityConversionFactor( scale_rotations / 60.0);
+        ctrl.configure(ctrlCfg, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
         return this;
     }
 
     // methods to tune the servo very SmartMax Neo specific
     public NeoServo setConversionFactor(double conversionFactor) {
-        encoder.setPositionConversionFactor(conversionFactor);
-        encoder.setVelocityConversionFactor(conversionFactor / 60.0);
+        ctrlCfg.alternateEncoder            
+            .positionConversionFactor(conversionFactor)
+            .velocityConversionFactor( conversionFactor / 60.0);
+        ctrl.configure(ctrlCfg, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
         return this;
     }
 
@@ -175,19 +204,21 @@ public class NeoServo implements VelocityControlled {
     }
 
     public NeoServo setSmartCurrentLimit(int stallLimit, int freeLimit, int rpmLimit) {
-        ctrl.setSmartCurrentLimit(stallLimit, freeLimit, rpmLimit);
+        ctrlCfg.smartCurrentLimit(stallLimit, freeLimit, rpmLimit);
+        ctrl.configure(ctrlCfg, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
         return this;
     }
 
     public NeoServo setVelocityHW_PID(double smVelMax, double smAccelMax) {
         // write the hwVelPIDcfgcfg constants to the sparkmax
-        hwVelPIDcfg.copyTo(pid, hwVelSlot, smVelMax, smAccelMax);
+        hwVelPIDcfg.copyTo(ctrl, ctrlCfg, hwVelSlot, smVelMax, smAccelMax);
         return this;
     }
 
     public NeoServo burnFlash() {
-        ctrl.burnFlash();
-        Timer.delay(.2); // this holds up the current thread
+        // TODO - clean up burnflash option, now its embedded in configure() call
+        //ctrl.burnFlash();
+        //Timer.delay(.2); // this holds up the current thread
         return this;
     }
 
@@ -198,12 +229,14 @@ public class NeoServo implements VelocityControlled {
         return this;
     }
 
-    public CANSparkMax getController() {
+    public SparkMax getController() {
         return ctrl;
     }
 
-    public NeoServo setBrakeMode(CANSparkMax.IdleMode mode) {
-        ctrl.setIdleMode(mode);
+    public NeoServo setBrakeMode(IdleMode mode) {        
+        SparkMaxConfig cfg = new SparkMaxConfig();
+        cfg.idleMode(mode);
+        ctrl.configureAsync(cfg, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
         return this;
     }
 
@@ -297,7 +330,7 @@ public class NeoServo implements VelocityControlled {
     }
 
     public void clearHwPID() {
-        ctrl.getPIDController().setIAccum(0.0);
+        ctrl.getClosedLoopController().setIAccum(0.0);
     }
 
     /*
@@ -422,7 +455,7 @@ public class NeoServo implements VelocityControlled {
             nt_trim.setDouble(trim);
 
             // look for PIDF config changes
-            hwVelPIDcfg.copyChangesTo(pid, hwVelSlot, prevVelPIDcfg);
+            hwVelPIDcfg.copyChangesTo(ctrl, ctrlCfg, hwVelSlot, prevVelPIDcfg);
         }
     }
 

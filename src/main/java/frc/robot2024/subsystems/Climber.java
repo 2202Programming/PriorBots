@@ -38,7 +38,7 @@ public class Climber extends SubsystemBase {
   final NeoServo servo = new NeoServo(CAN.CLIMBER, posPID, hwVelPID, false); //check invert
 
   public Climber() {
-    hwVelPID.copyTo(servo.getController().getPIDController(), 0);
+    //should be done by NeoServo //hwVelPID.copyTo(servo.getController().getClosedLoopController(), ClosedLoopSlot.kSlot0);
     servo.setConversionFactor(conversionFactor) // in cm
         .setSmartCurrentLimit(STALL_CURRENT, FREE_CURRENT)
         .setVelocityHW_PID(maxVel, maxAccel)

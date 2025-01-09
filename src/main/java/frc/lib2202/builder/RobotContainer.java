@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
+  public String LIB2202_VERSION = "1.0.1";
 
   // // enum for bindings add when needed
   // public enum Bindings {
@@ -99,6 +100,7 @@ public class RobotContainer {
    * You likely shouldn't need to edit this file.  
    */
   public RobotContainer() {
+    System.out.println("***Running lib2202 version "+ LIB2202_VERSION + " ***");
     RobotContainer.rc = this;
     // use serial number to set the proper config, use env or static set in Main.java
     String serialnum = System.getenv("serialnum");

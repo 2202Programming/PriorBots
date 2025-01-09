@@ -20,7 +20,7 @@ public final class Constants {
   // Handy feet to meters
   public static final double FTperM = 3.28084;
   public static final double MperFT = 1.0 / FTperM;
-  public static final double DEGperRAD = 57.3;
+  public static final double DEGperRAD = 57.39577951;
   public static final int NEO_COUNTS_PER_REVOLUTION = 42;
 
 }

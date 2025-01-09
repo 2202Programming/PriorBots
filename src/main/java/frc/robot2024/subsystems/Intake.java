@@ -11,11 +11,16 @@ package frc.robot2024.subsystems;
  * every time
  */
 
-import com.revrobotics.CANSparkMax;
+import com.revrobotics.spark.SparkMax;
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkMaxAlternateEncoder.Type;
-import com.revrobotics.SparkPIDController;
-import com.revrobotics.CANSparkBase.ControlType;
+import com.revrobotics.spark.ClosedLoopSlot;
+import com.revrobotics.spark.SparkClosedLoopController;
+import com.revrobotics.spark.SparkBase.ControlType;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.config.AlternateEncoderConfig.Type;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.networktables.NetworkTable;
@@ -66,11 +71,12 @@ public class Intake extends SubsystemBase {
   // TODO - add PIDs (hw and position for alpha bot), use when altEncoder is true
 
   // Intake roller motor
-  final CANSparkMax intakeMtr = new CANSparkMax(CAN.INTAKE_MTR, CANSparkMax.MotorType.kBrushless);
+  final SparkMax intakeMtr = new SparkMax(CAN.INTAKE_MTR, SparkMax.MotorType.kBrushless);
+  final SparkMaxConfig intakeMtrCfg = new SparkMaxConfig();
   final PIDFController intakeVelPID = new PIDFController(0.008, 0.000012, 0.0, kff); // tuned 3/19 (pls check NR)
   final double IntakeIZone = 5.0; //[cm/s] error IZone restriction
 
-  final SparkPIDController intakeMtrPid;
+  final SparkClosedLoopController intakeMtrPid;
   final RelativeEncoder intakeMtrEncoder;
   double cmdVelocity = 0.0; //[cm/s] latest commanded velocity
 
@@ -83,7 +89,6 @@ public class Intake extends SubsystemBase {
 
   // Note State variables
   boolean hasNote = false; // true when Intake has Note
-
 
   final boolean altencoder;
 
@@ -112,25 +117,29 @@ public class Intake extends SubsystemBase {
     // using hack (alt encoder used as flag for elvis) - strange inversion
     angle_servo = new NeoServo(CAN.ANGLE_MTR,
         anglePositionPID, hwAngleVelPID,
-        !altEncoder, 0);
+        !altEncoder, ClosedLoopSlot.kSlot0);
 
     // use velocity control on intake motor
     intakeMtr.clearFaults();
-    intakeMtr.restoreFactoryDefaults();
+    //intakeMtr.restoreFactoryDefaults();  //see mtr.configure()
     // alt encoder false for beta & beta inverted from alpha
-    intakeMtr.setInverted(!altEncoder);
-    intakeMtrPid = intakeMtr.getPIDController();
-    intakeMtrEncoder = intakeMtr.getEncoder();
-    intakeMtrEncoder.setPositionConversionFactor(conversionFactor);
-    intakeMtrEncoder.setVelocityConversionFactor(conversionFactor / 60.0); // min to sec
+    intakeMtrCfg
+      .inverted(!altEncoder)
+      .idleMode(IdleMode.kCoast);
+    intakeMtrCfg.encoder
+      .positionConversionFactor(conversionFactor)
+      .velocityConversionFactor(conversionFactor / 60.0); // min to sec
+    
     intakeVelPID.setIZone(IntakeIZone);
 
     // copy hw pid setting for intake roller to the intakeMtrPid
-    intakeVelPID.copyTo(intakeMtrPid, 0);
-    intakeMtr.burnFlash();
-
+    intakeVelPID.copyTo(intakeMtr, intakeMtrCfg, ClosedLoopSlot.kSlot0);
+    intakeMtr.configure(intakeMtrCfg, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    intakeMtrPid = intakeMtr.getClosedLoopController();
+    intakeMtrEncoder = intakeMtr.getEncoder();
+    
     // Servo setup for angle_servo
-    hwAngleVelPID.copyTo(angle_servo.getController().getPIDController(), 0);
+    //should be done in NeoServo  //hwAngleVelPID.copyTo(angle_servo.getController().getClosedLoopController(), 0);
     angle_servo.setConversionFactor(360.0 / AngleGearRatio) // [deg] for internal encoder behind gears
               // .setConversionFactor(360.0) // [deg] external encoder on arm shaft
               .setSmartCurrentLimit(STALL_CURRENT, FREE_CURRENT)
@@ -158,7 +167,7 @@ public class Intake extends SubsystemBase {
    * @param speed [cm/s]
    */
   public void setIntakeSpeed(double speed) {      
-    intakeMtrPid.setReference(speed, ControlType.kVelocity, 0);
+    intakeMtrPid.setReference(speed, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
     // clear any windup on stop
     if (speed == 0.0)
       intakeMtrPid.setIAccum(0.0);

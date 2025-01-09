@@ -38,7 +38,7 @@ public class driveToPose extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    AutoBuilder.pathfindToPose(targetPose, pathConstraints, 0, 0).schedule();
+    AutoBuilder.pathfindToPose(targetPose, pathConstraints, 0.0).schedule();
   }
 
   // Called once the command ends or is interrupted.
