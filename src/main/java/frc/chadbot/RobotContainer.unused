@@ -36,6 +36,7 @@ import frc.lib2202.subsystem.hid.SwitchboardController.SBButton;
 import frc.chadbot.subsystems.ifx.DriverControls.Id;
 import frc.chadbot.subsystems.shooter.Shooter_Subsystem;
 import frc.chadbot.RobotSpec_ChadBot;
+import frc.chadbot.Constants;
 //import frc.chadbot.RobotSpec_ChadBot.RobotNames;
 import frc.chadbot.ux.Dashboard;
 
@@ -166,7 +167,7 @@ public class RobotContainer {
       driverController.leftTrigger().onFalse(new InstantCommand(() -> {m_driveController.setFieldCentric();}));   
 
       //dpl testing hack shooter
-      driverController.rightTrigger().whileTrue(new VelShootGatedCommand(Shooter.shortVelocity,       mag_default_cmd));
+      driverController.rightTrigger().whileTrue(new VelShootGatedCommand(Shooter.shortVelocity, mag_default_cmd));
 
       //driverController.rightTrigger().onTrue(new InstantCommand(() -> {m_driveController.turnOnShootingMode();}));
       //driverController.rightTrigger().onFalse(new InstantCommand(() -> {m_driveController.turnOffShootingMode();}));

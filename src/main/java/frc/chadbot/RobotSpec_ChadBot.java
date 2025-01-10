@@ -16,18 +16,18 @@ import frc.lib2202.subsystem.swerve.SwerveDrivetrain;
 import frc.lib2202.subsystem.swerve.config.ChassisConfig;
 import frc.lib2202.subsystem.swerve.config.ModuleConfig;
 import frc.lib2202.subsystem.swerve.config.ModuleConfig.CornerID;
-import frc.robot2024.BindingsCompetition;
-import frc.robot2024.RegisteredCommands;
+import frc.chadbot.BindingsCompetition;
+import frc.chadbot.RegisteredCommands;
 //todo - remove robot2024 and replace with lib2202
-import frc.robot2024.subsystems.sensors.Sensors_Subsystem;
-
+import frc.chadbot.subsystems.sensors.Sensors_Subsystem;
+import frc.chadbot.Constants.CAN;;
 public class RobotSpec_ChadBot implements IRobotSpec {
 
   // Chad's subsystems and objects
   final SubsystemConfig ssConfig = new SubsystemConfig("ChadBot", "03238151")
       .add(Sensors_Subsystem.class)
-      .add(Limelight.class)
-      .add(SwerveDrivetrain.class) // must be after LL and Sensors
+      .add(Limelight.class, "Limelight")
+      .add(SwerveDrivetrain.class, "Drivetrain") // must be after LL and Sensors
       .add(HID_Xbox_Subsystem.class, "DC", () -> {
         return new HID_Xbox_Subsystem(0.3, 0.9, 0.05);
       });
@@ -49,7 +49,7 @@ public class RobotSpec_ChadBot implements IRobotSpec {
 
   final ChassisConfig chassisConfig = new ChassisConfig(
       MperFT * (21.516 / 12.0) / 2.0, // X offset
-      MperFT * (24.87 / 12) / 2.0, // Y offset
+      MperFT * (24.87 / 12.0) / 2.0, // Y offset
       kWheelCorrectionFactor,
       kWheelDiameter,
       kSteeringGR,
@@ -62,6 +62,9 @@ public class RobotSpec_ChadBot implements IRobotSpec {
 
   public RobotSpec_ChadBot(String getenv) {
     //TODO Auto-generated constructor stub
+}
+public SubsystemConfig getSubsystemConfig(){
+  return ssConfig;
 }
 
 @Override
@@ -100,7 +103,7 @@ public class RobotSpec_ChadBot implements IRobotSpec {
 
     ModuleConfig[] modules = new ModuleConfig[4];
     modules[CornerID.FrontLeft.getIdx()] = new ModuleConfig(CornerID.FrontLeft,
-        7, 20, 21,
+    CAN.DT_FL_CANCODER, 20, 21,
         -175.60)
         .setInversions(false, true, false);
 
