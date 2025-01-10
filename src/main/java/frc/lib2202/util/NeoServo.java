@@ -186,7 +186,8 @@ public class NeoServo implements VelocityControlled {
 
     // methods to tune the servo very SmartMax Neo specific
     public NeoServo setConversionFactor(double conversionFactor) {
-        ctrlCfg.alternateEncoder            
+        //changed from alternateEncoder to encoder -- alternateEncoder method is above, had to change this to encoder so the conversion factor is actually being set
+        ctrlCfg.encoder            
             .positionConversionFactor(conversionFactor)
             .velocityConversionFactor( conversionFactor / 60.0);
         ctrl.configure(ctrlCfg, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
