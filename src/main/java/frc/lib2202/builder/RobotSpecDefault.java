@@ -16,8 +16,9 @@ public class RobotSpecDefault implements IRobotSpec {
     // Build
 
     // Robot Speed Limits
-    double maxSpeed = 15.0 * MperFT; // [m/s]
-    double maxRotationRate = 2.0 * Math.PI; // [rad/s]
+    double maxSpeed = 15.0; // [ft/s] gets converted in RobotLimits
+    double maxRotationRate = 360.0; // [deg/s] ditto ^^
+    // robotLimits expects ft and degrees and saves everything in meters and radians
     RobotLimits robotLimits = new RobotLimits(maxSpeed, maxRotationRate);
 
     // Chassis
