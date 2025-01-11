@@ -81,12 +81,15 @@ public final class BindingsCompetition {
         operator.x().whileTrue(new InIntake(false)); // works ---> seq for stay in intake for amp shoot
         IntakeCalibrate.and(operator.povUp()).onTrue(new AngleCalibration(-25.0));// intake calibrate
         IntakeCalibrate.and(operator.povDown()).whileTrue(new TestIntake(0.0));
-        //amp is rightbumper
+        
+        //amp shooting
         ManualShoot.and(operator.rightBumper()).onTrue(new SequentialCommandGroup (
             new InstantCommand( ()-> {AmpMechanism.setServo(AmpMechanism.extended); }),
-            new ShooterServoSequence(45.5, 2200).andThen(new InstantCommand( ()-> {AmpMechanism.setServo(AmpMechanism.parked); }))));                                                                                              
+            new ShooterServoSequence(45.5, 2200).andThen(new InstantCommand( ()-> {AmpMechanism.setServo(AmpMechanism.parked); }))));      
+        // speaker shooting                                                                                            
         ManualShoot.and(operator.rightTrigger()).onTrue(new ShooterServoSequence()); // was 35
         ManualShoot.and(operator.leftTrigger()).onTrue(new ShooterServoSequenceDebug());
+
         // AutoShootm 
         ManualShoot.negate().and(operator.rightBumper())
             .onTrue(new AutoShooting(ShootingTarget.Speaker, 45.0, 3000.0));
