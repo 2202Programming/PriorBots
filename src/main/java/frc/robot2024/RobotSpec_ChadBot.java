@@ -17,6 +17,11 @@ import frc.lib2202.subsystem.swerve.config.ChassisConfig;
 import frc.lib2202.subsystem.swerve.config.ModuleConfig;
 import frc.lib2202.subsystem.swerve.config.ModuleConfig.CornerID;
 import frc.robot2024.subsystems.sensors.Sensors_Subsystem;
+import frc.robot2024.subsystems.Intake;
+import frc.robot2024.subsystems.ShooterServo;
+import frc.robot2024.subsystems.Transfer;
+
+
 
 public class RobotSpec_ChadBot implements IRobotSpec {
 
@@ -25,6 +30,9 @@ public class RobotSpec_ChadBot implements IRobotSpec {
       .add(Sensors_Subsystem.class)
       .add(Limelight.class)
       .add(SwerveDrivetrain.class) // must be after LL and Sensors
+      .add(Intake.class)
+      .add(Transfer.class)
+      .add(ShooterServo.class)
       .add(HID_Xbox_Subsystem.class, "DC", () -> {
         return new HID_Xbox_Subsystem(0.3, 0.9, 0.05);
       });
