@@ -57,7 +57,7 @@ public final class BindingsCompetition {
         var operator = dc.Operator();
 
         //var climber = RobotContainer.getSubsystem(Climber.class);
-        var AmpMechanism = RobotContainer.getSubsystem(AmpMechanism.class);
+        //var AmpMechanism = RobotContainer.getSubsystem(AmpMechanism.class);
 
         Trigger ManualShoot = sideboard.sw16();
        // Trigger ClimberCalibrate = sideboard.sw11();
@@ -65,13 +65,13 @@ public final class BindingsCompetition {
         Trigger IntakeCalibrate = sideboard.sw13();
 
         // Switchboard buttons too
-        sideboard.sw21().onTrue(new SequentialCommandGroup (
-            new InstantCommand( ()-> {AmpMechanism.setServo(AmpMechanism.field_goal); }),
-            new WaitCommand(0.5),
-            new Climb(Climber.ExtendPosition)));
-        sideboard.sw22().onTrue(new Climb(Climber.ClimbPosition));
+        //sideboard.sw21().onTrue(new SequentialCommandGroup (
+            //new InstantCommand( ()-> {AmpMechanism.setServo(AmpMechanism.field_goal); }),
+            //new WaitCommand(0.5),
+            //new Climb(Climber.ExtendPosition)));
+        //sideboard.sw22().onTrue(new Climb(Climber.ClimbPosition));
         sideboard.sw23().onTrue(new MoveToAnglePos(Intake.DownPos, Intake.TravelUp));
-        sideboard.sw24().toggleOnTrue(new InstantCommand( ()-> {AmpMechanism.setServo(AmpMechanism.parked); }));
+        //sideboard.sw24().toggleOnTrue(new InstantCommand( ()-> {AmpMechanism.setServo(AmpMechanism.parked); }));
 
         /***************************************************************************************/
         // REAL COMPETITION BINDINGS.
@@ -82,9 +82,9 @@ public final class BindingsCompetition {
         IntakeCalibrate.and(operator.povUp()).onTrue(new AngleCalibration(-25.0));// intake calibrate
         IntakeCalibrate.and(operator.povDown()).whileTrue(new TestIntake(0.0));
         //amp is rightbumper
-        ManualShoot.and(operator.rightBumper()).onTrue(new SequentialCommandGroup (
-            new InstantCommand( ()-> {AmpMechanism.setServo(AmpMechanism.extended); }),
-            new ShooterServoSequence(45.5, 2200).andThen(new InstantCommand( ()-> {AmpMechanism.setServo(AmpMechanism.parked); }))));                                                                                              
+        //ManualShoot.and(operator.rightBumper()).onTrue(new SequentialCommandGroup (
+            //new InstantCommand( ()-> {AmpMechanism.setServo(AmpMechanism.extended); }),
+            //new ShooterServoSequence(45.5, 2200).andThen(new InstantCommand( ()-> {AmpMechanism.setServo(AmpMechanism.parked); }))));                                                                                              
         ManualShoot.and(operator.rightTrigger()).onTrue(new ShooterServoSequence()); // was 35
         ManualShoot.and(operator.leftTrigger()).onTrue(new ShooterServoSequenceDebug());
         // AutoShootm 
