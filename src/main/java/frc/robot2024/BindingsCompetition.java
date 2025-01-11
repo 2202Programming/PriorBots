@@ -56,11 +56,11 @@ public final class BindingsCompetition {
         var sideboard = dc.SwitchBoard();
         var operator = dc.Operator();
 
-        var climber = RobotContainer.getSubsystem(Climber.class);
+        //var climber = RobotContainer.getSubsystem(Climber.class);
         var AmpMechanism = RobotContainer.getSubsystem(AmpMechanism.class);
 
         Trigger ManualShoot = sideboard.sw16();
-        Trigger ClimberCalibrate = sideboard.sw11();
+       // Trigger ClimberCalibrate = sideboard.sw11();
         Trigger ShooterCalibrate = sideboard.sw12();
         Trigger IntakeCalibrate = sideboard.sw13();
 
@@ -96,9 +96,10 @@ public final class BindingsCompetition {
         // Calibration commands
         ShooterCalibrate.and(operator.povUp()).onTrue(new CalibrateWithLS()); 
         ShooterCalibrate.and(operator.povDown()).whileTrue(new ShooterAngleVelMove(-2.0));
-        ClimberCalibrate.and(operator.povUp()).whileTrue(new ClimberVelocity(Climber.ClimbCalibrateVel));
+       /*  ClimberCalibrate.and(operator.povUp()).whileTrue(new ClimberVelocity(Climber.ClimbCalibrateVel));
         ClimberCalibrate.and(operator.povDown()).whileTrue(new ClimberVelocity(-Climber.ClimbCalibrateVel));
         ClimberCalibrate.and(operator.povLeft()).onTrue(
-            new InstantCommand( ()-> {climber.setClimberPos(0.0); } ));
+            new InstantCommand( ()-> {climber.setClimberPos(0.0); } ));*/
     }
 }
+    
