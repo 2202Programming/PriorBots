@@ -11,6 +11,7 @@ import frc.lib2202.builder.RobotContainer;
 import frc.lib2202.builder.RobotLimits;
 import frc.lib2202.builder.SubsystemConfig;
 import frc.lib2202.command.swerve.FieldCentricDrive;
+//import frc.lib2202.command.swerve.RobotCentricDrive;
 import frc.lib2202.subsystem.BlinkyLights;
 import frc.lib2202.subsystem.Limelight;
 import frc.lib2202.subsystem.hid.HID_Xbox_Subsystem;
@@ -79,9 +80,9 @@ public class RobotSpec_CompBot2024 implements IRobotSpec {
     boolean swerve = true;
 
     // Robot Speed Limits
-    double maxSpeed = 15.0 * MperFT; // [m/s]
-    double maxRotationRate = 2.0 * Math.PI; // [rad/s]
-    RobotLimits robotLimits = new RobotLimits(maxSpeed, maxRotationRate);
+    double maxSpeedFPS = 15.0; // [ft/s] 
+    double maxRotationRateDPS = 360.0; // [deg/s]
+    RobotLimits robotLimits = new RobotLimits(maxSpeedFPS, maxRotationRateDPS);
 
     // Chassis
     double kWheelCorrectionFactor = .987;
@@ -191,6 +192,8 @@ public class RobotSpec_CompBot2024 implements IRobotSpec {
        SwerveDrivetrain drivetrain = RobotContainer.getSubsystem(SwerveDrivetrain.class);
         if (drivetrain != null) {
             drivetrain.setDefaultCommand(new FieldCentricDrive());
+            //RobotCentricDrive());
+           ; 
           }
     }
 
