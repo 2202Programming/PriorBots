@@ -1,5 +1,7 @@
 package frc.robot2024;
 
+import static edu.wpi.first.units.Units.DegreesPerSecond;
+import static edu.wpi.first.units.Units.FeetPerSecond;
 import static frc.lib2202.Constants.MperFT;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -34,9 +36,7 @@ public class RobotSpec_ChadBot implements IRobotSpec {
   boolean swerve = true;
 
   // Robot Speed Limits
-  double maxSpeed = 15.0 * MperFT; // [m/s]
-  double maxRotationRate = 2.0 * Math.PI; // [rad/s]
-  RobotLimits limits = new RobotLimits(maxSpeed, maxRotationRate);
+  RobotLimits robotLimits = new RobotLimits(FeetPerSecond.of(15.0), DegreesPerSecond.of(180.0));
 
   // Chassis
   double kWheelCorrectionFactor = .995;
@@ -59,7 +59,7 @@ public class RobotSpec_ChadBot implements IRobotSpec {
 
   @Override
   public RobotLimits getRobotLimits() {
-    return limits;
+    return robotLimits;
   }
 
   @Override
@@ -74,23 +74,6 @@ public class RobotSpec_ChadBot implements IRobotSpec {
 
   @Override
   public ModuleConfig[] getModuleConfigs() {
-    // from original constants
-    // WheelOffsets chadBotOffsets = new WheelOffsets(-175.60, -115.40, -162.15,
-    // 158.81); //FL BL FR BR
-    // CANModuleConfig swerveBotCAN_FL = new CANModuleConfig(7, 20, 21);
-    // CANModuleConfig swerveBotCAN_FR = new CANModuleConfig(30, 26, 27);
-    // CANModuleConfig swerveBotCAN_BL = new CANModuleConfig(28, 22, 23);
-    // CANModuleConfig swerveBotCAN_BR = new CANModuleConfig(31, 24, 25);
-    // CANConfig chadBotCANConfig = new CANConfig(swerveBotCAN_FL, swerveBotCAN_FR,
-    // swerveBotCAN_BL, swerveBotCAN_BR);
-
-    // ChassisInversionSpecs chadBotChassisInversionSpecs = new
-    // ChassisInversionSpecs(
-    // new ModuleInversionSpecs(true, false, false), // FR
-    // new ModuleInversionSpecs(false, false, false), // FL
-    // new ModuleInversionSpecs(true, false, false), // BR
-    // new ModuleInversionSpecs(false, false, false)); // BL
-
     ModuleConfig[] modules = new ModuleConfig[4];
     modules[CornerID.FrontLeft.getIdx()] = new ModuleConfig(CornerID.FrontLeft,
         7, 20, 21,
@@ -119,6 +102,7 @@ public class RobotSpec_ChadBot implements IRobotSpec {
   public void setBindings() {
     HID_Xbox_Subsystem dc = RobotContainer.getSubsystem("DC");
     // pick one of the next two lines
+    //TODO - chadbot should have own comp bindings
     BindingsCompetition.ConfigureCompetition(dc);
     // BindingsOther.ConfigureOther(dc);
 

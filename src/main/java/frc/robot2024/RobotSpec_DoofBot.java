@@ -14,6 +14,9 @@ import frc.lib2202.subsystem.swerve.config.ModuleConfig;
 import frc.lib2202.subsystem.swerve.config.ModuleConfig.CornerID;
 import frc.lib2202.util.PIDFController;
 import frc.robot2024.subsystems.sensors.Sensors_Subsystem;
+
+import static edu.wpi.first.units.Units.DegreesPerSecond;
+import static edu.wpi.first.units.Units.FeetPerSecond;
 import static frc.lib2202.Constants.MperFT;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -34,9 +37,7 @@ public class RobotSpec_DoofBot implements IRobotSpec {
     boolean swerve = true;
 
     // Robot Speed Limits
-    static double maxSpeed = 15.0 * MperFT; // [m/s]
-    static double maxRotationRate = 2.0 * Math.PI; // [rad/s]
-    static RobotLimits limits = new RobotLimits(maxSpeed, maxRotationRate);
+    RobotLimits robotLimits = new RobotLimits(FeetPerSecond.of(15.0), DegreesPerSecond.of(180.0));
 
     // Chassis
     static double kWheelCorrectionFactor = .995;
@@ -44,7 +45,7 @@ public class RobotSpec_DoofBot implements IRobotSpec {
     static double kDriveGR = 6.12;
     static double kWheelDiameter = MperFT * 4.0 / 12.0; // [m]
 
-    public static final ChassisConfig doofBotChassisConfig = new ChassisConfig(
+    public final ChassisConfig doofBotChassisConfig = new ChassisConfig(
             MperFT * (23.5 / 12.0) / 2.0, // based on CAD in reference_links
             MperFT * (19.5 / 12.0) / 2.0, // based on CAD in reference_links
             kWheelCorrectionFactor, // scale [] <= 1.0
@@ -61,7 +62,7 @@ public class RobotSpec_DoofBot implements IRobotSpec {
 
     @Override
     public RobotLimits getRobotLimits() {
-        return limits;
+        return robotLimits;
     }
 
     @Override
@@ -76,24 +77,6 @@ public class RobotSpec_DoofBot implements IRobotSpec {
 
     @Override
     public ModuleConfig[] getModuleConfigs() {
-
-        // For 2023 CompetitionBot - Doof
-        // public static final WheelOffsets doofBotOffsets = new WheelOffsets(129.03,
-        // -83.94, -57.83, 139.38); //FL BL FR BR
-        // from original constants
-        // CANConfig doofBotCANConfig = new CANConfig(swerveBotCAN_FL, swerveBotCAN_FR,
-        // swerveBotCAN_BL, swerveBotCAN_BR);
-        // ModuleConfig comp2024CAN_FL = new ModuleConfig(29, 24, 25);
-        // ModuleConfig comp2024CAN_FR = new ModuleConfig(30, 26, 27);
-        // ModuleConfig comp2024CAN_BL = new ModuleConfig(28, 22, 23);
-        // ModuleConfig comp2024CAN_BR = new ModuleConfig(31, 20, 21);
-        // ChassisInversionSpecs doofBotChassisInversionSpecs = new
-        // ChassisInversionSpecs(
-        // new ModuleInversionSpecs(true, false, false), // FR
-        // new ModuleInversionSpecs(false, false, false), // FL
-        // new ModuleInversionSpecs(true, false, false), // BR
-        // new ModuleInversionSpecs(false, false, false)); // BL
-
         ModuleConfig[] modules = new ModuleConfig[4];
         modules[CornerID.FrontLeft.getIdx()] = new ModuleConfig(CornerID.FrontLeft,
                 29, 24, 25,
@@ -124,7 +107,6 @@ public class RobotSpec_DoofBot implements IRobotSpec {
         // pick one of the next two lines
         BindingsCompetition.ConfigureCompetition(dc);
         // BindingsOther.ConfigureOther(dc);
-
     }
 
     @Override

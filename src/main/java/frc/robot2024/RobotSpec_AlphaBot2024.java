@@ -1,11 +1,14 @@
 package frc.robot2024;
 
+import static edu.wpi.first.units.Units.DegreesPerSecond;
+import static edu.wpi.first.units.Units.FeetPerSecond;
 import static frc.lib2202.Constants.MperFT;
 
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.lib2202.builder.IRobotSpec;
 import frc.lib2202.builder.RobotContainer;
 import frc.lib2202.builder.RobotLimits;
@@ -16,6 +19,8 @@ import frc.lib2202.command.swerve.RobotCentricDrive;
 import frc.lib2202.subsystem.Limelight;
 import frc.lib2202.subsystem.VisionPoseEstimator;
 import frc.lib2202.subsystem.hid.HID_Xbox_Subsystem;
+import frc.lib2202.subsystem.hid.TMJoystickController;
+import frc.lib2202.subsystem.hid.TMJoystickController.ButtonType;
 import frc.lib2202.subsystem.swerve.DTMonitorCmd;
 import frc.lib2202.subsystem.swerve.IHeadingProvider;
 import frc.lib2202.subsystem.swerve.SwerveDrivetrain;
@@ -48,31 +53,13 @@ public class RobotSpec_AlphaBot2024 implements IRobotSpec {
       .add(Command.class, "DT_Monitor", () -> {return new DTMonitorCmd();})
       ;
       
-      /*  ALPHABOT PARTIALLY DISSAMBLED
-      .add(Intake.class)
-      .add(Command.class, "IntakeWatcher", () -> {
-        return RobotContainer.getSubsystem(Intake.class).getWatcher();
-      })
-      .add(Shooter.class)
-      .add(Command.class, "ShooterWatcher", () -> {
-        // cast to get the correct type of shooter
-        return (RobotContainer.getSubsystem(Shooter.class)).getWatcher();
-      })
-      .add(Transfer.class)
-      .add(Command.class, "TransferWatcher", () -> {
-        return RobotContainer.getSubsystem(Transfer.class).getWatcher();
-      });
-      */
-      
 
   // set this true at least once after robot hw stabilizes
   boolean burnFlash = false;
   boolean swerve = true;
 
   // Robot Speed Limits
-  double maxSpeed = 15.0 * MperFT; // [m/s]
-  double maxRotationRate = 180.0;  // [deg/s]
-  RobotLimits robotLimits = new RobotLimits(maxSpeed, maxRotationRate);
+  RobotLimits robotLimits = new RobotLimits(FeetPerSecond.of(15.0), DegreesPerSecond.of(180.0));
 
   // Chassis
   double kWheelCorrectionFactor = .957;
@@ -120,12 +107,12 @@ public class RobotSpec_AlphaBot2024 implements IRobotSpec {
     ModuleConfig[] modules = new ModuleConfig[4];
     modules[CornerID.FrontLeft.getIdx()] = new ModuleConfig(CornerID.FrontLeft,
         29, 24, 25,
-        41.484) //43.85746387)
+        41.484)
         .setInversions(false, true, false);
 
     modules[CornerID.FrontRight.getIdx()] = new ModuleConfig(CornerID.FrontRight,
         30, 26, 27,
-        -66.621) //-65.21481)
+        -66.621)
         .setInversions(true, true, false);
 
     modules[CornerID.BackLeft.getIdx()] = new ModuleConfig(CornerID.BackLeft,
@@ -144,18 +131,22 @@ public class RobotSpec_AlphaBot2024 implements IRobotSpec {
   @Override
   public void setBindings() {
     HID_Xbox_Subsystem dc = RobotContainer.getSubsystem("DC");
-    // pick one of the next two lines
-    // cant use - parts removed from bot
-    // BindingsCompetition.ConfigureCompetition(dc);
-
     var driver = dc.Driver();
-    //var drivetrain = RobotContainer.getSubsystem(SwerveDrivetrain.class);
-
-    // Driver buttons
-    driver.leftTrigger().whileTrue(new FieldCentricDrive());
-    driver.y().onTrue(new AllianceAwareGyroReset(true));
-    //driver.rightTrigger().whileTrue(new TargetCentricDrive(Tag_Pose.ID4, Tag_Pose.ID7));
-
+    
+    // handle controller options xbox or joystick, need to convert from CommandGenericHID
+    if (driver instanceof CommandXboxController) {
+      // Driver buttons
+      var xbox = (CommandXboxController)driver;
+      xbox.leftTrigger().whileTrue(new FieldCentricDrive());
+      xbox.y().onTrue(new AllianceAwareGyroReset(true));
+      //driver.rightTrigger().whileTrue(new TargetCentricDrive(Tag_Pose.ID4, Tag_Pose.ID7));
+    }
+    else {
+      // driver joystick
+      var joy =(TMJoystickController)driver;
+      joy.trigger(ButtonType.TriggerButton).whileTrue(new FieldCentricDrive());
+      joy.trigger(ButtonType.LeftOne).onTrue(new AllianceAwareGyroReset(true));
+    }
   }
 
   @Override

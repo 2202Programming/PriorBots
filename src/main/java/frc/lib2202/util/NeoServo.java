@@ -186,7 +186,7 @@ public class NeoServo implements VelocityControlled {
 
     // methods to tune the servo very SmartMax Neo specific
     public NeoServo setConversionFactor(double conversionFactor) {
-        ctrlCfg.encoder            
+        ctrlCfg.alternateEncoder            
             .positionConversionFactor(conversionFactor)
             .velocityConversionFactor( conversionFactor / 60.0);
         ctrl.configure(ctrlCfg, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
@@ -343,8 +343,8 @@ public class NeoServo implements VelocityControlled {
      *  true => servo is stalled for N frames or more, cut the motor in periodic()
      */
     boolean isStalled() {
-        boolean not_moving = (Math.abs(velocity_cmd) > positionPID.getVelocityTolerance()) && // motion requested
-                (Math.abs(currentVel) < positionPID.getVelocityTolerance()) && // motion not seen
+        boolean not_moving = (Math.abs(velocity_cmd) > positionPID.getErrorDerivativeTolerance()) && // motion requested
+                (Math.abs(currentVel) < positionPID.getErrorDerivativeTolerance()) && // motion not seen
                 (!positionPID.atSetpoint()) &&
                 (DriverStation.isEnabled()); // is enabled
 

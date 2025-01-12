@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.lib2202.builder.RobotContainer;
 import frc.lib2202.command.PDPMonitorCmd;
 import frc.lib2202.command.swerve.AllianceAwareGyroReset;
@@ -61,7 +62,7 @@ public class BindingsOther {
 
     static Bindings bindings = Bindings.DriveTest;
 
-    public static void ConfigureOther(HID_Xbox_Subsystem dc) {
+    public static void ConfigureOther(HID_Xbox_Subsystem dc) { 
         DriverBinding(dc);
         OperatorBindings(dc);
     }
@@ -77,9 +78,7 @@ public class BindingsOther {
         }
     }
 
-    static void DriverBinding(HID_Xbox_Subsystem dc) {
-        var driver = dc.Driver();
-
+    static void DriverBinding(HID_Xbox_Subsystem dc) {       
         var drivetrain = RobotContainer.getSubsystem(SwerveDrivetrain.class);
         var intake = RobotContainer.getSubsystem(Intake.class);
 
@@ -87,6 +86,15 @@ public class BindingsOther {
         PathPlannerPath red1 = loadFromFile("red1");
         PathPlannerPath path_test_1m = loadFromFile("test_1m");
         
+        CommandXboxController driver;
+
+        if (dc.Driver() instanceof CommandXboxController) {
+            driver = (CommandXboxController)dc.Driver();
+        }
+        else {
+            DriverStation.reportError("Please use XBOX for Driver with this robot -- no driver bindings", false);
+            return;  //no binding set
+        }
 
         switch (bindings) {
 
@@ -219,9 +227,17 @@ public class BindingsOther {
     }
 
 
-    static void OperatorBindings(HID_Xbox_Subsystem dc) {
-        var operator = dc.Operator();
+    static void OperatorBindings(HID_Xbox_Subsystem dc) {        
         boolean skip_SS_only = false;
+        CommandXboxController operator;
+        // deal with xbox or joystick, these binding are xbox only
+        if (dc.Driver() instanceof CommandXboxController) {
+            operator = (CommandXboxController)dc.Operator();
+        }
+        else {
+            DriverStation.reportError("Please use XBOX for Operator with this robot -- no opr bindings", false);
+            return;  //no binding set
+        }
 
         final Shooter shooter = (RobotContainer.getRobotName() == "CompetitionBotBeta2024")
                 ? RobotContainer.getSubsystemOrNull(ShooterServo.class)
@@ -275,32 +291,6 @@ public class BindingsOther {
                 break;
 
             case IntakeTesting:
-                /*
-                 * operator.a().onTrue(new IntakeSequence(true)); // works for both modes
-                 * operator.b().onTrue(new MoveToAnglePos(Intake.DownPos, 60.0));
-                 * operator.x().onTrue(new InIntake(true));
-                 * operator.y().whileTrue(new TestIntake(0.5)); // %
-                 * 
-                 * operator.povDown().onTrue(new AngleCalibration(15.0)); // good for alpha
-                 * operator.povUp().onTrue(new AngleCalibration(-15.0)); // not needed,
-                 * calibrate with up
-                 * 
-                 * operator.povRight().onTrue(new IntakeSwap());
-                 * operator.povLeft().whileTrue(new EjectNote());
-                 * 
-                 * // operator.rightBumper().whileTrue(new InIntake()); //works ---> seq for
-                 * stay
-                 * // in intake
-                 * // operator.leftTrigger().whileTrue(new InAmp()); //works ---> into amp seq
-                 * // operator.povRight().whileTrue(new IntakeTest(0.35));
-                 * 
-                 * operator.rightBumper().onTrue(new ShooterSequence(true, 2000.0)); // speaker
-                 * close
-                 * operator.leftTrigger().onTrue(new ShooterSequence(true, 800.0)); // amp - NO
-                 * WORK RN
-                 * operator.rightTrigger().onTrue(new ShooterSequence(3500.0)); // speaker far -
-                 * NO WORK RN
-                 */
                 break;
 
             case new_bot_test:
@@ -341,7 +331,7 @@ public class BindingsOther {
             case comp_not_comp:
                 var sideboard = dc.SwitchBoard();
                 var AmpMechanism = RobotContainer.getSubsystem(AmpMechanism.class);
-                SmartDashboard.putNumber("AMP MECHANISM DEBUG", 0.5);
+                SmartDashboard.putNumber("AMP MECHANISM DEBUG", 0.5);                
                 // Switchboard buttons too
                 sideboard.sw21().onTrue(new Climb(Climber.ExtendPosition));
                 sideboard.sw22().onTrue(new Climb(Climber.ClimbPosition));

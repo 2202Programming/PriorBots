@@ -1,8 +1,10 @@
 package frc.robot2024;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot2024.Constants.Tag_Pose;
 import frc.robot2024.commands.Climber.Climb;
@@ -42,7 +44,14 @@ public final class BindingsCompetition {
 
 
     private static void DriverBinding(HID_Xbox_Subsystem dc) {
-        var driver = dc.Driver();
+        CommandXboxController  driver;
+        if (dc.Driver() instanceof CommandXboxController) {
+            driver = (CommandXboxController)dc.Driver();
+        } else {
+            DriverStation.reportError("BindingsCompetition: Please use XBOX controller for Driver", false);
+            return;
+        }
+
         var drivetrain = RobotContainer.getSubsystem(SwerveDrivetrain.class);
 
         // Driver buttons
@@ -54,7 +63,13 @@ public final class BindingsCompetition {
 
     static void OperatorBindings(HID_Xbox_Subsystem dc) {
         var sideboard = dc.SwitchBoard();
-        var operator = dc.Operator();
+        CommandXboxController operator;
+        if (dc.Operator() instanceof CommandXboxController) {
+            operator = (CommandXboxController)dc.Operator();
+        }else {
+            DriverStation.reportError("BindingsCompetition: Please use XBOX controller for Operator", false);
+            return;
+        }
 
         var climber = RobotContainer.getSubsystem(Climber.class);
         var AmpMechanism = RobotContainer.getSubsystem(AmpMechanism.class);

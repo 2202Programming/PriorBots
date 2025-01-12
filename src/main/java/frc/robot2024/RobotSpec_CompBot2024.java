@@ -1,5 +1,7 @@
 package frc.robot2024;
 
+import static edu.wpi.first.units.Units.DegreesPerSecond;
+import static edu.wpi.first.units.Units.FeetPerSecond;
 import static frc.lib2202.Constants.MperFT;
 
 import edu.wpi.first.wpilibj.PowerDistribution;
@@ -82,8 +84,8 @@ public class RobotSpec_CompBot2024 implements IRobotSpec {
     // Robot Speed Limits
     double maxSpeedFPS = 15.0; // [ft/s] 
     double maxRotationRateDPS = 360.0; // [deg/s]
-    RobotLimits robotLimits = new RobotLimits(maxSpeedFPS, maxRotationRateDPS);
-
+    RobotLimits robotLimits = new RobotLimits(FeetPerSecond.of(15.0), DegreesPerSecond.of(180.0));
+    
     // Chassis
     double kWheelCorrectionFactor = .987;
     double kSteeringGR = 21.428;
@@ -128,22 +130,6 @@ public class RobotSpec_CompBot2024 implements IRobotSpec {
 
     @Override
     public ModuleConfig[] getModuleConfigs() {
-        // from original constants
-        // WheelOffsets(-125.595, 28.125, -114.785, -115.752); //FL BL FR BR
-        // final ModuleConfig comp2024CAN_FL = new ModuleConfig(29, 24, 25);
-        // final ModuleConfig comp2024CAN_FR = new ModuleConfig(30, 26, 27);
-        // final ModuleConfig comp2024CAN_BL = new ModuleConfig(28, 22, 23);
-        // final ModuleConfig comp2024CAN_BR = new ModuleConfig(31, 20, 21);
-        // final CANConfig comp2024BotCANConfig = new CANConfig(comp2024CAN_FL,
-        // comp2024CAN_FR, comp2024CAN_BL, comp2024CAN_BR);
-
-        // ChassisInversionSpecs comp2024BotBetaInversionSpecs = new
-        // ChassisInversionSpecs(
-        // new ModuleInversionSpecs(false, true, false), // FR
-        // new ModuleInversionSpecs(true, true, false), // FL
-        // new ModuleInversionSpecs(false, true, false), // BR
-        // new ModuleInversionSpecs(true, true, false)); // BL
-
         ModuleConfig[] modules = new ModuleConfig[4];
         modules[CornerID.FrontLeft.getIdx()] = new ModuleConfig(CornerID.FrontLeft,
                 29, 24, 25,
