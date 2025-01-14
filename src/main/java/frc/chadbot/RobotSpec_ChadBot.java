@@ -26,8 +26,11 @@ public class RobotSpec_ChadBot implements IRobotSpec {
   // Chad's subsystems and objects
   final SubsystemConfig ssConfig = new SubsystemConfig("ChadBot", "03238151")
       .add(Sensors_Subsystem.class)
-      .add(Limelight.class, "Limelight")
-      .add(SwerveDrivetrain.class, "Drivetrain") // must be after LL and Sensors
+      .add(Limelight.class)
+      .add(SwerveDrivetrain.class) // must be after LL and Sensors
+      .add(Intake.class)
+      .add(Transfer.class)
+      .add(ShooterServo.class)
       .add(HID_Xbox_Subsystem.class, "DC", () -> {
         return new HID_Xbox_Subsystem(0.3, 0.9, 0.05);
       });

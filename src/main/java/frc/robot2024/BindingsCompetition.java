@@ -1,12 +1,13 @@
 package frc.robot2024;
 
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.lib2202.builder.RobotContainer;
+import frc.lib2202.command.swerve.AllianceAwareGyroReset;
+import frc.lib2202.command.swerve.RobotCentricDrive;
+import frc.lib2202.command.swerve.TargetCentricDrive;
+import frc.lib2202.subsystem.hid.HID_Xbox_Subsystem;
+import frc.lib2202.subsystem.swerve.SwerveDrivetrain;
 import frc.robot2024.Constants.Tag_Pose;
-import frc.robot2024.commands.Climber.Climb;
-import frc.robot2024.commands.Climber.ClimberVelocity;
 import frc.robot2024.commands.Intake.AngleCalibration;
 import frc.robot2024.commands.Intake.EjectNote;
 import frc.robot2024.commands.Intake.InIntake;
@@ -20,15 +21,7 @@ import frc.robot2024.commands.Shooter.ShooterServoSequence;
 import frc.robot2024.commands.Shooter.ShooterServoSequenceDebug;
 import frc.robot2024.commands.auto.AutoShooting;
 import frc.robot2024.commands.auto.AutoShooting.ShootingTarget;
-import frc.robot2024.subsystems.AmpMechanism;
-import frc.robot2024.subsystems.Climber;
 import frc.robot2024.subsystems.Intake;
-import frc.lib2202.builder.RobotContainer;
-import frc.lib2202.command.swerve.AllianceAwareGyroReset;
-import frc.lib2202.command.swerve.RobotCentricDrive;
-import frc.lib2202.command.swerve.TargetCentricDrive;
-import frc.lib2202.subsystem.swerve.SwerveDrivetrain;
-import frc.lib2202.subsystem.hid.HID_Xbox_Subsystem;
 
 /*
  * Please don't edit this without leads/mentor/driveteam review
@@ -56,22 +49,22 @@ public final class BindingsCompetition {
         var sideboard = dc.SwitchBoard();
         var operator = dc.Operator();
 
-        var climber = RobotContainer.getSubsystem(Climber.class);
-        var AmpMechanism = RobotContainer.getSubsystem(AmpMechanism.class);
+        //var climber = RobotContainer.getSubsystem(Climber.class);
+        //var AmpMechanism = RobotContainer.getSubsystem(AmpMechanism.class);
 
         Trigger ManualShoot = sideboard.sw16();
-        Trigger ClimberCalibrate = sideboard.sw11();
+       // Trigger ClimberCalibrate = sideboard.sw11();
         Trigger ShooterCalibrate = sideboard.sw12();
         Trigger IntakeCalibrate = sideboard.sw13();
 
         // Switchboard buttons too
-        sideboard.sw21().onTrue(new SequentialCommandGroup (
-            new InstantCommand( ()-> {AmpMechanism.setServo(AmpMechanism.field_goal); }),
-            new WaitCommand(0.5),
-            new Climb(Climber.ExtendPosition)));
-        sideboard.sw22().onTrue(new Climb(Climber.ClimbPosition));
+        //sideboard.sw21().onTrue(new SequentialCommandGroup (
+            //new InstantCommand( ()-> {AmpMechanism.setServo(AmpMechanism.field_goal); }),
+            //new WaitCommand(0.5),
+            //new Climb(Climber.ExtendPosition)));
+        //sideboard.sw22().onTrue(new Climb(Climber.ClimbPosition));
         sideboard.sw23().onTrue(new MoveToAnglePos(Intake.DownPos, Intake.TravelUp));
-        sideboard.sw24().toggleOnTrue(new InstantCommand( ()-> {AmpMechanism.setServo(AmpMechanism.parked); }));
+        //sideboard.sw24().toggleOnTrue(new InstantCommand( ()-> {AmpMechanism.setServo(AmpMechanism.parked); }));
 
         /***************************************************************************************/
         // REAL COMPETITION BINDINGS.
@@ -82,9 +75,9 @@ public final class BindingsCompetition {
         IntakeCalibrate.and(operator.povUp()).onTrue(new AngleCalibration(-25.0));// intake calibrate
         IntakeCalibrate.and(operator.povDown()).whileTrue(new TestIntake(0.0));
         //amp is rightbumper
-        ManualShoot.and(operator.rightBumper()).onTrue(new SequentialCommandGroup (
-            new InstantCommand( ()-> {AmpMechanism.setServo(AmpMechanism.extended); }),
-            new ShooterServoSequence(45.5, 2200).andThen(new InstantCommand( ()-> {AmpMechanism.setServo(AmpMechanism.parked); }))));                                                                                              
+        //ManualShoot.and(operator.rightBumper()).onTrue(new SequentialCommandGroup (
+            //new InstantCommand( ()-> {AmpMechanism.setServo(AmpMechanism.extended); }),
+            //new ShooterServoSequence(45.5, 2200).andThen(new InstantCommand( ()-> {AmpMechanism.setServo(AmpMechanism.parked); }))));                                                                                              
         ManualShoot.and(operator.rightTrigger()).onTrue(new ShooterServoSequence()); // was 35
         ManualShoot.and(operator.leftTrigger()).onTrue(new ShooterServoSequenceDebug());
         // AutoShootm 
@@ -96,9 +89,10 @@ public final class BindingsCompetition {
         // Calibration commands
         ShooterCalibrate.and(operator.povUp()).onTrue(new CalibrateWithLS()); 
         ShooterCalibrate.and(operator.povDown()).whileTrue(new ShooterAngleVelMove(-2.0));
-        ClimberCalibrate.and(operator.povUp()).whileTrue(new ClimberVelocity(Climber.ClimbCalibrateVel));
+       /*  ClimberCalibrate.and(operator.povUp()).whileTrue(new ClimberVelocity(Climber.ClimbCalibrateVel));
         ClimberCalibrate.and(operator.povDown()).whileTrue(new ClimberVelocity(-Climber.ClimbCalibrateVel));
         ClimberCalibrate.and(operator.povLeft()).onTrue(
-            new InstantCommand( ()-> {climber.setClimberPos(0.0); } ));
+            new InstantCommand( ()-> {climber.setClimberPos(0.0); } ));*/
     }
 }
+    
