@@ -1,16 +1,21 @@
 package frc.chadbot.subsystems;
 
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.spark.ClosedLoopSlot;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.SparkMaxConfig;
+
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
-import static frc.chadbot.Constants.CAN;
-import static frc.chadbot.Constants.Intake;
-import static frc.chadbot.Constants.PCM1;
-
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkLowLevel.MotorType;
+import frc.chadbot.Constants.CAN;
+import frc.chadbot.Constants.Intake;
+import frc.chadbot.Constants.PCM1;
 
 public class Intake_Subsystem extends SubsystemBase {
     /**
@@ -27,29 +32,65 @@ public class Intake_Subsystem extends SubsystemBase {
     static final Value RETRACT = Value.kForward;
 
     // slot to use on controllers
-    int slot = 0;
+    ClosedLoopSlot slot = ClosedLoopSlot.kSlot0;
+
+    //Encoder Definitions
+    final RelativeEncoder r_mtr_Encoder;
+    final RelativeEncoder l_mtr_Encoder;
+    final RelativeEncoder intake_Encoder;
 
     // Instantiations
-    final CANSparkMax intake_mtr = new CANSparkMax(CAN.INTAKE_MTR, CANSparkMax.MotorType.kBrushless);
+    final SparkMax intake_mtr = new SparkMax(CAN.INTAKE_MTR, SparkMax.MotorType.kBrushless);
     final DoubleSolenoid intake_solenoid = new DoubleSolenoid(CAN.PCM1,
             PneumaticsModuleType.CTREPCM,
             PCM1.INTAKE_UP_SOLENOID_PCM,
             PCM1.INTAKE_DOWN_SOLENOID_PCM);
 
-    private CANSparkMax r_side_mtr = new CANSparkMax(CAN.MAG_R_SIDE_MTR, MotorType.kBrushless);
-    private CANSparkMax l_side_mtr = new CANSparkMax(CAN.MAG_L_SIDE_MTR, MotorType.kBrushless);
+    private SparkMax r_side_mtr = new SparkMax(CAN.MAG_R_SIDE_MTR, MotorType.kBrushless);
+    private SparkMax l_side_mtr = new SparkMax(CAN.MAG_L_SIDE_MTR, MotorType.kBrushless);
+    private SparkMaxConfig intake_mtr_cfg = new SparkMaxConfig();
+    private SparkMaxConfig l_side_config = new SparkMaxConfig();
+    private SparkMaxConfig r_side_config = new SparkMaxConfig();
 
     // Constructor
     public Intake_Subsystem() {
-        Intake.r_side_mtrPIDF.copyTo(r_side_mtr.getPIDController(), slot);
-        Intake.l_side_mtrPIDF.copyTo(l_side_mtr.getPIDController(), slot);
-        r_side_mtr.clearFaults();
-        r_side_mtr.restoreFactoryDefaults();
-        r_side_mtr.setInverted(false); // nren 12-12-2022 electrical flipped this motor so changed from true to false
+        l_side_config
+            .inverted(true) //magic value
+            .idleMode(IdleMode.kCoast);
+        
+        r_side_config
+            .inverted(false) //magic value
+            .idleMode(IdleMode.kCoast);
 
+        intake_mtr_cfg
+            .inverted(false) //magic value
+            .idleMode(IdleMode.kCoast);
+        Intake.r_side_mtrPIDF.copyTo(r_side_mtr, r_side_config, slot);
+        Intake.l_side_mtrPIDF.copyTo(l_side_mtr, l_side_config, slot);
+
+    
+         r_side_mtr.configure(r_side_config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        l_side_mtr.configure(l_side_config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        intake_mtr.configure(intake_mtr_cfg, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    
         l_side_mtr.clearFaults();
-        l_side_mtr.restoreFactoryDefaults();
-        l_side_mtr.setInverted(true); // nren 12-19-2022 electrical flipped this motor so changed from false to true
+        r_side_mtr.clearFaults();
+        intake_mtr.clearFaults();
+        //TODO add conversion factor??
+
+        //l_side_mtr.configure(l_side_config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+       // r_side_mtr.configure(r_side_config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        //intakeMtrPid = l_side_mtr.getClosedLoopController();
+        r_mtr_Encoder = r_side_mtr.getEncoder();
+        l_mtr_Encoder = l_side_mtr.getEncoder();
+        intake_Encoder = intake_mtr.getEncoder();
+
+
+        // r_side_mtr.restoreFactoryDefaults();
+        // r_side_mtr.setInverted(false); // nren 12-12-2022 electrical flipped this motor so changed from true to false
+
+        // l_side_mtr.restoreFactoryDefaults();
+        // l_side_mtr.setInverted(true); // nren 12-19-2022 electrical flipped this motor so changed from false to true
     }
 
     // Set the Intake Mode

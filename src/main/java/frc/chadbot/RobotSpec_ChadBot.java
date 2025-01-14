@@ -20,7 +20,8 @@ import frc.chadbot.BindingsCompetition;
 import frc.chadbot.RegisteredCommands;
 //todo - remove robot2024 and replace with lib2202
 import frc.chadbot.subsystems.sensors.Sensors_Subsystem;
-import frc.chadbot.Constants.CAN;;
+import frc.chadbot.Constants.CAN;
+import frc.chadbot.subsystems.Intake_Subsystem;
 public class RobotSpec_ChadBot implements IRobotSpec {
 
   // Chad's subsystems and objects
@@ -28,7 +29,7 @@ public class RobotSpec_ChadBot implements IRobotSpec {
       .add(Sensors_Subsystem.class)
       .add(Limelight.class)
       .add(SwerveDrivetrain.class) // must be after LL and Sensors
-      .add(Intake.class)
+      .add(Intake_Subsystem.class)
       .add(Transfer.class)
       .add(ShooterServo.class)
       .add(HID_Xbox_Subsystem.class, "DC", () -> {
