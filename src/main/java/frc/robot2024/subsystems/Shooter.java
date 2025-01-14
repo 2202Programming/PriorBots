@@ -48,8 +48,8 @@ public class Shooter extends SubsystemBase {
   private double measRightRPM;
 
   // left and right match pretty well.  25-50 rpm overshoot. 
-  PIDFController leftPidConsts = new  PIDFController(0.00050, 0.0000005, 0.0, left_kF);  //slot 0  - normal
-  PIDFController rightPidConsts = new PIDFController(0.000250,  0.0000001, 0.0, right_kF);
+  PIDFController leftPidConsts = new  PIDFController(0.000250, 0.0000002, 0.0, left_kF);  //slot 0  - normal
+  PIDFController rightPidConsts = new PIDFController(0.000250, 0.0000002, 0.0, right_kF);
   PIDFController pidConsts_freeSpin = new PIDFController(0.0, 0.0, 0.0, 0.0);  //slot 1 - free spin
 
   public Shooter() {
