@@ -2,9 +2,10 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.base;
+package frc;
 
 import edu.wpi.first.wpilibj.RobotBase;
+import frc.lib2202.builder.Robot;
 import frc.lib2202.builder.RobotSpecDefault;
 import frc.robot2024.RobotSpec_AlphaBot2024;
 import frc.robot2024.RobotSpec_ChadBot;

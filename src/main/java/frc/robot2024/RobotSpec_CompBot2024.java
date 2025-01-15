@@ -25,6 +25,7 @@ import frc.lib2202.subsystem.swerve.config.ModuleConfig;
 import frc.lib2202.subsystem.swerve.config.ModuleConfig.CornerID;
 import frc.lib2202.util.PIDFController;
 import frc.robot2024.Constants.CAN;
+import frc.robot2024.commands.Shooter.CalibrateWithLS;
 import frc.robot2024.commands.Shooter.DistanceInterpretor;
 import frc.robot2024.subsystems.AmpMechanism;
 import frc.robot2024.subsystems.Climber;
@@ -34,6 +35,8 @@ import frc.robot2024.subsystems.Transfer;
 import frc.robot2024.subsystems.sensors.Sensors_Subsystem;
 
 public class RobotSpec_CompBot2024 implements IRobotSpec {
+
+    boolean teleOpRunOnce = true;
 
     final SubsystemConfig config = new SubsystemConfig(
             "CompetitionBotBeta2024", "032D2062")
@@ -163,10 +166,6 @@ public class RobotSpec_CompBot2024 implements IRobotSpec {
 
     }
 
-    @Override
-    public boolean burnFlash() {
-        return burnFlash;
-    }
 
     @Override
     public SendableChooser<Command> getRegisteredCommands() {
@@ -182,5 +181,15 @@ public class RobotSpec_CompBot2024 implements IRobotSpec {
            ; 
           }
     }
-
+    @Override
+    public void teleopInit(){
+         // Temp command for compbot2024 to calibrate shooter's servo
+        if (teleOpRunOnce) {
+            // ensure shooter is calibrated on power up - note for a competition this
+            // should not be needed and the bot should be calibrated in the pit
+            var cmd = new CalibrateWithLS();
+            cmd.schedule();
+            teleOpRunOnce = false;
+        }
+    }
 }
