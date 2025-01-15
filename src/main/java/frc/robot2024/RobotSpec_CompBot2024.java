@@ -169,6 +169,9 @@ public class RobotSpec_CompBot2024 implements IRobotSpec {
 
     @Override
     public SendableChooser<Command> getRegisteredCommands() {
+        // configure pathplanner and the Registered commands
+        // ConfigureAutobuilder uses default pids and looks up SwereveDrivetrain from RobotContainer
+        AutoPPConfig.ConfigureAutoBuilder();
         return RegisteredCommands.RegisterCommands();
     }
 
@@ -178,7 +181,6 @@ public class RobotSpec_CompBot2024 implements IRobotSpec {
         if (drivetrain != null) {
             drivetrain.setDefaultCommand(new FieldCentricDrive());
             //RobotCentricDrive());
-           ; 
           }
     }
     @Override

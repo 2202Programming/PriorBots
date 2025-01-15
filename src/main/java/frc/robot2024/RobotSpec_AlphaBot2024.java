@@ -53,11 +53,6 @@ public class RobotSpec_AlphaBot2024 implements IRobotSpec {
       .add(Command.class, "DT_Monitor", () -> {return new DTMonitorCmd();})
       ;
       
-
-  // set this true at least once after robot hw stabilizes
-  boolean burnFlash = false;
-  boolean swerve = true;
-
   // Robot Speed Limits
   RobotLimits robotLimits = new RobotLimits(FeetPerSecond.of(15.0), DegreesPerSecond.of(180.0));
 
@@ -150,14 +145,9 @@ public class RobotSpec_AlphaBot2024 implements IRobotSpec {
   }
 
   @Override
-  public boolean burnFlash() {
-    return burnFlash;
-  }
-
-  @Override
-  public SendableChooser<Command> getRegisteredCommands() {
-    // no robot parts to support thse now
-    //return RegisteredCommands.RegisterCommands();
+  public SendableChooser<Command> getRegisteredCommands() {    
+    //    AutoPPConfig.ConfigureAutoBuilder();
+    //    return RegisteredCommands.RegisterCommands();
     return null;
   }
 
