@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.lib2202.builder.RobotContainer;
+import frc.robot2024.commands.Shooter.CalibrateWithLS;
 
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
@@ -57,6 +58,10 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+    // Temp command for compbot2024 to calibrate shooter's servo //TODO move to handler
+    var cmd = new CalibrateWithLS();
+    cmd.schedule();
+
   }
 
   @Override
