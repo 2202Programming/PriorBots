@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.chadbot.RobotContainer;
+import frc.lib2202.builder.RobotContainer;
 
 /** Add your docs here. */
 public class Dashboard {
