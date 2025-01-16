@@ -13,4 +13,4 @@ In the Powershell:
 Pick one of these before debugging in simulation mode.
 
 You can show env with:
-Get-ChildItem Env:serialnum  
+Get-ChildItem Env:serialnum     

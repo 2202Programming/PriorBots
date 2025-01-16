@@ -98,7 +98,7 @@ public class FlyWheel {
     //TODO wtf is .copyTo() - er
     // DPL - copyto is a helper for writing PID values to the device.  PIDF should have a method for Talon - need to find
     // it in original branch.
-    cfg.pid.copyTo(motor, kPIDLoopIdx );
+    cfg.pid.copyTo(motor, kPIDLoopIdx);
     motor.getAllConfigs(srxconfig);
 
     srxconfig.slot1 = srxconfig.slot0;

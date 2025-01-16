@@ -2,6 +2,8 @@ package frc.lib2202.util;
 
 import static frc.lib2202.Constants.DT;
 
+import com.ctre.phoenix.motorcontrol.can.TalonSRXConfiguration;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.revrobotics.REVLibError;
 import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkBase.PersistMode;
@@ -132,6 +134,16 @@ public class PIDFController extends PIDController {
         
         if(driveError != REVLibError.kOk)
         System.out.println("*** ERROR *** SparkMax Flash Failed during copyTo command. Error val=" + driveError);
+    }
+
+    public void copyTo(WPI_TalonSRX motor, int PIDloopIndex){
+        // ClosedLoopSlot slot = new ClosedLoopSlot(PIDloopIndex);
+        motor.config_kP(PIDloopIndex, this.getP());
+        motor.config_kI(PIDloopIndex, this.getI());
+        motor.config_kD(PIDloopIndex, this.getD());
+        motor.config_kF(PIDloopIndex, this.getF());
+
+        //TODO Do we have to call motor.configureAllSettings() ??? AS
     }
 
     public void copyChangesTo(SparkMax controller, SparkMaxConfig motorConfig, PIDFController updated) {
