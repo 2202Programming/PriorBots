@@ -17,6 +17,9 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.LinearAcceleration;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.chadbot.Constants.CAN;
 import frc.chadbot.Constants.NTStrings;
@@ -58,15 +61,15 @@ public class Sensors_Subsystem extends SubsystemBase {
   // Sensors
   final Pigeon2 m_pigeon;
   // roll and pitch aren't unpacked in the API
-  final StatusSignal<Double> ss_roll_rate;
-  final StatusSignal<Double> ss_pitch_rate;
-  final StatusSignal<Double> ss_yaw_rate;
-  final StatusSignal<Double> ss_roll;
-  final StatusSignal<Double> ss_pitch;
+  final StatusSignal<AngularVelocity> ss_roll_rate;
+  final StatusSignal<AngularVelocity> ss_pitch_rate;
+  final StatusSignal<AngularVelocity> ss_yaw_rate;
+  final StatusSignal<Angle> ss_roll;
+  final StatusSignal<Angle> ss_pitch;
 
-  final StatusSignal<Double> ss_x_acc;
-  final StatusSignal<Double> ss_y_acc;
-  final StatusSignal<Double> ss_z_acc;
+  final StatusSignal<LinearAcceleration> ss_x_acc;
+  final StatusSignal<LinearAcceleration> ss_y_acc;
+  final StatusSignal<LinearAcceleration> ss_z_acc;
 
   // DPL - we can't construct CANcoders here, they will be constructed as part of
   // the swerve sub-system
