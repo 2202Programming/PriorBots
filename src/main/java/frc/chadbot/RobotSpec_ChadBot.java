@@ -1,4 +1,4 @@
-package frc.robot2024;
+package frc.chadbot;
 
 import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.FeetPerSecond;
@@ -18,10 +18,19 @@ import frc.lib2202.subsystem.swerve.SwerveDrivetrain;
 import frc.lib2202.subsystem.swerve.config.ChassisConfig;
 import frc.lib2202.subsystem.swerve.config.ModuleConfig;
 import frc.lib2202.subsystem.swerve.config.ModuleConfig.CornerID;
-import frc.robot2024.subsystems.sensors.Sensors_Subsystem;
+
+
+//Note there is a sensors in lib2202, but we want the robot specific one
+import frc.chadbot.subsystems.Sensors_Subsystem;
+import frc.chadbot.Constants.CAN;
+import frc.chadbot.subsystems.Intake_Subsystem;
+import frc.chadbot.subsystems.Magazine_Subsystem;
+import frc.chadbot.subsystems.Positioner_Subsystem;
+
 
 public class RobotSpec_ChadBot implements IRobotSpec {
 
+  // In debugger window set env with:  $env:serialnum='03238151'
   // Chad's subsystems and objects
   final SubsystemConfig ssConfig = new SubsystemConfig("ChadBot", "03238151")
       .add(Sensors_Subsystem.class)
@@ -29,10 +38,12 @@ public class RobotSpec_ChadBot implements IRobotSpec {
       .add(SwerveDrivetrain.class) // must be after LL and Sensors
       .add(HID_Xbox_Subsystem.class, "DC", () -> {
         return new HID_Xbox_Subsystem(0.3, 0.9, 0.05);
-      });
+      })
+      //rest of Chad's subsystems
+      .add(Intake_Subsystem.class)
+      .add(Magazine_Subsystem.class)
+      .add(Positioner_Subsystem.class);
 
-  // set this true at least once after robot hw stabilizes
-  boolean burnFlash = false;
   boolean swerve = true;
 
   // Robot Speed Limits
@@ -46,7 +57,7 @@ public class RobotSpec_ChadBot implements IRobotSpec {
 
   final ChassisConfig chassisConfig = new ChassisConfig(
       MperFT * (21.516 / 12.0) / 2.0, // X offset
-      MperFT * (24.87 / 12) / 2.0, // Y offset
+      MperFT * (24.87 / 12.0) / 2.0, // Y offset
       kWheelCorrectionFactor,
       kWheelDiameter,
       kSteeringGR,
@@ -57,7 +68,11 @@ public class RobotSpec_ChadBot implements IRobotSpec {
     ssConfig.setRobotSpec(this);
   }
 
-  @Override
+  public SubsystemConfig getSubsystemConfig(){
+    return ssConfig;
+  }
+
+ @Override
   public RobotLimits getRobotLimits() {
     return robotLimits;
   }
@@ -74,24 +89,40 @@ public class RobotSpec_ChadBot implements IRobotSpec {
 
   @Override
   public ModuleConfig[] getModuleConfigs() {
+    // from original constants
+    // WheelOffsets chadBotOffsets = new WheelOffsets(-175.60, -115.40, -162.15, 158.81); //FL BL FR BR
+    // CANModuleConfig swerveBotCAN_FL = new CANModuleConfig(7, 20, 21);
+    // CANModuleConfig swerveBotCAN_FR = new CANModuleConfig(30, 26, 27);
+    // CANModuleConfig swerveBotCAN_BL = new CANModuleConfig(28, 22, 23);
+    // CANModuleConfig swerveBotCAN_BR = new CANModuleConfig(31, 24, 25);
+    // CANConfig chadBotCANConfig = new CANConfig(swerveBotCAN_FL, swerveBotCAN_FR,
+    // swerveBotCAN_BL, swerveBotCAN_BR);
+
+    // ChassisInversionSpecs chadBotChassisInversionSpecs = new
+    // ChassisInversionSpecs(
+    // new ModuleInversionSpecs(true, false, false), // FR
+    // new ModuleInversionSpecs(false, false, false), // FL
+    // new ModuleInversionSpecs(true, false, false), // BR
+    // new ModuleInversionSpecs(false, false, false)); // BL
+
     ModuleConfig[] modules = new ModuleConfig[4];
     modules[CornerID.FrontLeft.getIdx()] = new ModuleConfig(CornerID.FrontLeft,
-        7, 20, 21,
+        CAN.DT_FL_CANCODER, CAN.DT_FL_DRIVE, CAN.DT_FL_ANGLE,
         -175.60)
         .setInversions(false, true, false);
 
     modules[CornerID.FrontRight.getIdx()] = new ModuleConfig(CornerID.FrontRight,
-        30, 26, 27,
+        CAN.DT_FR_CANCODER, CAN.DT_FR_DRIVE, CAN.DT_FR_ANGLE, // 30, 26, 27,
         -162.15)
         .setInversions(true, false, false);
 
     modules[CornerID.BackLeft.getIdx()] = new ModuleConfig(CornerID.BackLeft,
-        28, 22, 23,
+        CAN.DT_BL_CANCODER, CAN.DT_BL_DRIVE, CAN.DT_BL_ANGLE, // 28, 22, 23,
         -115.40)
         .setInversions(false, false, false);
 
     modules[CornerID.BackRight.getIdx()] = new ModuleConfig(CornerID.BackRight,
-        31, 24, 25,
+        CAN.DT_BR_CANCODER, CAN.DT_BR_DRIVE, CAN.DT_BR_ANGLE, // 31, 24, 25,
         158.81)
         .setInversions(true, false, false);
 
@@ -100,22 +131,21 @@ public class RobotSpec_ChadBot implements IRobotSpec {
 
   @Override
   public void setBindings() {
-    HID_Xbox_Subsystem dc = RobotContainer.getSubsystem("DC");
+    //HID_Xbox_Subsystem dc = RobotContainer.getSubsystem("DC");
     // pick one of the next two lines
-    //TODO - chadbot should have own comp bindings
-    BindingsCompetition.ConfigureCompetition(dc);
+    //BindingsCompetition.ConfigureCompetition(dc);
     // BindingsOther.ConfigureOther(dc);
 
   }
 
   @Override
   public boolean burnFlash() {
-    return burnFlash;
+    return true;
   }
 
   @Override
   public SendableChooser<Command> getRegisteredCommands() {
-    return RegisteredCommands.RegisterCommands();
+    return null;  //RegisteredCommands.RegisterCommands();
   }
 
   @Override

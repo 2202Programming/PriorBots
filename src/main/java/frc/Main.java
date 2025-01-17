@@ -5,10 +5,10 @@
 package frc;
 
 import edu.wpi.first.wpilibj.RobotBase;
+import frc.chadbot.RobotSpec_ChadBot;
 import frc.lib2202.builder.Robot;
 import frc.lib2202.builder.RobotSpecDefault;
 import frc.robot2024.RobotSpec_AlphaBot2024;
-import frc.robot2024.RobotSpec_ChadBot;
 import frc.robot2024.RobotSpec_CompBot2024;
 import frc.robot2024.RobotSpec_DoofBot;
 import frc.robot2024.RobotSpec_SwerveBot;

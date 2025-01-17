@@ -6,6 +6,12 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.lib2202.builder.RobotContainer;
+import frc.lib2202.command.swerve.AllianceAwareGyroReset;
+import frc.lib2202.command.swerve.RobotCentricDrive;
+import frc.lib2202.command.swerve.TargetCentricDrive;
+import frc.lib2202.subsystem.hid.HID_Xbox_Subsystem;
+import frc.lib2202.subsystem.swerve.SwerveDrivetrain;
 import frc.robot2024.Constants.Tag_Pose;
 import frc.robot2024.commands.Climber.Climb;
 import frc.robot2024.commands.Climber.ClimberVelocity;
@@ -25,12 +31,6 @@ import frc.robot2024.commands.auto.AutoShooting.ShootingTarget;
 import frc.robot2024.subsystems.AmpMechanism;
 import frc.robot2024.subsystems.Climber;
 import frc.robot2024.subsystems.Intake;
-import frc.lib2202.builder.RobotContainer;
-import frc.lib2202.command.swerve.AllianceAwareGyroReset;
-import frc.lib2202.command.swerve.RobotCentricDrive;
-import frc.lib2202.command.swerve.TargetCentricDrive;
-import frc.lib2202.subsystem.swerve.SwerveDrivetrain;
-import frc.lib2202.subsystem.hid.HID_Xbox_Subsystem;
 
 /*
  * Please don't edit this without leads/mentor/driveteam review
@@ -100,7 +100,8 @@ public final class BindingsCompetition {
         //amp shooting
         ManualShoot.and(operator.rightBumper()).onTrue(new SequentialCommandGroup (
             new InstantCommand( ()-> {AmpMechanism.setServo(AmpMechanism.extended); }),
-            new ShooterServoSequence(45.5, 2200).andThen(new InstantCommand( ()-> {AmpMechanism.setServo(AmpMechanism.parked); }))));      
+            new ShooterServoSequence(45.5, 2200).andThen(new InstantCommand( ()-> {
+                AmpMechanism.setServo(AmpMechanism.parked); }))));      
         // speaker shooting                                                                                            
         ManualShoot.and(operator.rightTrigger()).onTrue(new ShooterServoSequence()); // was 35
         ManualShoot.and(operator.leftTrigger()).onTrue(new ShooterServoSequenceDebug());
@@ -116,7 +117,7 @@ public final class BindingsCompetition {
         ShooterCalibrate.and(operator.povDown()).whileTrue(new ShooterAngleVelMove(-2.0));
         ClimberCalibrate.and(operator.povUp()).whileTrue(new ClimberVelocity(Climber.ClimbCalibrateVel));
         ClimberCalibrate.and(operator.povDown()).whileTrue(new ClimberVelocity(-Climber.ClimbCalibrateVel));
-        ClimberCalibrate.and(operator.povLeft()).onTrue(
-            new InstantCommand( ()-> {climber.setClimberPos(0.0); } ));
+        ClimberCalibrate.and(operator.povLeft()).onTrue(new InstantCommand( ()-> {climber.setClimberPos(0.0); }));
     }
 }
+    

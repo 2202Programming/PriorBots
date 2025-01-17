@@ -24,10 +24,10 @@ public class Limelight extends SubsystemBase {
 
   private NetworkTable table;
   private NetworkTable outputTable;
-  //private NetworkTableEntry tx;
-  //private NetworkTableEntry ty;
-  //private NetworkTableEntry ta;
-  //private NetworkTableEntry tv;
+  // private NetworkTableEntry tx;
+  // private NetworkTableEntry ty;
+  // private NetworkTableEntry ta;
+  // private NetworkTableEntry tv;
 
   private NetworkTableEntry leds;
   private NetworkTableEntry booleanLeds;
@@ -41,6 +41,7 @@ public class Limelight extends SubsystemBase {
   private NetworkTableEntry distanceToTargetTag;
   // private NetworkTableEntry nt_botpose; //todo: merge in helpers_util
 
+  private final String name;
   private double x;
   private double filteredX;
   private double y;
@@ -63,8 +64,7 @@ public class Limelight extends SubsystemBase {
   private LinearFilter x_iir;
   @SuppressWarnings("unused")
   private LinearFilter area_iir;
-  public final String NT_Name = "Vision"; // expose data under DriveTrain table
-  final String NT_Shooter_Name = "Shooter";
+  public final String NT_Name = "Vision_"; // expose data under DriveTrain table
   private double filterTC = 0.08; // seconds, 2Hz cutoff T = 1/(2pi*f) was .2hz T=.8
   private int log_counter = 0;
 
@@ -75,18 +75,23 @@ public class Limelight extends SubsystemBase {
   // private Pose2d megaPose;
   private Pose2d teamPose = new Pose2d(); // todo hack inits to avoid NPE 4/8/2023
   private Pose2d bluePose = new Pose2d();
-  final private String LL_NAME = "";// "limelight" for if left blank
   private int numAprilTags;
   private double visionTimestamp;
 
-  public Limelight() {
+  public Limelight(){
+    this("limelight");
+  }
+
+  // in case we have multiple limelights, use different name, include name in tables
+  public Limelight(String name) {
+    this.name = name;
     x_iir = LinearFilter.singlePoleIIR(filterTC, Constants.DT);
     area_iir = LinearFilter.singlePoleIIR(filterTC, Constants.DT);
-    table = NetworkTableInstance.getDefault().getTable("limelight");
-    outputTable = NetworkTableInstance.getDefault().getTable(NT_Name);
+    table = NetworkTableInstance.getDefault().getTable(this.name);  // was "limelight"); //TODO test with multiple Limelights
+    outputTable = NetworkTableInstance.getDefault().getTable(NT_Name + this.name);
 
     // these are "input" entries, to pull data from LL only
-    //tv = table.getEntry("tv"); // target validity (1 or 0)
+    // tv = table.getEntry("tv"); // target validity (1 or 0)
     leds = table.getEntry("ledMode");
     booleanLeds = table.getEntry("booleanLeds");
     pipelineNTE = table.getEntry("pipeline");
@@ -102,20 +107,23 @@ public class Limelight extends SubsystemBase {
     disableLED();
   }
 
+
+  public String getName(){ return this.name;}
+
   /*
    * LL pose estimate may need a starting point to work from.
    * This matches PhotonVision and will be called anytime
    * the drivetrain's pose is reset. See swerverDrivetrain.java.
    */
   public void setInitialPose(Pose2d pose, double time) {
-
+    // TODO - What is needed here? Even used?
+    System.out.println("LL_setInitialPose():" + pose.toString() + " function needs implementation...");
   }
 
-  public void setTarget(int id, Translation2d location ) {
+  public void setTarget(int id, Translation2d location) {
     targetID = id;
     targetTag = location;
   }
-
 
   @Override
   public void periodic() {
@@ -124,24 +132,23 @@ public class Limelight extends SubsystemBase {
 
     pipeline = pipelineNTE.getInteger(0);
 
-      // LL apriltags stuff
-      LimelightHelpers.LimelightResults llresults = LimelightHelpers.getLatestResults("");
-      numAprilTags = llresults.targetingResults.targets_Fiducials.length;
-      nt_numApriltags.setInteger(numAprilTags);
-      visionTimestamp = Timer.getFPGATimestamp() - (LimelightHelpers.getLatency_Pipeline(LL_NAME) / 1000.0)
-          - (LimelightHelpers.getLatency_Capture(LL_NAME) / 1000.0);
+    // LL apriltags stuff
+    LimelightHelpers.LimelightResults llresults = LimelightHelpers.getLatestResults(this.name);
+    numAprilTags = llresults.targetingResults.targets_Fiducials.length;
+    nt_numApriltags.setInteger(numAprilTags);
+    visionTimestamp = Timer.getFPGATimestamp() - (LimelightHelpers.getLatency_Pipeline(this.name) / 1000.0)
+        - (LimelightHelpers.getLatency_Capture(this.name) / 1000.0);
 
-      if (numAprilTags > 0) {
-        bluePose = LimelightHelpers.getBotPose2d_wpiBlue(LL_NAME);
-        teamPose = LimelightHelpers.getBotPose2d_wpiBlue(LL_NAME); // assume/default blue for now
+    if (numAprilTags > 0) {
+      bluePose = LimelightHelpers.getBotPose2d_wpiBlue(this.name);
+      teamPose = LimelightHelpers.getBotPose2d_wpiBlue(this.name); // assume/default blue for now
 
-        var alliance = DriverStation.getAlliance();
-        if (alliance.isPresent() && alliance.get() == Alliance.Red)
-          //aliance info exists AND is red
-          teamPose = LimelightHelpers.getBotPose2d_wpiRed(LL_NAME);
-      }
+      var alliance = DriverStation.getAlliance();
+      if (alliance.isPresent() && alliance.get() == Alliance.Red)
+        // aliance info exists AND is red
+        teamPose = LimelightHelpers.getBotPose2d_wpiRed(this.name);
     }
-  
+  }
 
   public double getVisionTimestamp() {
     return visionTimestamp;
@@ -170,20 +177,21 @@ public class Limelight extends SubsystemBase {
   public double getFilteredX() {
     return filteredX;
   }
-  
-  public double[] getAprilTagID(){
-    LimelightTarget_Fiducial[] apriltag = 
-    LimelightHelpers.getLatestResults("").targetingResults.targets_Fiducials;
+
+  public double[] getAprilTagID() {
+    LimelightTarget_Fiducial[] apriltag = LimelightHelpers.getLatestResults("").targetingResults.targets_Fiducials;
     double[] tagIDs = new double[apriltag.length];
-    for(int i = 0; i < apriltag.length; i++){
+    for (int i = 0; i < apriltag.length; i++) {
       tagIDs[i] = apriltag[i].fiducialID;
     }
     return tagIDs;
   }
-  public double getTA(){
+
+  public double getTA() {
     return LimelightHelpers.getTA("");
   }
-  public LimelightTarget_Fiducial[] getAprilTagsFromHelper(){
+
+  public LimelightTarget_Fiducial[] getAprilTagsFromHelper() {
     return LimelightHelpers.getLatestResults("").targetingResults.targets_Fiducials;
   }
 
@@ -229,7 +237,7 @@ public class Limelight extends SubsystemBase {
   }
 
   public void setPipeline(int pipe) {
-    LimelightHelpers.setPipelineIndex(LL_NAME, pipe);
+    LimelightHelpers.setPipelineIndex(this.name, pipe);
     if (pipe == 1) {
       enableLED();
     } else
@@ -253,7 +261,7 @@ public class Limelight extends SubsystemBase {
   }
 
   public boolean valid() {
-    return targetValid;  //TODO doesn't seem like this was set right -dpl
+    return targetValid; // TODO doesn't seem like this was set right -dpl
   }
 
   public void log() {
@@ -269,9 +277,9 @@ public class Limelight extends SubsystemBase {
       outputTv.setValue(targetValid);
       outputTx.setDouble(x);
 
-
-      if (targetTag != null  && targetID > 0) {
-        distanceToTargetTag.setDouble(RobotContainer.getSubsystem(SwerveDrivetrain.class).getDistanceToTranslation(targetTag));
+      if (targetTag != null && targetID > 0) {
+        distanceToTargetTag
+            .setDouble(RobotContainer.getSubsystem(SwerveDrivetrain.class).getDistanceToTranslation(targetTag));
       }
     }
   }
