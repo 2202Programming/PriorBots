@@ -2,7 +2,6 @@ package frc.lib2202.util;
 
 import static frc.lib2202.Constants.DT;
 
-import com.ctre.phoenix.motorcontrol.can.TalonSRXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.revrobotics.REVLibError;
 import com.revrobotics.spark.ClosedLoopSlot;
@@ -136,14 +135,18 @@ public class PIDFController extends PIDController {
         System.out.println("*** ERROR *** SparkMax Flash Failed during copyTo command. Error val=" + driveError);
     }
 
-    public void copyTo(WPI_TalonSRX motor, int PIDloopIndex){
-        // ClosedLoopSlot slot = new ClosedLoopSlot(PIDloopIndex);
-        motor.config_kP(PIDloopIndex, this.getP());
-        motor.config_kI(PIDloopIndex, this.getI());
-        motor.config_kD(PIDloopIndex, this.getD());
-        motor.config_kF(PIDloopIndex, this.getF());
+    public void copyTo(WPI_TalonSRX motor, int slotIdx){
+        // ClosedLoopSlot slot = new ClosedLoopSlot(slotIdx);
+        motor.config_kP(slotIdx, this.getP());
+        motor.config_kI(slotIdx, this.getI());
+        motor.config_kD(slotIdx, this.getD());
+        motor.config_kF(slotIdx, this.getF());
+        //TODO - pidf izone defaults to infinity, might not work on hardware.
+        // infinity disables, SparkMax uses zero, what does SRSX use? 
+        //TODO TEST on some hardware when tuning.
+        motor.config_IntegralZone(slotIdx, this.getIZone());
 
-        //TODO Do we have to call motor.configureAllSettings() ??? AS
+        //TODO Do we have to call motor.configureAllSettings() ??? AS        
     }
 
     public void copyChangesTo(SparkMax controller, SparkMaxConfig motorConfig, PIDFController updated) {

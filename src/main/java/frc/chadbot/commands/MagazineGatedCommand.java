@@ -5,10 +5,10 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.chadbot.RobotContainer;
 import frc.chadbot.commands.MovePositioner.PositionerMode;
 import frc.chadbot.subsystems.Intake_Subsystem;
 import frc.chadbot.subsystems.Magazine_Subsystem;
+import frc.lib2202.builder.RobotContainer;
 import frc.lib2202.command.JoystickRumble;
 import frc.lib2202.subsystem.hid.DriverControls.Id;
 
@@ -108,8 +108,8 @@ public class MagazineGatedCommand extends Command implements MagazineController 
 
     // Constructor
     public MagazineGatedCommand(double magazineSpeed) {
-        this.magazine = RobotContainer.RC().magazine; // just get the magazine from RC
-        this.intake = RobotContainer.RC().intake;
+        this.intake = RobotContainer.getSubsystem(Intake_Subsystem.class);
+        this.magazine = RobotContainer.getSubsystem(Magazine_Subsystem.class); // just get the magazine from RC
         this.magazineSpeed = magazineSpeed;
 
         //ejectCmd = new EjectCmd(this);

@@ -8,7 +8,7 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.chadbot.RobotContainer;
+import frc.lib2202.builder.RobotContainer;
 import frc.chadbot.subsystems.Magazine_Subsystem;
 
 public class LightGateTest extends Command {
@@ -23,7 +23,7 @@ public class LightGateTest extends Command {
    * Test simply reads the values and puts them on the Network Table
    */
   public LightGateTest() {
-    mag = RobotContainer.RC().magazine;
+    mag = RobotContainer.getSubsystem(Magazine_Subsystem.class);
 
     NetworkTable table  = NetworkTableInstance.getDefault().getTable(NT_Name);
     nte_gate1 = table.getEntry("/lowerGate");

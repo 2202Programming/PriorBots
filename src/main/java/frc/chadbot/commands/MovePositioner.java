@@ -1,8 +1,8 @@
 package frc.chadbot.commands;
 
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import frc.chadbot.RobotContainer;
 import frc.chadbot.subsystems.Positioner_Subsystem;
+import frc.lib2202.builder.RobotContainer;
 
 public class MovePositioner extends InstantCommand {
     PositionerMode mode;
@@ -21,7 +21,7 @@ public class MovePositioner extends InstantCommand {
      *             Toggle --> change shooter angle to opposite
      */
     public MovePositioner(PositionerMode mode) {
-        this.positioner = RobotContainer.RC().positioner;
+        this.positioner = RobotContainer.getSubsystem(Positioner_Subsystem.class);
         addRequirements(positioner);
         // go where we are told
         this.mode = mode;

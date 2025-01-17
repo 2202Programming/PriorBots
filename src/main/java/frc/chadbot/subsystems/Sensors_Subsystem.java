@@ -23,9 +23,10 @@ import edu.wpi.first.units.measure.LinearAcceleration;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.chadbot.Constants.CAN;
 import frc.chadbot.Constants.NTStrings;
+import frc.lib2202.subsystem.swerve.IHeadingProvider;
 import frc.lib2202.util.ModMath;
 
-public class Sensors_Subsystem extends SubsystemBase {
+public class Sensors_Subsystem extends SubsystemBase implements IHeadingProvider{
   /**
    * Creates a new Sensors_Subsystem.
    * 
@@ -162,7 +163,9 @@ public class Sensors_Subsystem extends SubsystemBase {
     // This method will be called once per scheduler run
     m_roll = ss_roll_rate.refresh().getValueAsDouble();
     m_pitch = ss_pitch_rate.refresh().getValueAsDouble();
-    m_yaw = m_pigeon.getAngle();
+
+    //double m_yaw = m_pigeon.getAngle(); //CCW+ signal
+    m_yaw = m_pigeon.getYaw().getValueAsDouble();  // CW+}
     m_yaw_mod180 = ModMath.fmod360_2(m_yaw);
 
     // rates

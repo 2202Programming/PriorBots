@@ -1,8 +1,9 @@
 package frc.chadbot.commands;
 
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import frc.chadbot.RobotContainer;
+
 import frc.chadbot.subsystems.Intake_Subsystem;
+import frc.lib2202.builder.RobotContainer;
 
 public class MoveIntake extends InstantCommand {
     Intake_Subsystem intake;
@@ -20,7 +21,7 @@ public class MoveIntake extends InstantCommand {
      *             Toggle --> change intake mode
      */
     public MoveIntake(DeployMode mode) {
-        this.intake = RobotContainer.RC().intake;
+        this.intake = RobotContainer.getSubsystem(Intake_Subsystem.class);
         addRequirements(intake);
         // go where we are told
         this.mode = mode;

@@ -1,7 +1,7 @@
 package frc.chadbot.commands.Shoot;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.chadbot.RobotContainer;
+import frc.lib2202.builder.RobotContainer;
 import frc.chadbot.subsystems.Intake_Subsystem;
 import frc.chadbot.subsystems.Magazine_Subsystem;
 import frc.chadbot.subsystems.shooter.FlyWheelRPM;
@@ -29,7 +29,7 @@ public class RPMShootCommand extends Command{
 
     private boolean finished = false;
 
-    final FlyWheelRPM defaultShooterRPMs = new FlyWheelRPM(1000,1000);
+    final static FlyWheelRPM defaultShooterRPMs = new FlyWheelRPM(1000,1000);
 
     public enum Stage{
         DoNothing("Do Nothing"),
@@ -51,17 +51,14 @@ public class RPMShootCommand extends Command{
     Stage stage;
 
     public RPMShootCommand(FlyWheelRPM target){
-        this.intake = RobotContainer.RC().intake;
-        this.shooter = RobotContainer.RC().shooter;
-        this.magazine = RobotContainer.RC().magazine;
+        this.intake = RobotContainer.getSubsystem(Intake_Subsystem.class);
+        this.shooter = RobotContainer.getSubsystem(Shooter_Subsystem.class);
+        this.magazine = RobotContainer.getSubsystem(Magazine_Subsystem.class);
         this.cmdRPM = target;
     }
     
     public RPMShootCommand(){
-        this.intake = RobotContainer.RC().intake;
-        this.shooter = RobotContainer.RC().shooter;
-        this.magazine = RobotContainer.RC().magazine;
-        cmdRPM = defaultShooterRPMs;
+       this(defaultShooterRPMs);
     }
 
     @Override

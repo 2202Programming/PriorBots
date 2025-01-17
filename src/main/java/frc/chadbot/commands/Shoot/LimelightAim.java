@@ -27,7 +27,7 @@ import frc.lib2202.subsystem.Limelight;
 */
 
 
-public class LimelightAim extends Command {
+public class LimeLightAim extends Command {
 
   final SwerveDrivetrain drivetrain;
   final SwerveDriveKinematics kinematics;

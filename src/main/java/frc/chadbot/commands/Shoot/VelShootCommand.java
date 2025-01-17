@@ -12,6 +12,8 @@ import frc.chadbot.subsystems.shooter.Shooter_Subsystem;
 import frc.chadbot.subsystems.shooter.Shooter_Subsystem.ShooterSettings;
 import frc.lib2202.builder.RobotContainer;
 import frc.lib2202.subsystem.Limelight;
+import frc.lib2202.subsystem.LimelightHelpers;
+import frc.lib2202.subsystem.swerve.SwerveDrivetrain;
 import frc.lib2202.util.PoseMath;
 
 /**
@@ -25,7 +27,9 @@ public class VelShootCommand extends Command implements SolutionProvider{
     final Intake_Subsystem intake;
     final Shooter_Subsystem shooter;
     final SolutionProvider solutionProvider;
-    final Limelight limelight;  
+    final Limelight limelight;
+    final SwerveDrivetrain drivetrain;
+      
     final double TESTANGLE = 0.0;
     final double TESTTOL = 0.02;
     final int BackupPeriod;
@@ -104,6 +108,7 @@ public class VelShootCommand extends Command implements SolutionProvider{
         this.shooter = RobotContainer.getSubsystem(Shooter_Subsystem.class);
         this.magazine = RobotContainer.getSubsystem(Magazine_Subsystem.class);
         this.limelight = RobotContainer.getSubsystem(Limelight.class);
+        this.drivetrain = RobotContainer.getSubsystem(SwerveDrivetrain.class);
 
         // the default solution provider is always true
         this.solutionProvider = (solutionProvider ==null) ? this : solutionProvider;
@@ -238,8 +243,8 @@ public class VelShootCommand extends Command implements SolutionProvider{
     public void calculateDistance(){
         currentDistance = PoseMath.poseDistance(drivetrain.getPose(), Autonomous.hubPose); //crappy estimate from odometery
         if (limelight.getTarget() && limelight.getLEDStatus()){
-            //calculate current distance with limelight area instead of odometery
-            currentDistance = limelight.estimateDistance(); 
+            //calculate current distance with limelight area instead of odometery, use our ll's name to get from NT.
+            currentDistance = estimateDistance(limelight.getName()); 
         }
         currentDistance += distanceOffeset;  //add in velocity based distance offset
     }
@@ -291,5 +296,18 @@ public class VelShootCommand extends Command implements SolutionProvider{
         }
     }
 
+  public static double estimateDistance(String llname) {
+    //TODO - verify this works, it should reach into the NT and get the latest TY set by LL
+    // might need to make sure we are on retro pipeline.  @Jason - can you review...  1/16/2025
+    double ty = LimelightHelpers.getTY(llname);
+    double targetOffsetAngle_Vertical = ty;  // was ty.getDouble(0.0);
+    // how many degrees back is your limelight rotated from perfectly vertical?
+    // both because why not (and that's what the copy-pasta had)
+    double angleToGoalDegrees = Shooter.LL_MOUNT_ANGLE_DEG + targetOffsetAngle_Vertical;
+    double angleToGoalRadians = angleToGoalDegrees * (Math.PI / 180.0);
+    // calculate distance
+    return (((Shooter.GOAL_HEIGHT_TO_FLOOR_INCHES - Shooter.LL_LENS_HEIGHT_INCHES) / Math.tan(angleToGoalRadians)
+        + Shooter.EDGE_TO_CENTER_INCHES) / Shooter.METERS_TO_INCHES);
+  }
 
 }

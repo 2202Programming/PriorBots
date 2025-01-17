@@ -2,7 +2,8 @@ package frc.chadbot.commands.Shoot;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.chadbot.RobotContainer;
+import frc.lib2202.builder.RobotContainer;
+import frc.lib2202.subsystem.swerve.SwerveDrivetrain;
 import frc.chadbot.Constants.Autonomous;
 import frc.chadbot.commands.IntakeCommand;
 import frc.chadbot.commands.IntakeCommand.IntakeMode;
@@ -23,6 +24,8 @@ public class RPMShootCommandTune extends Command{
     final Magazine_Subsystem magazine;
     final Intake_Subsystem intake;
     final Shooter_Subsystem shooter;
+    final SwerveDrivetrain drivetrain;
+
     final double TESTANGLE = 0.0;
     final double TESTTOL = 0.02;
     int ballCount = 999;
@@ -62,17 +65,16 @@ public class RPMShootCommandTune extends Command{
     private double distanceToTarget = 0;
     
     public RPMShootCommandTune(double requestedVelocity){
-        this.intake = RobotContainer.RC().intake;
-        this.shooter = RobotContainer.RC().shooter;
-        this.magazine = RobotContainer.RC().magazine;
+        this();       
         ShooterSettings target = new ShooterSettings(requestedVelocity, 0.0, USE_CURRENT_ANGLE, 0.20);
         this.cmdSS = target;
     }
     
     public RPMShootCommandTune(){
-        this.intake = RobotContainer.RC().intake;
-        this.shooter = RobotContainer.RC().shooter;
-        this.magazine = RobotContainer.RC().magazine;
+        this.intake = RobotContainer.getSubsystem(Intake_Subsystem.class);
+        this.shooter = RobotContainer.getSubsystem(Shooter_Subsystem.class);
+        this.magazine = RobotContainer.getSubsystem(Magazine_Subsystem.class);
+        this.drivetrain = RobotContainer.getSubsystem(SwerveDrivetrain.class);
         cmdSS = defaultShooterSettings;
     }
 
@@ -82,7 +84,7 @@ public class RPMShootCommandTune extends Command{
 
         currentShooterCommand = new VelShootCommand(new ShooterSettings(10, 0.0) , 20);
         CommandScheduler.getInstance().schedule(currentShooterCommand);
-        RobotContainer.RC().drivetrain.setPose(Autonomous.startPose1);
+        drivetrain.setPose(Autonomous.startPose1);
 
         SmartDashboard.putNumber("Requested Flywheel P", r_upperP);
         SmartDashboard.putNumber("Requested Flywheel I", r_upperI);
@@ -110,7 +112,7 @@ public class RPMShootCommandTune extends Command{
         checkDashboard();
         getPID();
         checkPID();
-        distanceToTarget = PoseMath.poseDistance(RobotContainer.RC().drivetrain.getPose(), Autonomous.hubPose);
+        distanceToTarget = PoseMath.poseDistance(drivetrain.getPose(), Autonomous.hubPose);
     }
 
     private void getPID(){

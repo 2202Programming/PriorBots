@@ -6,9 +6,9 @@ package frc.chadbot.commands;
 
 import java.util.function.DoubleSupplier;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.chadbot.RobotContainer;
 import frc.chadbot.Constants.MagazineSettings;
 import frc.chadbot.subsystems.Intake_Subsystem;
+import frc.lib2202.builder.RobotContainer;
 
 public class IntakeCommand extends Command {
   /**
@@ -32,7 +32,7 @@ public class IntakeCommand extends Command {
    * @param intakeMode - determines if we are intaking or expelling cargo
    */
   public IntakeCommand(DoubleSupplier intakeSpeedFunction, DoubleSupplier sideIntakeSpeedFunction, IntakeMode mode) {
-      this.intake = RobotContainer.RC().intake;
+      this.intake = RobotContainer.getSubsystem(Intake_Subsystem.class);
       this.mode  = mode;
       this.intakeSpeed = intakeSpeedFunction;
       this.sideIntakeSpeed = sideIntakeSpeedFunction;

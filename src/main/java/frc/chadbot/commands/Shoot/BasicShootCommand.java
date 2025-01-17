@@ -1,7 +1,7 @@
 package frc.chadbot.commands.Shoot;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.chadbot.RobotContainer;
+import frc.lib2202.builder.RobotContainer;
 import frc.chadbot.subsystems.Intake_Subsystem;
 import frc.chadbot.subsystems.Magazine_Subsystem;
 import frc.chadbot.subsystems.shooter.Shooter_Subsystem;
@@ -63,9 +63,9 @@ public class BasicShootCommand extends Command{
     Stage stage;
     
     public BasicShootCommand(ShooterSettings shooterSettings, int backupFrameCount){
-        this.intake = RobotContainer.RC().intake;
-        this.shooter = RobotContainer.RC().shooter;
-        this.magazine = RobotContainer.RC().magazine;
+        this.intake = RobotContainer.getSubsystem(Intake_Subsystem.class);
+        this.shooter = RobotContainer.getSubsystem(Shooter_Subsystem.class);
+        this.magazine = RobotContainer.getSubsystem(Magazine_Subsystem.class);
         specialSettings = shooterSettings;
         BackupPeriod = backupFrameCount;  //number of frames to move mag back slowly 5-20
         addRequirements(magazine,shooter);

@@ -11,13 +11,11 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.chadbot.Constants;
-//import frc.lib2202.Constants;
-//import frc.lib2202.builder.RobotContainer;
-import frc.chadbot.RobotContainer;
 import frc.chadbot.commands.MagazineController;
+import frc.chadbot.commands.Shoot.VelShootCommand;
 import frc.chadbot.commands.Shoot.VelShootGatedCommand;
-import frc.lib2202.subsystem.Limelight;
-import frc.lib2202.subsystem.LimelightHelpers;
+import frc.chadbot.subsystems.shooter.Shooter_Subsystem;
+import frc.lib2202.builder.RobotContainer;
 
 public class DriveControllerWithShooter extends DriveControllerDrivetrain {
 
@@ -33,7 +31,7 @@ public class DriveControllerWithShooter extends DriveControllerDrivetrain {
 
   public DriveControllerWithShooter(MagazineController magazineController)  {
     super();
-    this.shooter = RobotContainer.RC().shooter;
+    this.shooter = RobotContainer.getSubsystem(Shooter_Subsystem.class);
     this.magazineController = magazineController;
 
     //shootCommand = new VelShootCommand(45,false);  //right now just use fixed velocity; eventually replace with limelight distance estimated velocity
@@ -41,7 +39,6 @@ public class DriveControllerWithShooter extends DriveControllerDrivetrain {
     //use this one when ready for solution provider and velocity auto adjustment
     shootCommand = new VelShootGatedCommand(magazineController, this);
 
-    
     shooterTable = NetworkTableInstance.getDefault().getTable(NT_ShooterName);
     NThasSolution = shooterTable.getEntry("/DriveController/HasSolution");
   }
@@ -85,10 +82,10 @@ public class DriveControllerWithShooter extends DriveControllerDrivetrain {
 
   //If limelight has target and is locked on, update odometery pose with new estimate of position
   public void estimatePoseFromLimelight(){
-    double distance = limelight.estimateDistance(); //distance from hub in meters
-    double LLangle = RobotContainer.RC().limelight.getX();
+    double distance = estimateDistance(); //distance from hub in meters
+    double LLangle = limelight.getX();
 
-    Rotation2d correctionVectorRot = RobotContainer.RC().drivetrain.getPose().getRotation().minus(Rotation2d.fromDegrees(90));
+    Rotation2d correctionVectorRot = drivetrain.getPose().getRotation().minus(Rotation2d.fromDegrees(90));
    
     //correction vector if LL angle is not zero
     //Mag is distance * sine angle
@@ -128,7 +125,7 @@ public class DriveControllerWithShooter extends DriveControllerDrivetrain {
     double[] u = {drivetrain.getChassisSpeeds().vxMetersPerSecond, drivetrain.getChassisSpeeds().vyMetersPerSecond}; 
     //in m/s - robot's direction vector (in robot frame of reference, intake is forward 0 deg)
   
-    distance = limelight.estimateDistance(); //distance to target based on LL angle
+    distance = estimateDistance(); //distance to target based on LL angle
     HANGTIME = getHangTime2(distance);
     double perpendicularVelocity = -u[1]; //inverted since we shoot out the back of the robot so left/right is reversed
     double parallelVelocity = -u[0]; //inverted since we shoot out the back of the robot so forward/back is reversed
@@ -183,5 +180,10 @@ public class DriveControllerWithShooter extends DriveControllerDrivetrain {
     return tof;
   }
 
+  //Use the estimateDistance setup in VelShootCommand
+  double estimateDistance() {
+    // needed values can be pulled from LL helper with the name of the LL
+    return VelShootCommand.estimateDistance(limelight.getName());
+  }
 
 }
