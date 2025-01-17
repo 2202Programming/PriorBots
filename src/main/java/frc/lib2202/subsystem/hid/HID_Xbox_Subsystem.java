@@ -7,7 +7,8 @@
 
 package frc.lib2202.subsystem.hid;
 
-import java.util.HashMap;
+import java.util.function.DoubleSupplier;
+//import java.util.function.Supplier;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -15,7 +16,6 @@ import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.lib2202.subsystem.hid.DriverControls.Id;
 import frc.lib2202.subsystem.hid.SwitchboardController.SBButton;
 
 /**
@@ -45,12 +45,59 @@ import frc.lib2202.subsystem.hid.SwitchboardController.SBButton;
  * 
  */
 public class HID_Xbox_Subsystem extends SubsystemBase {
+
+  //moved from DriverControls.java
+  public enum Id {
+    Driver(0), Operator(1), SwitchBoard(2);
+    public final int value;
+
+    Id(int value) {
+      this.value = value;
+    }
+  }
+
+  //use device type to get the needed double suppliers
+  class AnalogSuppliers {
+    public DoubleSupplier getX;
+    public DoubleSupplier getY;
+    public DoubleSupplier getRot;
+
+    AnalogSuppliers(CommandGenericHID device) {
+      if (device instanceof TMJoystickController) {
+        TMJoystickController joystick = (TMJoystickController)device;
+        getX = joystick::getX;
+        getY = joystick::getY;
+        getRot = joystick::getTwist;
+      }
+      else if (device instanceof CommandXboxController) 
+      {
+        CommandXboxController xb = (CommandXboxController)device;
+        getX = xb::getRightY; // X robot is Y axis on Joystick
+        getY = xb::getRightX; // Y robot is X axis on Joystick
+        getRot = xb::getLeftX;
+      }
+      else {
+        // repeat xbox setting so we have something, but report unknown type.
+        DriverStation.reportError("Driver controller type unknown, treating as xbox", false);
+        CommandXboxController xb = (CommandXboxController)device;
+        getX = xb::getRightY; // X robot is Y axis on Joystick
+        getY = xb::getRightX; // Y robot is X axis on Joystick
+        getRot = xb::getLeftX;
+      }
+    }
+  }
+
   /**
    * Creates a new HID_Subsystem.
    */
-  private final CommandXboxController driver;
-  private final CommandXboxController operator;
-  private final CommandSwitchboardController switchBoard;
+  final CommandGenericHID driver;
+  final CommandGenericHID operator;
+  final CommandSwitchboardController switchBoard;
+  
+  //unshaped double suppliers - use for aborts...
+  final AnalogSuppliers _driver;
+  final AnalogSuppliers _operator;
+  // no analog 
 
   // Buttons onStartup - in case you want to do something based on controls
   // being held at power up or on switchboard.
@@ -63,11 +110,14 @@ public class HID_Xbox_Subsystem extends SubsystemBase {
   double scale_xy = 1.0;
   double scale_rot = 1.0;
 
+ 
+ 
   //XYRot / Swerve (field or robot relative)
   ExpoShaper velXShaper;    // left/right  
   ExpoShaper velYShaper;    // forward/backward 
   ExpoShaper swRotShaper;   // rotation for XYRot
-
+  
+ 
   //values updated each frame
   double vel, z_rot;           //arcade
   double velLeft, velRight;    //tank
@@ -78,36 +128,35 @@ public class HID_Xbox_Subsystem extends SubsystemBase {
   // A negative value indicates you're driving backwards with forwards controls.
   double invertGain = 1.0;
 
-  public HashMap<Id, CommandGenericHID> deviceMap = new HashMap<Id, CommandGenericHID>();
-
   public HID_Xbox_Subsystem(final double velExpo, final double rotExpo, final double deadzone) {
-
     // register the devices
-    driver = (CommandXboxController) registerController(Id.Driver, new CommandXboxController(Id.Driver.value));
-    operator = (CommandXboxController) registerController(Id.Operator, new CommandXboxController(Id.Operator.value));
-    switchBoard = (CommandSwitchboardController) registerController(Id.SwitchBoard, new CommandSwitchboardController(Id.SwitchBoard.value));
-   
+    driver = create_hid_device(Id.Driver);
+    operator = create_hid_device(Id.Operator);
+    switchBoard = new CommandSwitchboardController(Id.SwitchBoard.value);
+    
+    // configure driver shapers based on stick type (xbox or joystick)
+    _driver = new AnalogSuppliers(driver);
+    _operator = new AnalogSuppliers(operator);
+    
     this.deadzone = deadzone;
     /**
      * All Joysticks are read and shaped without sign conventions.
      * Sign convention added on periodic based on the type of driver control
      * being used.
      */
+    // configure driver expo shapers, use raw accessors
+    velXShaper = new ExpoShaper(velExpo, _driver.getX);
+    velYShaper = new ExpoShaper(velExpo, _driver.getY); 
+    swRotShaper = new ExpoShaper(rotExpo, _driver.getRot);
 
-    // XYRot or Swerve Drive
-    // Rotation on Left-X axis,  X-Y throttle on Right
-    velXShaper = new ExpoShaper(velExpo,  () -> driver.getRightY()); // X robot is Y axis on Joystick
-    velYShaper = new ExpoShaper(velExpo,  () -> driver.getRightX()); // Y robot is X axis on Joystick
-    swRotShaper = new ExpoShaper(rotExpo, () -> driver.getLeftX());
-
-    // deadzone for swerve
+    // deadzone for driver
     velXShaper.setDeadzone(deadzone);
     velYShaper.setDeadzone(deadzone);
     swRotShaper.setDeadzone(deadzone);
 
-    // read some values to remove unused warning
+    // read some values to remove unused warning 
     // CHANGED for 2022
-    operator.getRightX();
+    operator.getRawAxis(0);
     switchBoard.getRawAxis(0);
 
     // read initial buttons for each device - maybe used for configurions
@@ -129,21 +178,22 @@ public class HID_Xbox_Subsystem extends SubsystemBase {
   }
 
   // accesors for our specific controllers to bind triggers 
-  public CommandXboxController Driver() {return driver; }
-  public CommandXboxController Operator() {return operator;}
+  public CommandGenericHID Driver() {return driver; }
+  public CommandGenericHID Operator() {return operator;}
   public CommandSwitchboardController SwitchBoard() {return switchBoard; }
-
+ 
   /**
    * constructor of the implementing class.
    * 
    * @param id  Id.Driver, Id.Assistent, Id.Sideboard
    * @param hid Input device, xbox or other stick
    * @return
-   */
+  
   public CommandGenericHID registerController(Id id, CommandGenericHID hid) {
     deviceMap.put(id, hid);
     return hid;
   }
+  unused dpl */
 
   @Override
   public void periodic() {
@@ -153,9 +203,9 @@ public class HID_Xbox_Subsystem extends SubsystemBase {
 
     //XYRot - field axis, pos X away from driver station, pos y to left side of field
     //Added scale-factors for low-speed creeper mode
-    velX = -velXShaper.get() * scale_xy;    //invert, so right stick moves robot, right, lowering Y 
-    velY = -velYShaper.get() * scale_xy;    //invert, so forward stick is positive, increase X
-    xyRot = -swRotShaper.get() * scale_rot; //invert, so positive is CCW 
+    velX = -(velXShaper.get() * scale_xy);     //invert, so right stick moves robot, right, lowering Y
+    velY = -(velYShaper.get() * scale_xy);     //invert, so forward stick is positive, increase X
+    xyRot = -(swRotShaper.get() * scale_rot);  //invert, so positive is CCW
   }
   
   //public void setLimitRotation(boolean enableLimit) {
@@ -214,19 +264,16 @@ public class HID_Xbox_Subsystem extends SubsystemBase {
    *          false - no stick
    */
   public boolean rightStickMotionDriver() {
-    final CommandXboxController device = driver;
-    double x = Math.abs(device.getRightX());
-    double y = Math.abs(device.getRightY());
+    double x = Math.abs(_driver.getX.getAsDouble());
+    double y = Math.abs(_driver.getY.getAsDouble());
     return (x > (deadzone * 2.0)) || (y > (deadzone * 2.0)); // 2x multiplier so doesn't abort too easily
  }
 
  public boolean rightStickMotionOperator() {
-  final CommandXboxController device = operator;
-  double x = Math.abs(device.getRightX());
-  double y = Math.abs(device.getRightY());
+  double x = Math.abs(_operator.getX.getAsDouble());
+  double y = Math.abs(_operator.getY.getAsDouble());
   return (x > (deadzone * 2.0)) || (y > (deadzone * 2.0)); // 2x multiplier so doesn't abort too easily
 }
-
 
 
   public int getInitialButtons(final Id id) {
@@ -285,5 +332,29 @@ public boolean isConnected(Id id){
       return false;
   }
 }
+
+/*
+ * Scan_map_device()
+ * 
+ * Looks at the types of controls that are plugged in on the ports
+ * and maps to the proper controller type.
+ * 
+ *  Type = 1   XBox One
+ *  Type = 20  ThrustMaster 
+ * 
+ */
+@SuppressWarnings("unchecked")
+static <T extends CommandGenericHID> T create_hid_device(Id port){
+    String name = DriverStation.getJoystickName(port.value);
+    int dev_type = DriverStation.getJoystickType(port.value);
+    System.out.println("On port "+ port + " found controller:"+ name + " type=" + dev_type  );
+    
+    // either return xbox or thrustmaster controller based on what the DS finds
+    if (dev_type == 20) {
+      return (T) new TMJoystickController(port.value);
+    }
+    // otherwise use xbox
+    return (T) new CommandXboxController(port.value);
+  }
 
 }

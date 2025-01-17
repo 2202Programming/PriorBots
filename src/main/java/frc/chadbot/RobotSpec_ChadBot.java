@@ -1,5 +1,7 @@
 package frc.chadbot;
 
+import static edu.wpi.first.units.Units.DegreesPerSecond;
+import static edu.wpi.first.units.Units.FeetPerSecond;
 import static frc.lib2202.Constants.MperFT;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -45,9 +47,7 @@ public class RobotSpec_ChadBot implements IRobotSpec {
   boolean swerve = true;
 
   // Robot Speed Limits
-  double maxSpeed = 15.0 * MperFT; // [m/s]
-  double maxRotationRate = 2.0 * Math.PI; // [rad/s]
-  RobotLimits limits = new RobotLimits(maxSpeed, maxRotationRate);
+  RobotLimits robotLimits = new RobotLimits(FeetPerSecond.of(15.0), DegreesPerSecond.of(180.0));
 
   // Chassis
   double kWheelCorrectionFactor = .995;
@@ -74,7 +74,7 @@ public class RobotSpec_ChadBot implements IRobotSpec {
 
  @Override
   public RobotLimits getRobotLimits() {
-    return limits;
+    return robotLimits;
   }
 
   @Override

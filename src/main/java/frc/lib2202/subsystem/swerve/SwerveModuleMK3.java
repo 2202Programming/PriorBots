@@ -6,6 +6,7 @@ import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkMax;
@@ -135,6 +136,8 @@ public class SwerveModuleMK3 {
               .positionConversionFactor(Math.PI * cc.wheelDiameter / cc.kDriveGR) // mo-rot to wheel units
               .velocityConversionFactor((Math.PI * cc.wheelDiameter / cc.kDriveGR) / 60.0); // mo-rpm wheel units
     
+    driveCfg.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
+
     // finish pid and config 
     cc.drivePIDF.copyTo(driveMtr, driveCfg, kSlot); // velocity mode
     driveMotor.configure(driveCfg, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -151,6 +154,8 @@ public class SwerveModuleMK3 {
             .encoder // set angle endcoder to return values in deg and deg/s
               .positionConversionFactor(360.0 / cc.kSteeringGR) // mo-rotations to degrees
               .velocityConversionFactor(360.0 / cc.kSteeringGR / 60.0); // rpm to deg/s  
+    angleCfg.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
+
     //finish angle controller
     cc.anglePIDF.copyTo(angleMtr, angleCfg, kSlot); // position mode
     angleMotor.configure(angleCfg, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);

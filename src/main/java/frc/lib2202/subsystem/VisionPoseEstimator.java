@@ -176,9 +176,9 @@ public class VisionPoseEstimator extends SubsystemBase {
                  field_speed.vyMetersPerSecond * field_speed.vyMetersPerSecond;
  
         // only apply ll measurements if we have tags, quality, and not moving too fast (2.5m/s)
-        if (limelight.getNumApriltags() > 0 && 
-            limelight.getTA() > 0.13 &&
-            Math.abs(v2) < (2.5 * 2.5)) {
+        if (limelight.getNumApriltags() > 0 && //make sure at least 1 tag is in view
+            //limelight.getTA() > 0.13 && //JR I don't think we want this here, the limelight is also filtering this out on it's end
+            Math.abs(v2) < (2.5 * 2.5)) { //don't use vision if moving too fast - might be better in limelight 3G
             // this should happen only if we have a tag in view
             // OK if it is run only intermittanly. Uses latency of vision pose.
             m_poseEstimator_ll.addVisionMeasurement(limelight.getBluePose(), limelight.getVisionTimestamp());

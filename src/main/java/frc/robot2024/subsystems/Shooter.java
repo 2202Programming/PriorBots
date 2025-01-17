@@ -8,6 +8,7 @@ import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.RelativeEncoder;
@@ -36,7 +37,7 @@ public class Shooter extends SubsystemBase {
   final RelativeEncoder rightEncoder;
   final double FACTOR = 1.0;
   final double left_kF = 1.0 / 5425.0; //5425 orig
-  final double right_kF = 1.0 / 5500.0; //5100 orig
+  final double right_kF = 1.0 / 5400.0; //5500 orig
   public final double adjustment = 0.0;
 
   private DoubleSolenoid shooterAngle; // can be replaced w/ servo in derived class
@@ -47,8 +48,9 @@ public class Shooter extends SubsystemBase {
   private double measRightRPM;
 
   // left and right match pretty well.  25-50 rpm overshoot. 
-  PIDFController leftPidConsts = new  PIDFController(0.000050, 0.0000005, 0.0, left_kF);  //slot 0  - normal
-  PIDFController rightPidConsts = new PIDFController(0.000050, 0.0000005, 0.0, right_kF);
+  double kIzone = 750.0;// rpm err
+  PIDFController leftPidConsts = new  PIDFController(0.000040, 0.0000004, 0.0, left_kF);  //slot 0  - normal
+  PIDFController rightPidConsts = new PIDFController(0.000045, 0.0000004, 0.0, right_kF);
   PIDFController pidConsts_freeSpin = new PIDFController(0.0, 0.0, 0.0, 0.0);  //slot 1 - free spin
 
   public Shooter() {
@@ -56,6 +58,9 @@ public class Shooter extends SubsystemBase {
   }
 
   public Shooter(boolean HasSolenoid) {
+    // add iZone to our pid constants holder, used in copyTo()
+    leftPidConsts.setIZone(kIzone);
+    rightPidConsts.setIZone(kIzone);
     motor_config(leftMtr, leftMtrCfg, leftPidConsts, false);
     motor_config(rightMtr, rightMtrCfg, rightPidConsts, true);
 
@@ -132,9 +137,10 @@ public class Shooter extends SubsystemBase {
     cfg.encoder
       .positionConversionFactor(FACTOR)
       .velocityConversionFactor(FACTOR /* / 60.0 */);
-
+    
     cfg.closedLoop
-      .iZone(750.0, ClosedLoopSlot.kSlot0);
+      .feedbackSensor(FeedbackSensor.kPrimaryEncoder);
+      // Izone set from hwPidConsts in copyTo()  //.iZone(kIzone, ClosedLoopSlot.kSlot0);
     hwPidConsts.copyTo(mtr, cfg, ClosedLoopSlot.kSlot0);
    
     pidConsts_freeSpin.copyTo(mtr, cfg, ClosedLoopSlot.kSlot1); 

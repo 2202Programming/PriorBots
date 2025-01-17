@@ -68,7 +68,9 @@ public class RegisteredCommands {
             NamedCommands.registerCommand("highShoot2500", new ShooterServoSequence(45.5,2500,false,true));
             NamedCommands.registerCommand("midShoot", new ShooterServoSequence(39,3000.0,false,true));
         }
-        autoChooser = AutoBuilder.buildAutoChooser();
+        
+        // check autobuilder is setup
+        autoChooser = (AutoBuilder.isConfigured()) ? AutoBuilder.buildAutoChooser() : null;
         // select our auto
         SmartDashboard.putData("Auto Chooser", autoChooser);
         return autoChooser;

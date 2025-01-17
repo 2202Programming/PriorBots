@@ -10,10 +10,10 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot2024.Constants.CAN;
 import frc.lib2202.command.WatcherCmd;
 import frc.lib2202.util.NeoServo;
 import frc.lib2202.util.PIDFController;
+import frc.robot2024.Constants.CAN;
 
 public class Climber extends SubsystemBase {
   /** Creates a new Climber. */
@@ -35,9 +35,12 @@ public class Climber extends SubsystemBase {
 
   PIDController posPID = new PIDController(4.0, 0.0015, 0.125);
   PIDFController hwVelPID = new PIDFController(0.02, 0.0, 0, 0.0285);
-  final NeoServo servo = new NeoServo(CAN.CLIMBER, posPID, hwVelPID, false); //check invert
+  final NeoServo servo; 
 
   public Climber() {
+    // it needed to be inverted bc someone unwound and rewound it in the opposite direction -er
+   servo = new NeoServo(CAN.CLIMBER, posPID, hwVelPID, true); 
+
     //should be done by NeoServo //hwVelPID.copyTo(servo.getController().getClosedLoopController(), ClosedLoopSlot.kSlot0);
     servo.setConversionFactor(conversionFactor) // in cm
         .setSmartCurrentLimit(STALL_CURRENT, FREE_CURRENT)

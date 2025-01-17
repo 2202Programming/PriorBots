@@ -1,5 +1,7 @@
 package frc.lib2202.builder;
 
+import static edu.wpi.first.units.Units.DegreesPerSecond;
+import static edu.wpi.first.units.Units.FeetPerSecond;
 import static frc.lib2202.Constants.MperFT;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -16,9 +18,9 @@ public class RobotSpecDefault implements IRobotSpec {
     // Build
 
     // Robot Speed Limits
-    double maxSpeed = 15.0 * MperFT; // [m/s]
-    double maxRotationRate = 2.0 * Math.PI; // [rad/s]
-    RobotLimits robotLimits = new RobotLimits(maxSpeed, maxRotationRate);
+    RobotLimits robotLimits = new RobotLimits(
+        FeetPerSecond.of(15.0), 
+        DegreesPerSecond.of(360.0));
 
     // Chassis
     double kWheelCorrectionFactor = .995;
@@ -27,12 +29,12 @@ public class RobotSpecDefault implements IRobotSpec {
     double kWheelDiameter = MperFT * 4.0 / 12.0; // [m]
 
     ChassisConfig chassisConfig = new ChassisConfig(
-            MperFT * (21.516 / 12.0) / 2.0, // X offset
-            MperFT * (24.87 / 12) / 2.0, // Y offset
-            kWheelCorrectionFactor,
-            kWheelDiameter,
-            kSteeringGR,
-            kDriveGR);
+            MperFT * (21.516 / 12.0) / 2.0, // X offset [m]
+            MperFT * (24.87 / 12) / 2.0, // Y offset [m]
+            kWheelCorrectionFactor, // []
+            kWheelDiameter, // [m]
+            kSteeringGR,    // []
+            kDriveGR);      // []
 
     // SubsystemConfig gets registered in static array to match serial number at Construct call
     SubsystemConfig subsystemConfig = new SubsystemConfig("DEFAULT:bot-On-Board", "00000000");

@@ -2,12 +2,11 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.base;
+package frc.lib2202.builder;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.lib2202.builder.RobotContainer;
 
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
@@ -57,6 +56,8 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+    // call any robot spec'd teleOpInit needed by the bot.
+    RobotContainer.getRobotSpecs().teleopInit();
   }
 
   @Override

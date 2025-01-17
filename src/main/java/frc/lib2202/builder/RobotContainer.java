@@ -20,16 +20,7 @@ import frc.base.Robot;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
-  public String LIB2202_VERSION = "1.0.1";
-
-  // // enum for bindings add when needed
-  // public enum Bindings {
-  //   Competition,
-  //   DriveTest, Shooter_test, IntakeTesting, auto_shooter_test, new_bot_test, comp_not_comp, Etude
-  // }
-
-  // Change the line below for testing, try not to commit a change 
-  ///public static final frc.robot.RobotContainer.Bindings bindings = Bindings.Competition;
+  public String LIB2202_VERSION = "1.0.2";
 
   // The robot's subsystems and commands are defined here...
   static RobotContainer rc;   //singleton

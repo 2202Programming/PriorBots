@@ -35,7 +35,14 @@ public final class BindingsCompetition {
 
 
     private static void DriverBinding(HID_Xbox_Subsystem dc) {
-        var driver = dc.Driver();
+        CommandXboxController  driver;
+        if (dc.Driver() instanceof CommandXboxController) {
+            driver = (CommandXboxController)dc.Driver();
+        } else {
+            DriverStation.reportError("BindingsCompetition: Please use XBOX controller for Driver", false);
+            return;
+        }
+
         var drivetrain = RobotContainer.getSubsystem(SwerveDrivetrain.class);
 
         // Driver buttons
@@ -47,7 +54,13 @@ public final class BindingsCompetition {
 
     static void OperatorBindings(HID_Xbox_Subsystem dc) {
         var sideboard = dc.SwitchBoard();
-        var operator = dc.Operator();
+        CommandXboxController operator;
+        if (dc.Operator() instanceof CommandXboxController) {
+            operator = (CommandXboxController)dc.Operator();
+        }else {
+            DriverStation.reportError("BindingsCompetition: Please use XBOX controller for Operator", false);
+            return;
+        }
 
         //var climber = RobotContainer.getSubsystem(Climber.class);
         //var AmpMechanism = RobotContainer.getSubsystem(AmpMechanism.class);
@@ -74,12 +87,15 @@ public final class BindingsCompetition {
         operator.x().whileTrue(new InIntake(false)); // works ---> seq for stay in intake for amp shoot
         IntakeCalibrate.and(operator.povUp()).onTrue(new AngleCalibration(-25.0));// intake calibrate
         IntakeCalibrate.and(operator.povDown()).whileTrue(new TestIntake(0.0));
-        //amp is rightbumper
-        //ManualShoot.and(operator.rightBumper()).onTrue(new SequentialCommandGroup (
-            //new InstantCommand( ()-> {AmpMechanism.setServo(AmpMechanism.extended); }),
-            //new ShooterServoSequence(45.5, 2200).andThen(new InstantCommand( ()-> {AmpMechanism.setServo(AmpMechanism.parked); }))));                                                                                              
+        
+        //amp shooting
+        ManualShoot.and(operator.rightBumper()).onTrue(new SequentialCommandGroup (
+            new InstantCommand( ()-> {AmpMechanism.setServo(AmpMechanism.extended); }),
+            new ShooterServoSequence(45.5, 2200).andThen(new InstantCommand( ()-> {AmpMechanism.setServo(AmpMechanism.parked); }))));      
+        // speaker shooting                                                                                            
         ManualShoot.and(operator.rightTrigger()).onTrue(new ShooterServoSequence()); // was 35
         ManualShoot.and(operator.leftTrigger()).onTrue(new ShooterServoSequenceDebug());
+
         // AutoShootm 
         ManualShoot.negate().and(operator.rightBumper())
             .onTrue(new AutoShooting(ShootingTarget.Speaker, 45.0, 3000.0));

@@ -1,5 +1,7 @@
 package frc.robot2024;
 
+import static edu.wpi.first.units.Units.DegreesPerSecond;
+import static edu.wpi.first.units.Units.FeetPerSecond;
 import static frc.lib2202.Constants.MperFT;
 
 import edu.wpi.first.wpilibj.PowerDistribution;
@@ -11,6 +13,7 @@ import frc.lib2202.builder.RobotContainer;
 import frc.lib2202.builder.RobotLimits;
 import frc.lib2202.builder.SubsystemConfig;
 import frc.lib2202.command.swerve.FieldCentricDrive;
+//import frc.lib2202.command.swerve.RobotCentricDrive;
 import frc.lib2202.subsystem.BlinkyLights;
 import frc.lib2202.subsystem.Limelight;
 import frc.lib2202.subsystem.hid.HID_Xbox_Subsystem;
@@ -22,6 +25,7 @@ import frc.lib2202.subsystem.swerve.config.ModuleConfig;
 import frc.lib2202.subsystem.swerve.config.ModuleConfig.CornerID;
 import frc.lib2202.util.PIDFController;
 import frc.robot2024.Constants.CAN;
+import frc.robot2024.commands.Shooter.CalibrateWithLS;
 import frc.robot2024.commands.Shooter.DistanceInterpretor;
 import frc.robot2024.subsystems.AmpMechanism;
 import frc.robot2024.subsystems.Climber;
@@ -31,6 +35,8 @@ import frc.robot2024.subsystems.Transfer;
 import frc.robot2024.subsystems.sensors.Sensors_Subsystem;
 
 public class RobotSpec_CompBot2024 implements IRobotSpec {
+
+    boolean teleOpRunOnce = true;
 
     final SubsystemConfig config = new SubsystemConfig(
             "CompetitionBotBeta2024", "032D2062")
@@ -79,10 +85,10 @@ public class RobotSpec_CompBot2024 implements IRobotSpec {
     boolean swerve = true;
 
     // Robot Speed Limits
-    double maxSpeed = 15.0 * MperFT; // [m/s]
-    double maxRotationRate = 2.0 * Math.PI; // [rad/s]
-    RobotLimits robotLimits = new RobotLimits(maxSpeed, maxRotationRate);
-
+    double maxSpeedFPS = 15.0; // [ft/s] 
+    double maxRotationRateDPS = 360.0; // [deg/s]
+    RobotLimits robotLimits = new RobotLimits(FeetPerSecond.of(15.0), DegreesPerSecond.of(180.0));
+    
     // Chassis
     double kWheelCorrectionFactor = .987;
     double kSteeringGR = 21.428;
@@ -127,22 +133,6 @@ public class RobotSpec_CompBot2024 implements IRobotSpec {
 
     @Override
     public ModuleConfig[] getModuleConfigs() {
-        // from original constants
-        // WheelOffsets(-125.595, 28.125, -114.785, -115.752); //FL BL FR BR
-        // final ModuleConfig comp2024CAN_FL = new ModuleConfig(29, 24, 25);
-        // final ModuleConfig comp2024CAN_FR = new ModuleConfig(30, 26, 27);
-        // final ModuleConfig comp2024CAN_BL = new ModuleConfig(28, 22, 23);
-        // final ModuleConfig comp2024CAN_BR = new ModuleConfig(31, 20, 21);
-        // final CANConfig comp2024BotCANConfig = new CANConfig(comp2024CAN_FL,
-        // comp2024CAN_FR, comp2024CAN_BL, comp2024CAN_BR);
-
-        // ChassisInversionSpecs comp2024BotBetaInversionSpecs = new
-        // ChassisInversionSpecs(
-        // new ModuleInversionSpecs(false, true, false), // FR
-        // new ModuleInversionSpecs(true, true, false), // FL
-        // new ModuleInversionSpecs(false, true, false), // BR
-        // new ModuleInversionSpecs(true, true, false)); // BL
-
         ModuleConfig[] modules = new ModuleConfig[4];
         modules[CornerID.FrontLeft.getIdx()] = new ModuleConfig(CornerID.FrontLeft,
                 29, 24, 25,
@@ -176,13 +166,12 @@ public class RobotSpec_CompBot2024 implements IRobotSpec {
 
     }
 
-    @Override
-    public boolean burnFlash() {
-        return burnFlash;
-    }
 
     @Override
     public SendableChooser<Command> getRegisteredCommands() {
+        // configure pathplanner and the Registered commands
+        // ConfigureAutobuilder uses default pids and looks up SwereveDrivetrain from RobotContainer
+        AutoPPConfig.ConfigureAutoBuilder();
         return RegisteredCommands.RegisterCommands();
     }
 
@@ -191,7 +180,18 @@ public class RobotSpec_CompBot2024 implements IRobotSpec {
        SwerveDrivetrain drivetrain = RobotContainer.getSubsystem(SwerveDrivetrain.class);
         if (drivetrain != null) {
             drivetrain.setDefaultCommand(new FieldCentricDrive());
+            //RobotCentricDrive());
           }
     }
-
+    @Override
+    public void teleopInit(){
+         // Temp command for compbot2024 to calibrate shooter's servo
+        if (teleOpRunOnce) {
+            // ensure shooter is calibrated on power up - note for a competition this
+            // should not be needed and the bot should be calibrated in the pit
+            var cmd = new CalibrateWithLS();
+            cmd.schedule();
+            teleOpRunOnce = false;
+        }
+    }
 }

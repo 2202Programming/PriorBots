@@ -16,23 +16,25 @@ import frc.lib2202.subsystem.swerve.config.ModuleConfig;
 public interface IRobotSpec {
 
     // basic robot speeds
-    public  RobotLimits  getRobotLimits();
+    public abstract RobotLimits  getRobotLimits();
 
     // Sensors needed for drivetrain
-    IHeadingProvider getHeadingProvider();
+    public abstract IHeadingProvider getHeadingProvider();
 
     // swerve specs
-    public ChassisConfig getChassisConfig();
-    public ModuleConfig[] getModuleConfigs();
+    public abstract ChassisConfig getChassisConfig();
+    public abstract ModuleConfig[] getModuleConfigs();
 
     // bindings
     public abstract void setBindings();
 
-    public boolean burnFlash();
+    default public boolean burnFlash(){ return true;};
 
     // Setup registered commands
-    public SendableChooser<Command> getRegisteredCommands();
+    public abstract SendableChooser<Command> getRegisteredCommands();
 
     public abstract void setDefaultCommands();
+
+    default public void teleopInit(){}
 
 }

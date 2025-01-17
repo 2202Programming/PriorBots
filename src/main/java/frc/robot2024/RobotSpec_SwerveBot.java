@@ -1,5 +1,7 @@
 package frc.robot2024;
 
+import static edu.wpi.first.units.Units.DegreesPerSecond;
+import static edu.wpi.first.units.Units.FeetPerSecond;
 import static frc.lib2202.Constants.MperFT;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -29,10 +31,7 @@ public class RobotSpec_SwerveBot implements IRobotSpec {
     boolean swerve = true;
 
     // Robot Speed Limits
-    static double maxSpeed = 15.0 * MperFT; // [m/s]
-    static double maxRotationRate = 360.0;  // [deg/s]
-    static RobotLimits robotLimits = new RobotLimits(maxSpeed, maxRotationRate);
-
+    RobotLimits robotLimits = new RobotLimits(FeetPerSecond.of(15.0), DegreesPerSecond.of(180.0));
     // Chassis
     static double kWheelCorrectionFactor = .995;
     static double kSteeringGR = 12.8;
@@ -80,22 +79,6 @@ public class RobotSpec_SwerveBot implements IRobotSpec {
 
     @Override
     public ModuleConfig[] getModuleConfigs() {
-        // dpl 8/11/2024   posible fix for https://github.com/2202Programming/PriorBots/issues/1 
-        //                 offset angles adjusted along with invert flags.
-        //
-        // From original 2024 Constants.java:
-        //
-        // WheelOffsets swerveBotOffsets = new WheelOffsets(-98.942, 91.33, -177.035, -28.215); //FL BL FR BR
-        // swerveBotChassisInversionSpecs = new ChassisInversionSpecs(
-        //      new ModuleInversionSpecs(true, false, false), // FR  (drvMtrInver, angMtrInvert, angCmdInvert)
-        //      new ModuleInversionSpecs(false, false, false), // FL
-        //      new ModuleInversionSpecs(true, false, false), // BR
-        //      new ModuleInversionSpecs(false, false, false)); // BL
-        // CANModuleConfig swerveBotCAN_FL = new CANModuleConfig(7, 20, 21);
-        // CANModuleConfig swerveBotCAN_FR = new CANModuleConfig(30, 26, 27);
-        // CANModuleConfig swerveBotCAN_BL = new CANModuleConfig(28, 22, 23);
-        // CANModuleConfig swerveBotCAN_BR = new CANModuleConfig(31, 24, 25);
-       
         ModuleConfig[] modules = new ModuleConfig[4];
         modules[CornerID.FrontLeft.getIdx()] = new ModuleConfig(CornerID.FrontLeft,
                 7, 20, 21, -98.942)

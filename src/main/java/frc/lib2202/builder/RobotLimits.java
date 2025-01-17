@@ -1,32 +1,35 @@
 package frc.lib2202.builder;
-import static frc.lib2202.Constants.MperFT;
+import edu.wpi.first.units.Units;
+import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.LinearVelocity;
+
+// 1/11/2025 dpl  Use units for robot speeds
 
 public class RobotLimits {
-    
-    //Start wit reasonable defaults...
+    //Start with reasonable defaults...
     public double motorMaxRPM = 5600; // drive motor limit
     
     // see  https://docs.revrobotics.com/sparkmax/software-resources/configuration-parameters
-    public int driveStallAmp = 40; // dpl 3/15 was 30
+    public int driveStallAmp = 40; 
     public int angleStallAmp = 20;
     public int freeAmp = 20;
 
     // Constraints on speeds enforeced in DriveTrain    
-    public double kMaxSpeed = 16.2 * MperFT; // [m/s] new gears 3/23/24 16.6 m/s max
-    public double kMaxAngularSpeed = 2 * Math.PI; // [rad/s]
+    public double kMaxSpeed;            // [m/s] new gears 3/23/24 16.6 m/s max
+    public double kMaxAngularSpeed;     // [rad/s]
 
-    public RobotLimits(double maxSpeedFPS, double maxAngularSpeedDPS) {
-        kMaxSpeed = maxSpeedFPS * MperFT;
-        kMaxAngularSpeed = maxAngularSpeedDPS * (Math.PI / 180.0);        
+    public RobotLimits(LinearVelocity maxSpeed, AngularVelocity maxAngularSpeed) {
+        kMaxSpeed = maxSpeed.in(Units.MetersPerSecond);
+        kMaxAngularSpeed = maxAngularSpeed.in(Units.RadiansPerSecond);      
     }
 
-    public RobotLimits setMaxSpeed(double maxSpeed) {
-        kMaxSpeed= maxSpeed;
+    public RobotLimits setMaxSpeed(LinearVelocity maxSpeed) {
+        kMaxSpeed= maxSpeed.in(Units.MetersPerSecond);
         return this;
     }
 
-    public RobotLimits setAngularSpeed(double maxAngularSpeed) {
-        kMaxAngularSpeed = maxAngularSpeed;
+    public RobotLimits setAngularSpeed(AngularVelocity maxAngularSpeed) {
+        kMaxAngularSpeed = maxAngularSpeed.in(Units.RadiansPerSecond);
         return this;
     }
 
