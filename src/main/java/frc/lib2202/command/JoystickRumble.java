@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib2202.builder.RobotContainer;
 import frc.lib2202.subsystem.hid.HID_Xbox_Subsystem;
-import frc.lib2202.subsystem.hid.DriverControls.Id;
+import frc.lib2202.subsystem.hid.HID_Xbox_Subsystem.Id;
 
 public class JoystickRumble extends Command {
   /** Creates a new JoystickRumble. */

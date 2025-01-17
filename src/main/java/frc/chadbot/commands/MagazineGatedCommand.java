@@ -10,7 +10,7 @@ import frc.chadbot.subsystems.Intake_Subsystem;
 import frc.chadbot.subsystems.Magazine_Subsystem;
 import frc.lib2202.builder.RobotContainer;
 import frc.lib2202.command.JoystickRumble;
-import frc.lib2202.subsystem.hid.DriverControls.Id;
+import frc.lib2202.subsystem.hid.HID_Xbox_Subsystem.Id;
 
 /**
  * 
