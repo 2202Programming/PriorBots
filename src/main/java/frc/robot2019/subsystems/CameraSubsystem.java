@@ -2,7 +2,7 @@ package frc.robot2019.subsystems;
 
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
-import edu.wpi.first.cscore.VideoMode;
+//import edu.wpi.first.cscore.VideoMode;
 import edu.wpi.first.cscore.VideoSink;
 import edu.wpi.first.util.PixelFormat;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -22,16 +22,16 @@ public class CameraSubsystem extends SubsystemBase {
     //      https://www.chiefdelphi.com/t/stream-from-jetson-to-rio/343525/2
     //CameraServer cs = CameraServer.getInstance();
 
-    frontCamera = CameraServer.getInstance().startAutomaticCapture("Front Drive", RobotMap.FRONT_DRIVE_CAMERA_PATH);
+    frontCamera = CameraServer.startAutomaticCapture("Front Drive", RobotMap.FRONT_DRIVE_CAMERA_PATH);
     frontCamera.setVideoMode(PixelFormat.kMJPEG, 320, 240, 20);
     
-    rearCamera = CameraServer.getInstance().startAutomaticCapture("Rear Drive", RobotMap.REAR_DRIVE_CAMERA_PATH);
+    rearCamera = CameraServer.startAutomaticCapture("Rear Drive", RobotMap.REAR_DRIVE_CAMERA_PATH);
     rearCamera.setVideoMode(PixelFormat.kMJPEG, 320, 240, 20);
 
     //armCamera = CameraServer.getInstance().startAutomaticCapture("Arm", RobotMap.ARM_CAMERA_PATH);
     //armCamera.setVideoMode(PixelFormat.kYUYV, 240, 240, 15);
 
-    switchedCamera = CameraServer.getInstance().addSwitchedCamera("Switched Camera");
+    switchedCamera = CameraServer.addSwitchedCamera("Switched Camera");
     
     //frontCamera.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
     //rearCamera.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
@@ -51,11 +51,5 @@ public class CameraSubsystem extends SubsystemBase {
     }
   }
   
- 
-  @Override
-  public void initDefaultCommand() {
-      //set default command
-  }
-
   
 }

@@ -8,9 +8,12 @@ package frc.robot2019;
 
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.Joystick.ButtonType;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.buttons.Button;
-import edu.wpi.first.wpilibj.buttons.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+//import edu.wpi.first.wpilibj.buttons.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.lib2202.subsystem.hid.ExpoShaper;
 import frc.robot2019.commands.arm.ResetArmCommand;
 import frc.robot2019.commands.cargo.AutoCargoIntakeCommand;
 import frc.robot2019.commands.cargo.DeployCargoTrapCommand;
@@ -30,9 +33,9 @@ import frc.robot2019.commands.drive.shift.DownShiftCommand;
 import frc.robot2019.commands.drive.shift.ToggleAutomaticGearShiftingCommand;
 import frc.robot2019.commands.drive.shift.UpShiftCommand;
 import frc.robot2019.commands.intake.VacuumCommand;
-import frc.robot2019.commands.util.ExpoShaper;
+
 import frc.robot2019.input.XboxControllerButtonCode;
-import frc.robot2019.input.triggers.GeneralTrigger;
+//import frc.robot2019.input.triggers.GeneralTrigger;
 import frc.robot2019.input.triggers.JoystickTrigger;
 
 /**
@@ -80,8 +83,8 @@ public class OI {
   public JoystickButton endDriveMode; // Switches state out of drive
   public JoystickButton goToPrevMode; // Goes to previous state (only works for recapturing)
 
-  public Button climbButton;
-  public Button shortClimbButton;
+  public Trigger climbButton;
+  public Trigger shortClimbButton;
 
   private ExpoShaper rotateShaper = new ExpoShaper(.7); // fairly flat curve
 
@@ -128,8 +131,8 @@ public class OI {
 
     // Climber tests - temporary added to field
     //execute Pawl only on change
-    new JoystickButton(switchBoard, 1).whenPressed(new PawlSureFire(Robot.climber.Extend, 3));
-    new JoystickButton(switchBoard, 1).whenReleased(new PawlSureFire(Robot.climber.Retract, 3));
+    new JoystickButton(switchBoard, 1).whenPressed(new PawlSureFire(RobotSpec_2019.climber.Extend, 3));
+    new JoystickButton(switchBoard, 1).whenReleased(new PawlSureFire(RobotSpec_2019.climber.Retract, 3));
     new JoystickButton(switchBoard, 2).whileActive(new ClimbMotorTestCmd(0.3));
     
     //execute Charon only on button change
@@ -139,7 +142,7 @@ public class OI {
     new JoystickButton(switchBoard, 4).whileActive(new RollerMotorTestCmd(0.25));
     new JoystickButton(switchBoard, 5).whileActive(new ClimbMotorTestCmd(-0.3));
 
-    new GeneralTrigger(Robot.arm::extensionAtMin).whenPressed(new ResetArmCommand());
+    new GeneralTrigger(RobotSpec_2019.arm::extensionAtMin).whenPressed(new ResetArmCommand());
 
     // setup buttons for use in CommandManager
     heightDownSelect = new JoystickButton(assistant, XboxControllerButtonCode.LB.getCode());
@@ -150,8 +153,8 @@ public class OI {
     goToPrevMode = new JoystickButton(assistant, XboxControllerButtonCode.Y.getCode());
 
     //TODO: Billy / Zander / driveteam pick a real place for this - 3/23/19
-    climbButton = new GeneralTrigger(() -> switchBoard.getRawButton(7) && switchBoard.getRawButton(11));
-    shortClimbButton = new GeneralTrigger(() -> switchBoard.getRawButton(8) && switchBoard.getRawButton(11));
+    climbButton = new Trigger(() -> switchBoard.getRawButton(7) && switchBoard.getRawButton(11));
+    shortClimbButton = new Trigger(() -> switchBoard.getRawButton(8) && switchBoard.getRawButton(11));
   }
 
 
@@ -201,16 +204,16 @@ public class OI {
   // converted in
   // the CommandManager
   public double adjustHeight() {
-    return Robot.m_oi.assistant.getTriggerAxis(Hand.kLeft) - Robot.m_oi.assistant.getTriggerAxis(Hand.kRight);
+    return RobotSpec_2019.m_oi.assistant.getTriggerAxis(Hand.kLeft) - RobotSpec_2019.m_oi.assistant.getTriggerAxis(Hand.kRight);
   }
 
   public double extensionInput() {
-    return Robot.m_oi.assistant.getY(Hand.kLeft);
+    return RobotSpec_2019.m_oi.assistant.getY(Hand.kLeft);
   }
 
   // assistant rotation input
   public double rotationInput() {
-    double in = Robot.m_oi.assistant.getY(Hand.kRight);
+    double in = RobotSpec_2019.m_oi.assistant.getY(Hand.kRight);
     double out = rotateShaper.expo(in);
     return out;
   }

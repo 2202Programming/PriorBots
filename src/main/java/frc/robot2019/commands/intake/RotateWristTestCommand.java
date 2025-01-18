@@ -2,7 +2,9 @@ package frc.robot2019.commands.intake;
 
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot2019.Robot;
+import frc.lib2202.builder.Robot;
+import frc.lib2202.builder.RobotContainer;
+import frc.robot2019.subsystems.IntakeSubsystem;
 
 /**
  * This command is intended to be used for testing purposes.
@@ -18,20 +20,22 @@ public class RotateWristTestCommand extends Command {
   private XboxController ctrl = Robot.m_oi.getAssistantController();
   private double[] positions = {-30, 0, 30, 0};
   private int currentIndex = 0;
-
+  final IntakeSubsystem intake;
+  
   public RotateWristTestCommand() {
-    addRequirements(Robot.intake);
+     intake = RobotContainer.getSubsystem(IntakeSubsystem.class);
+    addRequirements(intake);
   }
 
   @Override
   public void initialize() {
-    Robot.intake.setAngle(positions[currentIndex]);
+    intake.setAngle(positions[currentIndex]);
   }
 
   @Override
   public void execute() {
     if (ctrl.getAButtonReleased()) { // TODO: change to respective button
-      Robot.intake.setAngle(positions[currentIndex++]);
+      intake.setAngle(positions[currentIndex++]);
       if (currentIndex > positions.length) currentIndex = 0;
     }
   }

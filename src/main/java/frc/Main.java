@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.RobotBase;
 import frc.chadbot.RobotSpec_ChadBot;
 import frc.lib2202.builder.Robot;
 import frc.lib2202.builder.RobotSpecDefault;
+import frc.robot2019.RobotSpec_2019;
 import frc.robot2024.RobotSpec_AlphaBot2024;
 import frc.robot2024.RobotSpec_CompBot2024;
 import frc.robot2024.RobotSpec_DoofBot;
@@ -22,6 +23,7 @@ public final class Main {
     new RobotSpec_ChadBot();
     new RobotSpec_SwerveBot();
     new RobotSpec_DoofBot();
+    new RobotSpec_2019();
 
   }
   public static void main(String... args) {

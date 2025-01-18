@@ -1,9 +1,10 @@
 package frc.robot2019;
 
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.GenericHID.Hand;
+
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Scheduler;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot2019.commands.arm.TeleopArmControlCommand;
 import frc.robot2019.commands.arm.tests.TestArmRateCmd;
@@ -11,9 +12,9 @@ import frc.robot2019.commands.intake.tests.TestWristPositionCommand;
 
 
 public class RobotTest {
-    private XboxController driver = Robot.m_oi.getDriverController();
-    private XboxController assistant = Robot.m_oi.getAssistantController();
-    private XboxController switchBoard = Robot.m_oi.getAssistantController();
+    private XboxController driver = RobotSpec_2019.m_oi.getDriverController();
+    private XboxController assistant = RobotSpec_2019.m_oi.getAssistantController();
+    private XboxController switchBoard = RobotSpec_2019.m_oi.getAssistantController();
 
     // TESTING Started in TestInit
     Command testWristCmd;
@@ -25,11 +26,11 @@ public class RobotTest {
 
     public void initialize() {
         // Set commands here so they override the OI 
-        Scheduler.getInstance().removeAll();
+        CommandScheduler.getInstance().removeAll();
         // remove defaultCommands so only testing is being done.
-        Robot.intake.setDefaultCommand(null);
-        Robot.gearShifter.setDefaultCommand(null);
-        Robot.arm.zeroArm();
+        RobotSpec_2019.intake.setDefaultCommand(null);
+        RobotSpec_2019.gearShifter.setDefaultCommand(null);
+        RobotSpec_2019.arm.zeroArm();
 
         // TESTING Commands, only get scheduled if we enter Test mode
         //testWristCmd = new  TestWristPositionCommand(this::Wrist_AssistLeftTrigger);
@@ -55,7 +56,7 @@ public class RobotTest {
      */
     private double Wrist_AssistLeftTrigger() {
         //rescale as expected by wrist test
-        double temp = -1.0 +2.0*Robot.m_oi.getAssistantController().getTriggerAxis(Hand.kLeft);
+        double temp = -1.0 +2.0*RobotSpec_2019.m_oi.getAssistantController().getTriggerAxis(Hand.kLeft);
         return temp;
     }
 
@@ -74,8 +75,8 @@ public class RobotTest {
         // SmartDashboard.putNumber("Right Encoder Rate", driveTrain.getRightEncoderTalon().getSelectedSensorVelocity());
         // SmartDashboard.putString("Gear Shifter State", String.valueOf(gearShifter.getCurGear()));
 
-        Robot.arm.log();
-        Robot.arm.logTalons();
+        RobotSpec_2019.arm.log();
+        RobotSpec_2019.arm.logTalons();
  
         SmartDashboard.putData(Scheduler.getInstance()); 
         //SmartDashboard.putData(driveTrain);
@@ -83,7 +84,7 @@ public class RobotTest {
       }
     
       private void resetAllDashBoardSensors() {
-        Robot.driveTrain.getLeftEncoderTalon().setSelectedSensorPosition(0);
-        Robot.driveTrain.getRightEncoderTalon().setSelectedSensorPosition(0);
+        RobotSpec_2019.driveTrain.getLeftEncoderTalon().setSelectedSensorPosition(0);
+        RobotSpec_2019.driveTrain.getRightEncoderTalon().setSelectedSensorPosition(0);
       }
 }

@@ -100,12 +100,6 @@ import edu.wpi.first.wpilibj.AnalogInput;
 
 
     @Override
-    protected void initDefaultCommand() {
-        // could put the trigger here if good, but may just want to do in state manager or owning subsytem
-
-    }
-
-    @Override
     public Command zeroSubsystem() {   
         return null;    //does not need a zeroSubsystem
     }

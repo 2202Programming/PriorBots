@@ -1,13 +1,11 @@
 package frc.robot2019.input.triggers;
 
 import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.buttons.Button;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+import static edu.wpi.first.util.ErrorMessages.requireNonNullParam;
 
-public class JoystickTrigger extends Button {
-    private final GenericHID joystick;
-    private final int axisNumber;
-    private final double threshold;
-
+public class JoystickTrigger extends Trigger {
+    
     /**
      * Create a joystick trigger for triggering commands.
      *
@@ -15,16 +13,12 @@ public class JoystickTrigger extends Button {
      *                   KinectStick, etc)
      * @param axisNumber The axis number (see {@link GenericHID#getRawAxis(int) }
      * 
-     * @param threshold The value necessary for the trigger to activate (0-1) }     * 
+     * @param threshold The value necessary for the trigger to activate (0-1) }     
      */
     public JoystickTrigger(GenericHID joystick, int axisNumber, double threshold) {
-        this.joystick = joystick;
-        this.axisNumber = axisNumber;
-        this.threshold = threshold;
-    }
-
-    @Override
-    public boolean get() {
-        return joystick.getRawAxis(axisNumber) > threshold;
+        //super must be called first, so create the bool function as lambda
+        super( () -> joystick.getRawAxis(axisNumber) > threshold ); 
+        // good habit to use logging of null
+        requireNonNullParam(joystick, "joystick", "JoystickTrigger");
     }
 }

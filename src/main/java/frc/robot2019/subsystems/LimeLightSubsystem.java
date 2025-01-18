@@ -28,10 +28,7 @@ public class LimeLightSubsystem extends SubsystemBase {
         logTimer = System.currentTimeMillis();
     }
 
-    @Override
-    protected void initDefaultCommand() {
-
-    }
+  
 
     public void log(int interval) {
 

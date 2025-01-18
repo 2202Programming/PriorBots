@@ -9,10 +9,10 @@ package frc.robot2019;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.PowerDistributionPanel;
+import edu.wpi.first.wpilibj.PowerDistribution;      ///was .PowerDistributionPanel;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj2.command.CommandGroup;
-import edu.wpi.first.wpilibj2.command.Scheduler;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot2019.commands.CommandManager;
 import frc.robot2019.commands.CommandManager.Modes;
@@ -41,7 +41,7 @@ import frc.robot2019.subsystems.SensorSubsystem;
  * creating this project, you must also update the build.gradle file in the
  * project.
  */
-public class Robot extends TimedRobot {
+public class RobotSpec_2019 extends TimedRobot {
   //common constants for robot
   public static double dT = kDefaultPeriod;  // Robots sample period (seconds) 
   //THis years bounding box beyond frame of robot. Use this in limit calcs in subsystems.
@@ -56,7 +56,7 @@ public class Robot extends TimedRobot {
   public static CargoTrapSubsystem cargoTrap = new CargoTrapSubsystem();
   public static ArmSubsystem arm = new ArmSubsystem();
   public static ClimberSubsystem climber = new ClimberSubsystem();
-  public static PowerDistributionPanel pdp = new PowerDistributionPanel(0);
+  public static PowerDistribution pdp = new PowerDistribution();   //auto type: Rev or ctre
   public static CameraSubsystem cameraSubsystem = new CameraSubsystem();
   public static SensorSubsystem sensorSubystem = new SensorSubsystem();
 
@@ -83,10 +83,10 @@ public class Robot extends TimedRobot {
     // 0=front cam, 1= rear cam, 2 = arm  (pi camera server defines this - could change)
     cameraSelect.setDouble(1);    
     m_cmdMgr.setMode(Modes.SettingZeros);   // schedules the mode's function    
-    CommandGroup level3Climb = new ClimbGroup(100, -5.0);  // extend/retract in inches
+    Command level3Climb = new ClimbGroup(100, -5.0);  // extend/retract in inches
     m_oi.climbButton.whenPressed(level3Climb);
     m_oi.climbButton.whenReleased(new CancelCommand(level3Climb));
-    CommandGroup level2Climb = new Level2ClimbGroup(15.0, -5.0);
+    Command level2Climb = new Level2ClimbGroup(15.0, -5.0);
     m_oi.shortClimbButton.whenPressed(level2Climb);
     m_oi.shortClimbButton.whenReleased(new CancelCommand(level2Climb));
   }
@@ -118,7 +118,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledPeriodic() {
-    Scheduler.getInstance().run();
+    CommandScheduler.getInstance().run();
     sensorSubystem.disableLED(); //disable blinding green LED that Trevor hates
   }
 
@@ -137,7 +137,7 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     resetAllDashBoardSensors();
-    Scheduler.getInstance().add(new CheckSolenoids());
+    CommandScheduler.getInstance().add(new CheckSolenoids());
 
     if(!doneOnce) {
       m_cmdMgr.setMode(Modes.HuntGameStart);   // schedules the mode's function
@@ -151,7 +151,7 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic() {
     m_cmdMgr.execute();
-    Scheduler.getInstance().run();
+    CommandScheduler.getInstance().run();
   }
 
   @Override

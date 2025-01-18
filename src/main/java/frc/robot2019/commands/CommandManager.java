@@ -1,14 +1,13 @@
 package frc.robot2019.commands;
 
 import java.util.function.IntSupplier;
-
-import edu.wpi.first.wpilibj.buttons.Trigger;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandGroup;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot2019.Robot;
+import frc.lib2202.builder.Robot;
+import frc.lib2202.builder.RobotContainer;
 import frc.robot2019.commands.arm.ArmStatePositioner;
 import frc.robot2019.commands.arm.EmptyArmCommand;
 import frc.robot2019.commands.arm.MoveArmToPosition;
@@ -20,6 +19,8 @@ import frc.robot2019.commands.intake.WristTrackAngle;
 import frc.robot2019.commands.util.Angle;
 import frc.robot2019.commands.util.MathUtil;
 import frc.robot2019.commands.util.TriggerTimeoutCommand;
+import frc.robot2019.subsystems.ArmSubsystem;
+import frc.robot2019.subsystems.IntakeSubsystem;
 import frc.robot2019.subsystems.VacuumSensorSystem;
 
 /**
@@ -42,20 +43,20 @@ public class CommandManager {
     Command flipCmd;
 
     // Command Sets - one created for each major operation of the robot.
-    CommandGroup zeroRobotGrp;
-    CommandGroup huntGameStartGrp;
-    CommandGroup huntingHatchGrp;
-    CommandGroup huntingCargoGrp;
-    CommandGroup huntingHFloorGrp;
-    CommandGroup captureGrp;
-    CommandGroup deliveryGrp;
-    CommandGroup releaseGrp;
-    CommandGroup flipToFrontGrp;
-    CommandGroup flipToFrontGrpFast;
-    CommandGroup flipToBackGrp;
-    CommandGroup flipToBackGrpFast;
-    CommandGroup driveGrp;
-    CommandGroup currentGrp; // what is running
+    Command zeroRobotGrp;
+    Command huntGameStartGrp;
+    Command huntingHatchGrp;
+    Command huntingCargoGrp;
+    Command huntingHFloorGrp;
+    Command captureGrp;
+    Command deliveryGrp;
+    Command releaseGrp;
+    Command flipToFrontGrp;
+    Command flipToFrontGrpFast;
+    Command flipToBackGrp;
+    Command flipToBackGrpFast;
+    Command driveGrp;
+    Command currentGrp; // what is running
 
     // Modes of behavior
     public enum Modes {
@@ -101,8 +102,17 @@ public class CommandManager {
     private int delHeightIdx = 0; // used in Delivery<Cargo/Hatch>Heights[]
     private int driveIdx = 1;
 
+    //Subsystems used 
+    final IntakeSubsystem intake;
+    final ArmSubsystem arm;
+
     public CommandManager() {
+        intake = RobotContainer.getSubsystem(IntakeSubsystem.class);
+        arm = RobotContainer.getSubsystem(ArmSubsystem.class);
+
+        //state machine mode
         currentMode = Modes.Construction;
+        
         // bind commands to buttons
         Robot.m_oi.heightDownSelect.whenPressed(new CallFunctionCmd(this::cycleDown));
         Robot.m_oi.heightUpSelect.whenPressed(new CallFunctionCmd(this::cycleUp));
@@ -112,15 +122,11 @@ public class CommandManager {
         Robot.m_oi.goToPrevMode.whenPressed(new CallFunctionCmd(this::goToPrevMode));
 
         // Rumble on vacuum
-        VacuumSensorSystem vs = Robot.intake.getVacuumSensor();
+        VacuumSensorSystem vs = intake.getVacuumSensor();
         if ((vs != null) && vs.isGood()) {
             // Command vacRumble = new RumbleCommand(Robot.m_oi.getAssistantController(), vs::hasVacuum);
             // capture trigger on vacuum
-            Trigger capTrigger = new Trigger() {
-                public boolean get() {
-                    return vs.hasVacuum();
-                }
-            };
+            Trigger capTrigger = new Trigger(vs::hasVacuum);
             capTrigger.whenActive(new CallFunctionCmd(this::autoTriggerCapture));
         }
 
@@ -158,7 +164,7 @@ public class CommandManager {
      * gripperHeight functions assigned.
      */
     public void setMode(Modes mode) {
-        CommandGroup nextCmd = null;
+        Command nextCmd = null;
 
         switch (mode) {
         case Construction:
@@ -210,14 +216,14 @@ public class CommandManager {
             nextCmd = releaseGrp;
             break;
         case Flipping:
-            if (Robot.arm.isInverted()) {
-                if (Robot.intake.getVacuumSensor().hasVacuum()) {
+            if (arm.isInverted()) {
+                if (intake.getVacuumSensor().hasVacuum()) {
                     nextCmd = flipToFrontGrp;
                 } else {
                     nextCmd = flipToFrontGrpFast;
                 }
             } else {
-                if (Robot.intake.getVacuumSensor().hasVacuum()) {
+                if (intake.getVacuumSensor().hasVacuum()) {
                     nextCmd = flipToBackGrp;
                 } else {
                     nextCmd = flipToBackGrpFast;
@@ -236,13 +242,13 @@ public class CommandManager {
     }
 
     // Starts new group.
-    void installGroup(CommandGroup grp) {
+    void installGroup(Command grp) {
         if (grp == null)
             return;
         if (currentGrp != null)
             currentGrp.cancel(); // end methods are called
         currentGrp = grp;
-        currentGrp.start(); // schedule our new work, initialize() then execute() are called
+        currentGrp.schedule();  // pre2025 was  start(); // schedule our new work, initialize() then execute() are called
     }
 
     public Modes getCurMode() {
@@ -402,8 +408,8 @@ public class CommandManager {
 
     // Command Factories that build command sets for each mode of operation
     // These are largely interruptable so we can switch as state changes
-    private CommandGroup CmdFactoryZeroRobot() {
-        CommandGroup grp = new CommandGroup("ZeroRobot");
+    private Command CmdFactoryZeroRobot() {
+        Command grp = new CommandGroup("ZeroRobot");
         grp.addSequential(Robot.arm.zeroSubsystem());
         grp.addSequential(Robot.intake.zeroSubsystem());
         grp.addSequential(Robot.climber.zeroSubsystem());
@@ -414,19 +420,19 @@ public class CommandManager {
         return grp;
     }
 
-    private CommandGroup CmdFactoryHuntHatch() {
+    private Command CmdFactoryHuntHatch() {
         CommandGroup grp = new CommandGroup("HuntHatch");
         grp.addSequential(new VacuumCommand(true, 0.0));
         return grp;
     }
 
-    private CommandGroup CmdFactoryHuntCargo() {
+    private Command CmdFactoryHuntCargo() {
         CommandGroup grp = new CommandGroup("HuntCargo");
         grp.addSequential(new VacuumCommand(true, 0.0));
         return grp;
     }
 
-    private CommandGroup CmdFactoryHuntHatchFloor() {
+    private Command CmdFactoryHuntHatchFloor() {
         CommandGroup grp = new CommandGroup("HuntHatchFloor");
         grp.addSequential(new VacuumCommand(true, 0.0));
         return grp;
@@ -436,9 +442,9 @@ public class CommandManager {
     // that will require some special motion, turn on vacuum,
     // and finaly go into delivery.
     //
-    private CommandGroup CmdFactoryHuntGameStart() {
+    private Command CmdFactoryHuntGameStart() {
         CommandGroup grp = new CommandGroup("HuntGameStart");
-        VacuumSensorSystem vs = Robot.intake.getVacuumSensor();
+        VacuumSensorSystem vs = intake.getVacuumSensor();
         grp.addSequential(new VacuumCommand(true, 0.0)); // no timeout
         grp.addParallel(new WristTrackAngle(Angle.Starting_Hatch_Hunt.getAngle()));
         grp.addSequential(new MoveArmToPosition(4.875, 11, 0.05, 1)); // Move arm up and back to avoid moving hatch
@@ -453,7 +459,7 @@ public class CommandManager {
         return grp;
     }
 
-    private CommandGroup CmdFactoryCapture() {
+    private Command CmdFactoryCapture() {
         CommandGroup grp = new CommandGroup("Capture");
         grp.addSequential(new VacuumCommand(true, 0.0)); // no timeout
         // grp.addSequential(new MoveDownToCapture(Capture_dDown), 3.5 ); //TODO: fix
@@ -462,17 +468,17 @@ public class CommandManager {
         return grp;
     }
 
-    private CommandGroup CmdFactoryDrive() {
+    private Command CmdFactoryDrive() {
         CommandGroup grp = new CommandGroup("Drive");
         return grp;
     }
 
-    private CommandGroup CmdFactoryDelivery() {
+    private Command CmdFactoryDelivery() {
         CommandGroup grp = new CommandGroup("Deliver");
         return grp;
     }
 
-    private CommandGroup CmdFactoryRelease() {
+    private Command CmdFactoryRelease() {
         double vacTimeout = 0.2; // seconds
         CommandGroup grp = new CommandGroup("Release");
         // grp.AddSequential(new Extend_Drive_To_Deliver());
@@ -483,7 +489,7 @@ public class CommandManager {
     }
 
     // TODO: Check for working w/ higher speeds
-    private CommandGroup CmdFactoryFlipToBack() {
+    private Command CmdFactoryFlipToBack() {
         CommandGroup grp = new CommandGroup("FlipToBack");
         grp.addSequential(new WristSetAngleCommand(0.0));
         grp.addSequential(new MoveArmToRawPosition(-35.0, 12.0, 1.0, 180));
@@ -492,7 +498,7 @@ public class CommandManager {
     }
 
     // TODO: Check for working w/ higher speeds
-    private CommandGroup CmdFactoryFlipToBackFast() {
+    private Command CmdFactoryFlipToBackFast() {
         CommandGroup grp = new CommandGroup("FlipToBackFast");
         grp.addSequential(new WristSetAngleCommand(0.0));
         grp.addSequential(new MoveArmToRawPosition(-35.0, 12.0, 1.0, 360));
@@ -501,7 +507,7 @@ public class CommandManager {
     }
 
     // TODO: Check for working w/ higher speeds
-    private CommandGroup CmdFactoryFlipToFront() {
+    private Command CmdFactoryFlipToFront() {
         CommandGroup grp = new CommandGroup("FlipToFront");
         grp.addSequential(new WristSetAngleCommand(0.0));
         grp.addSequential(new MoveArmToRawPosition(35.0, 12.0, 1.0, 180));
