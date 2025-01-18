@@ -27,7 +27,7 @@ import frc.lib2202.subsystem.Limelight;
 */
 
 
-public class LimeLightAim extends Command {
+public class LimelightAim extends Command {
 
   final SwerveDrivetrain drivetrain;
   final SwerveDriveKinematics kinematics;
@@ -73,7 +73,7 @@ public class LimeLightAim extends Command {
   //A simplified version of HubCentricDrive, designed for stand-alone limelight aiming during auto
   //will finish when PID error is small enough, to allow auto to progress to next command.
 
-  public LimeLightAim() {
+  public LimelightAim() {
     this.drivetrain = RobotContainer.getSubsystem(SwerveDrivetrain.class);
     addRequirements(drivetrain);
     this.kinematics = drivetrain.getKinematics();
