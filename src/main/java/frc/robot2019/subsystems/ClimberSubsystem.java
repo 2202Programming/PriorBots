@@ -1,12 +1,17 @@
 package frc.robot2019.subsystems;
 
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
 
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
-import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
+
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot2019.RobotMap;
 import frc.robot2019.commands.climb.ClimbZero;
@@ -24,6 +29,8 @@ import edu.wpi.first.wpilibj2.command.Command;
  */
 
 /**
+ * The Climber is no longer on the robot, code kept as example. 1/17/2025
+ * 
  * Climber subsystem consistes of an extensible foot to lift and lower the robot
  * with. When the robot is lifted up, a motor on the foot is used to roll the
  * robot past the step so the robot can be lowered on the higher step.
@@ -53,14 +60,16 @@ public class ClimberSubsystem extends ExtendedSubSystem {
     public final double IN_PER_COUNT = 1.0 / COUNTS_PER_IN;
 
     // physical devices
-    DoubleSolenoid pawl = new DoubleSolenoid(RobotMap.CLIMB_PCM_ID, RobotMap.CLIMB_PAWL_ENGAGE_PCM,
-            RobotMap.CLIMB_PAWL_RELEASE_PCM);
-    DoubleSolenoid drawerSlide = new DoubleSolenoid(RobotMap.CLIMB_PCM_ID, RobotMap.CLIMB_SLIDE_PULL_PCM,
-            RobotMap.CLIMB_SLIDE_RELEASE_PCM);
+    DoubleSolenoid pawl = new DoubleSolenoid(RobotMap.CLIMB_PCM_ID, RobotMap.moduleType, 
+        RobotMap.CLIMB_PAWL_ENGAGE_PCM, RobotMap.CLIMB_PAWL_RELEASE_PCM);
+    DoubleSolenoid drawerSlide = new DoubleSolenoid(RobotMap.CLIMB_PCM_ID, RobotMap.moduleType, 
+        RobotMap.CLIMB_SLIDE_PULL_PCM, RobotMap.CLIMB_SLIDE_RELEASE_PCM);
 
-    CANSparkMax footExtender = new CANSparkMax(RobotMap.CLIMB_FOOT_SPARK_MAX_CAN_ID, MotorType.kBrushless);
-    CANSparkMax roller = new CANSparkMax(RobotMap.CLIMB_ROLLER_SPARK_MAX_CAN_ID, MotorType.kBrushed);
-
+    SparkMax footExtender = new SparkMax(RobotMap.CLIMB_FOOT_SPARK_MAX_CAN_ID, MotorType.kBrushless);
+    SparkMax roller = new SparkMax(RobotMap.CLIMB_ROLLER_SPARK_MAX_CAN_ID, MotorType.kBrushed);
+    SparkMaxConfig footCfg = new SparkMaxConfig();
+    SparkMaxConfig rollerCfg = new SparkMaxConfig();
+    
     private DigitalInput extensionAtMax = new DigitalInput(RobotMap.CLIMB_MAX_EXTENSION_CH);
     private DigitalInput extensionAtMin = new DigitalInput(RobotMap.CLIMB_MIN_EXTENSION_CH);
     private DigitalInput drawerSlideAtMin = new DigitalInput(RobotMap.CLIMB_DRAWER_SLIDE_MIN);
@@ -68,6 +77,18 @@ public class ClimberSubsystem extends ExtendedSubSystem {
     // think we need to add an encoder
     public ClimberSubsystem() {
         super("Climber");
+        footCfg.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
+        footCfg.absoluteEncoder.positionConversionFactor(COUNTS_PER_IN)
+            .velocityConversionFactor(COUNTS_PER_IN / 60.0)
+            .inverted(false);
+        footExtender.configure(footCfg, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    
+        rollerCfg.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
+        rollerCfg.absoluteEncoder.positionConversionFactor(1.0)  //rpms
+            .velocityConversionFactor(1.0 / 60.0)
+            .inverted(false);
+        roller.configure(rollerCfg, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+
         zeroClimber();
     }
 
@@ -77,9 +98,7 @@ public class ClimberSubsystem extends ExtendedSubSystem {
 
     public void zeroClimber() {
         footExtender.getEncoder().setPosition(0.0);
-        footExtender.getEncoder().setPositionConversionFactor(IN_PER_COUNT);
         roller.getEncoder().setPosition(0.0);
-        roller.getEncoder().setPositionConversionFactor(1.0);
     }
 
     public void setDrawerSlide(boolean on) {
@@ -141,9 +160,6 @@ public class ClimberSubsystem extends ExtendedSubSystem {
         return !drawerSlideAtMin.get();
     }
 
-    @Override
-    protected void initDefaultCommand() {
-    }
 
     public void initSendable(SendableBuilder builder) {
         builder.setSmartDashboardType("ClimberSubsystem");

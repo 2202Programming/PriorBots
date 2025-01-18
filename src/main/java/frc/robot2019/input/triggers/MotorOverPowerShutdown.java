@@ -1,20 +1,22 @@
 package frc.robot2019.input.triggers;
 
+import java.util.function.BooleanSupplier;
+
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
-import edu.wpi.first.wpilibj.filters.LinearDigitalFilter;
+import edu.wpi.first.math.filter.LinearFilter;  // was .LinearDigitalFilter;
 import frc.robot2019.Robot;
 import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.PIDSourceType;
-import edu.wpi.first.wpilibj.buttons.Trigger;
+//was a trigger import edu.wpi.first.wpilibj.buttons.Trigger;
 import edu.wpi.first.wpilibj2.command.Command;
 
-public class MotorOverPowerShutdown extends Trigger implements PIDSource {
+public class MotorOverPowerShutdown implements PIDSource, BooleanSupplier {
     final int TAP_MAX = 25;   // this is 0.5 seconds normally
     WPI_TalonSRX motor;
     double powerLimit;
     double avgPower;          //watts
     Command saveMotorCmd;
-    LinearDigitalFilter movingWindow;
+    LinearFilter movingWindow;
 
     public MotorOverPowerShutdown(WPI_TalonSRX motor, double powerLimit, double seconds) {
         this.powerLimit = powerLimit;
@@ -23,17 +25,17 @@ public class MotorOverPowerShutdown extends Trigger implements PIDSource {
         int taps = (int) Math.floor(seconds / Robot.dT);
     
         // build a moving average window
-        movingWindow = LinearDigitalFilter.movingAverage(this, taps);
+        movingWindow = LinearFilter.movingAverage(taps);
         this.saveMotorCmd = new SaveMotor();
 
         //install the command and hope it is never used
         this.whenActive(this.saveMotorCmd);
 
-        System.out.println("OverPower " +motor.getName() + " watts= " + powerLimit + " - for testing only");
+        System.out.println("OverPower " + motor.getDescription() + " watts= " + powerLimit + " - for testing only");
     }
 
     @Override
-    public boolean get() {
+    public boolean getAsBoolean() {
         // this is called each frame, so call pidGet() here.
         // Not really a pid, but this is how the filter class works
         pidGet();   //reads values, computes power and saves in the window
@@ -44,7 +46,7 @@ public class MotorOverPowerShutdown extends Trigger implements PIDSource {
 
     // monitor power
     double readPower() {
-        double oi = motor.getOutputCurrent();
+        double oi = motor.getStatorCurrent();   // was getOutputCurrent();
         double ov = motor.getMotorOutputVoltage();
         return Math.abs(oi*ov);
     }

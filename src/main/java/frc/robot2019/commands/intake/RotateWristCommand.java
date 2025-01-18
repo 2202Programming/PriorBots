@@ -1,7 +1,9 @@
 package frc.robot2019.commands.intake; 
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot2019.Robot;
+import frc.lib2202.builder.RobotContainer;
+import frc.robot2019.subsystems.IntakeSubsystem;
 
 
 /**
@@ -14,9 +16,13 @@ import frc.robot2019.Robot;
 public class RotateWristCommand extends Command{
     private double angle;
     private double timeout;
+    final IntakeSubsystem intake;
+    final Timer timer;
 
     public RotateWristCommand(double angle, double timeout){
-        addRequirements(Robot.intake);
+        intake = RobotContainer.getSubsystem(IntakeSubsystem.class);
+        timer = new Timer();
+        addRequirements(intake);
         this.angle = angle;
         this.timeout = timeout;
     }
@@ -27,31 +33,26 @@ public class RotateWristCommand extends Command{
 
     @Override
     public void initialize() {
-        setTimeout(timeout);
+        timer.start(); // setTimeout(timeout); 
+        intake.setAngle(angle);
     }
 
   @Override
-  public void execute() {
-      Robot.intake.setAngle(angle);
+  public void execute() {      
   }
 
   @Override
   public boolean isFinished() {
      // position in 1.0 degrees, but servo will always hit.
-    double measAngle = Robot.intake.getAngle();
+    double measAngle = intake.getAngle();
     boolean posHit = ( Math.abs(measAngle - angle) < 1.0 );
      //stay for the whole timeout
-     boolean to = isTimedOut();
-     return (to && posHit);
+     return (timer.hasElapsed(timeout) && posHit);
   }
 
   @Override
   public void end(boolean interrupted) {
   }
 
-  @Override
-  public void interrupted() {
-      return;
-  }
 }
 

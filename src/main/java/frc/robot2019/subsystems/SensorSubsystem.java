@@ -153,8 +153,4 @@ public class SensorSubsystem extends SubsystemBase {
 
   }
 
-  @Override
-  public void initDefaultCommand() {
-      //set default command
-  }
 }

@@ -13,7 +13,6 @@ import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot2019.Robot;
 import frc.robot2019.RobotMap;
 import frc.robot2019.commands.drive.ArcadeDriveCommand;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -39,8 +38,8 @@ public class DriveTrainSubsystem extends SubsystemBase {
   private WPI_TalonSRX frontRightMotor = new WPI_TalonSRX(RobotMap.FR_TALON_CAN_ID);
   private WPI_TalonSRX middleRightMotor = new WPI_TalonSRX(RobotMap.MR_TALON_CAN_ID);
   private WPI_TalonSRX backRightMotor = new WPI_TalonSRX(RobotMap.BR_TALON_CAN_ID);
-  private SpeedController leftMotors;
-  private SpeedController rightMotors;
+  private MotorController leftMotors;
+  private MotorController rightMotors;
   private WPI_TalonSRX leftEncoder;
   private WPI_TalonSRX rightEncoder;
 

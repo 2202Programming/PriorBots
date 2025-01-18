@@ -1,22 +1,20 @@
 package frc.robot2019.subsystems;
 
-import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.Solenoid;
-import edu.wpi.first.wpilibj.PWM;
-import edu.wpi.first.wpilibj.SpeedController;
-//import edu.wpi.first.wpilibj.Solenoid.Value;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot2019.Robot;
-import frc.robot2019.RobotMap;
-import frc.robot2019.commands.intake.WristStatePositioner;
-import frc.robot2019.subsystems.ExtendedSubSystem;
-import edu.wpi.first.wpilibj.motorcontrol.Spark;
 //used for CustomServo
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.hal.HAL;
-import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
+import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.PWM;
+import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.motorcontrol.Spark;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+//import edu.wpi.first.wpilibj.Solenoid.Value;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Subsystem;
+import frc.lib2202.builder.RobotContainer;
+import frc.robot2019.RobotMap;
+import frc.robot2019.commands.intake.WristStatePositioner;
 
 /**
  * Authors: Derek Laufenberg
@@ -70,7 +68,6 @@ public class IntakeSubsystem extends ExtendedSubSystem {
   final double kServoMinPWM = 0.553;
   final double kServoMaxPWM = 2.455;
 
-  Subsystem intakeVacuum;
 
   // Vacuum mode is the default for the solenoid, power it to drop the payload
   public final double kRelease = 1.0; // powered will open solenoid
@@ -79,39 +76,37 @@ public class IntakeSubsystem extends ExtendedSubSystem {
   // Physical devices
   protected CustomServo wristServo; // positive angle, wrist up, when arm is forward
   protected DigitalInput cargoSwitch; // true when cargo switch is pressed by ball
-  protected SpeedController vacuumPump; // motor control for vacuum pump
-  protected SpeedController vacuumSol; // solenoid to hold and relase ball/hatch
+  protected Spark vacuumPump; // motor control for vacuum pump
+  protected Spark vacuumSol; // solenoid to hold and relase ball/hatch
   protected VacuumSensorSystem vacuumSensor; // sensor to tell if we suck.
+
+  final PowerDistribution pdp;
 
   /**
    * Creates an intake subsystem.
    */
   public IntakeSubsystem() {
     super("Intake");
-    wristServo = new CustomServo(RobotMap.INTAKE_WRIST_SERVO_PWM, WristMinDegrees, WristMaxDegrees, kServoMinPWM,
-        kServoMaxPWM);
-    wristServo.setName(this.getSubsystem(), "wrist");
-
+    wristServo = new CustomServo(RobotMap.INTAKE_WRIST_SERVO_PWM, WristMinDegrees, WristMaxDegrees,
+                                 kServoMinPWM, kServoMaxPWM);
+    // cant setname anymore wristServo.setName(this.getSubsystem(), "wrist");
+    pdp = RobotContainer.getObject("PDP");
     cargoSwitch = new DigitalInput(RobotMap.INTAKE_CARGO_SWITCH_MXP_CH);
     vacuumPump = new Spark(RobotMap.INTAKE_VACUUM_SPARK_PWM);
     vacuumSol = new Spark(RobotMap.INTAKE_VAC_RELEASE_SPARK_PWM);
     vacuumSensor = new VacuumSensorSystem(RobotMap.INTAKE_VAC_SENSOR_AD);
 
-    // addChild("In:Wrist", (Sendable) wristServo);
-    // addChild("In:VacPump", vacuumPump);
-    // addChild("In:CargoSw", cargoSwitch); //dpl not using 3/14/2019
-    // addChild("In:VacSol", vacuumSol); //switched to spark
+    addChild("In:Wrist", wristServo);
+    addChild("In:VacPump", vacuumPump);
+    addChild("In:CargoSw", cargoSwitch); //dpl not using 3/14/2019
+    addChild("In:VacSol", vacuumSol); //switched to spark
 
-    intakeVacuum = new Subsystem("Intake:Vac") {
-      @Override
-      protected void initDefaultCommand() {
-      } // none
-    };
+
 
     logTimer = System.currentTimeMillis();
   }
 
-  @Override
+  //TODO - deal with INITDefaultCommand
   public void initDefaultCommand() {
     setDefaultCommand(new WristStatePositioner());
   }
@@ -145,7 +140,7 @@ public class IntakeSubsystem extends ExtendedSubSystem {
    * Commands can used the vacuum subsystem without interferring with wrist.
    */
   public Subsystem getVacuumSubsystem() {
-    return this.intakeVacuum;
+    return null;    /// dpl 1/17/25 not sure what was going on here //this.intakeVacuum;
   }
 
   // true - will release the payload
@@ -195,7 +190,7 @@ public class IntakeSubsystem extends ExtendedSubSystem {
 
   // ### check the PDP for current level, we can tell if vacuum is obtained.
   public double getPumpCurrent() {
-    return Robot.pdp.getCurrent(RobotMap.INTAKE_VACCUM_SPARK_PDP);
+    return pdp.getCurrent(RobotMap.INTAKE_VACCUM_SPARK_PDP);
   }
 
   @Override
@@ -255,8 +250,8 @@ public class IntakeSubsystem extends ExtendedSubSystem {
     private final double kMinServoAngle;
     private final double kServoRange;
 
-    private final double kDefaultMaxServoPWM;
-    private final double kDefaultMinServoPWM;
+    private final int kDefaultMaxServoPWM;
+    private final int kDefaultMinServoPWM;
     private double position; // save the setting and use it to return a value if asked
 
     /**
@@ -277,20 +272,22 @@ public class IntakeSubsystem extends ExtendedSubSystem {
      * @param maxPWMuS   Servo timing max, 2.5 uS typical
      * 
      */
-    public CustomServo(final int channel, final double minDegrees, final double maxDegrees, final double minPWMuS,
-        final double maxPWMuS) {
+    public CustomServo(final int channel, final double minDegrees, final double maxDegrees, 
+      final double minPWMuS,  final double maxPWMuS) {
       super(channel);
       kMaxServoAngle = maxDegrees;
       kMinServoAngle = minDegrees;
-      kDefaultMaxServoPWM = maxPWMuS;
-      kDefaultMinServoPWM = minPWMuS;
+      kDefaultMaxServoPWM = (int)maxPWMuS;
+      kDefaultMinServoPWM = (int)minPWMuS;
+      
       // compute range once
       kServoRange = kMaxServoAngle - kMinServoAngle;
-      setBounds(kDefaultMaxServoPWM, 0.0, 0.0, 0.0, kDefaultMinServoPWM);
+      setBoundsMicroseconds(kDefaultMaxServoPWM, 0, 0, 0, kDefaultMinServoPWM);
       setPeriodMultiplier(PeriodMultiplier.k4X);
 
       HAL.report(tResourceType.kResourceType_Servo, getChannel());
-      setName("CustomServo", getChannel());
+      //TODO setup dashboard stuff sendable build
+      //setName("CustomServo", getChannel());
     }
 
     /**

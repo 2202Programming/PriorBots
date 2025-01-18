@@ -1,17 +1,19 @@
 package frc.robot2019.commands.climb;
 
-import edu.wpi.first.wpilibj2.command.CommandGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot2019.Robot;
 import frc.robot2019.commands.arm.MoveArmToRawPosition;
 
-public class ClimbUpPartial extends CommandGroup {
+public class ClimbUpPartial extends SequentialCommandGroup {
     public ClimbUpPartial(double climbHeight, double retractHeight) {
 
         //if separate command to bring up robot change to parallel
-        addSequential(Robot.climber.zeroSubsystem());   //hack to zero counters
-        addSequential(new MoveArmToRawPosition(90, 29, 0.5, 20));
-        addSequential(new PawlSureFire(Robot.climber.Extend, 4));
-        addSequential(new DeployClimbFoot(0.9, climbHeight));    // 20.5 uses limit switch
+        addCommands(Robot.climber.zeroSubsystem(),    //hack to zero counters
+            new MoveArmToRawPosition(90, 29, 0.5, 20),
+            new PawlSureFire(Robot.climber.Extend, 4),
+            new DeployClimbFoot(0.9, climbHeight));    // 20.5 uses limit switch
+
+
     }
 
     /*
@@ -33,8 +35,9 @@ public class ClimbUpPartial extends CommandGroup {
     pawl piston is foot, m23 is foot extension motor, m22 is motor to move foot
     */
 
-    @Override
-    public void interrupted() {
+    //TODO - this was done on an interrupt but api changed. Climb never really got done might just end 
+    // up deleting climb related stuff.  dpl 1-17-2025
+    void doInterrupted() {
         Robot.driveTrain.stop();
         Robot.climber.setRollerSpeed(0.0);
         Robot.climber.setExtenderSpeed(0.0);

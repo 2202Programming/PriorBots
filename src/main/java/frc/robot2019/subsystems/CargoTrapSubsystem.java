@@ -19,8 +19,8 @@ public class CargoTrapSubsystem extends SubsystemBase {
     // Physical Devices and Controls
     Spark intakeMotors = new Spark(RobotMap.TRAP_INTAKE_MOTOR_PIN);
                                            
-    DoubleSolenoid deployPiston = new DoubleSolenoid(RobotMap.TRAP_PCM_ID,
-         RobotMap.TRAP_DEPLOY_PCM, RobotMap.TRAP_RETRACT_PCM);
+    DoubleSolenoid deployPiston = new DoubleSolenoid(RobotMap.TRAP_PCM_ID, RobotMap.moduleType,
+        RobotMap.TRAP_DEPLOY_PCM, RobotMap.TRAP_RETRACT_PCM);
 
     DigitalInput cargoSensor = new DigitalInput(RobotMap.TRAP_CARGO_SENSOR_DIO);
 
@@ -30,7 +30,7 @@ public class CargoTrapSubsystem extends SubsystemBase {
         addChild("Trap Deployment Solenoid", deployPiston);
     }
 
-    @Override
+    //TODO - figure out how to use initDefaultCommand - no longer part of the api //@OVERIDE
     public void initDefaultCommand() {
         //setDefaultCommand(new AutoTrapCargoCommand());
         retractTrap();

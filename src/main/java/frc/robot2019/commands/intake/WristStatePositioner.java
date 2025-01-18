@@ -1,9 +1,12 @@
 package frc.robot2019.commands.intake;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot2019.Robot;
+import frc.lib2202.builder.Robot;
+import frc.lib2202.builder.RobotContainer;
 import frc.robot2019.commands.CommandManager.Modes;
 import frc.robot2019.commands.util.Angle;
+import frc.robot2019.subsystems.ArmSubsystem;
+import frc.robot2019.subsystems.IntakeSubsystem;
 
 public class WristStatePositioner extends Command {
     private double curAngle;
@@ -40,8 +43,13 @@ public class WristStatePositioner extends Command {
             { { Angle.Parallel.getAngle() }, { Angle.Back_Parallel.getAngle() } }, // Climbing
     };
 
+    final IntakeSubsystem intake;
+    final ArmSubsystem arm;
+
     public WristStatePositioner() {
-        addRequirements(Robot.intake);
+        intake = RobotContainer.getSubsystem(IntakeSubsystem.class);
+        arm = RobotContainer.getSubsystem(ArmSubsystem.class);
+        addRequirements(intake);
     }
 
     @Override
@@ -59,8 +67,8 @@ public class WristStatePositioner extends Command {
         }
 
         // intake angle is relative to arm
-        double offset = Robot.arm.getRealAngle() - curAngle;
-        Robot.intake.setAngle(offset);
+        double offset = arm.getRealAngle() - curAngle;
+        intake.setAngle(offset);
     }
 
     @Override
@@ -68,7 +76,13 @@ public class WristStatePositioner extends Command {
         return false;
     }
 
+    //TODO - interrupted f() removed, test this new end()
     @Override
+    public void end(boolean interrupted) {
+        if (interrupted) interrupted();
+    }
+
+    //@Override  TODO test this idiom
     public void interrupted() {
         // Update position based on current mode
         Modes curMode = Robot.m_cmdMgr.getCurMode();

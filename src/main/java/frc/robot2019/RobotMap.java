@@ -1,4 +1,7 @@
 package frc.robot2019;
+
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
+
 /**
  * The RobotMap is a mapping from the ports sensors and actuators are wired into
  * to a variable name. This provides flexibility changing wiring, makes checking
@@ -36,6 +39,7 @@ public class RobotMap {
   public static final int ENCODER_RIGHT_PIN_1 = 2;
   public static final int ENCODER_RIGHT_PIN_2 = 3;
 
+  public static PneumaticsModuleType moduleType = PneumaticsModuleType.CTREPCM;
   public static final int GEARSHIFT_PCM_ID = CAN_PCM1_ID;
   public static final int GEARSHIFTUP_SOLENOID_PCM = 0;
   public static final int GEARSHIFTDOWN_SOLENOID_PCM = 1;
