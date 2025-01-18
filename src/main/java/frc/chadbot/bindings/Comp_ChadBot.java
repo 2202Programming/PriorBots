@@ -77,7 +77,6 @@ public final class Comp_ChadBot {
         Trigger IntakeCalibrate = sideboard.sw13();
 
         // Switchboard buttons too
-        sideboard.sw22().onTrue(new Climb(Climber.ClimbPosition));
         sideboard.sw23().onTrue(new MoveToAnglePos(Intake.DownPos, Intake.TravelUp));
         sideboard.sw24().toggleOnTrue(new InstantCommand( ()-> {AmpMechanism.setServo(AmpMechanism.parked); }));
 

@@ -19,6 +19,7 @@ import frc.lib2202.subsystem.swerve.config.ChassisConfig;
 import frc.lib2202.subsystem.swerve.config.ModuleConfig;
 import frc.lib2202.subsystem.swerve.config.ModuleConfig.CornerID;
 import frc.chadbot.bindings.Comp_ChadBot;
+import frc.robot2024.subsystems.AmpMechanism;
 
 
 //Note there is a sensors in lib2202, but we want the robot specific one
@@ -43,7 +44,8 @@ public class RobotSpec_ChadBot implements IRobotSpec {
       //rest of Chad's subsystems
       .add(Intake_Subsystem.class)
       .add(Magazine_Subsystem.class)
-      .add(Positioner_Subsystem.class);
+      .add(Positioner_Subsystem.class)
+      .add(AmpMechanism.class);
 
   boolean swerve = true;
 
