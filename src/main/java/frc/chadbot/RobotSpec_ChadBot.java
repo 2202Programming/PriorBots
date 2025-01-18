@@ -18,6 +18,7 @@ import frc.lib2202.subsystem.swerve.SwerveDrivetrain;
 import frc.lib2202.subsystem.swerve.config.ChassisConfig;
 import frc.lib2202.subsystem.swerve.config.ModuleConfig;
 import frc.lib2202.subsystem.swerve.config.ModuleConfig.CornerID;
+import frc.chadbot.bindings.Comp_ChadBot;
 
 
 //Note there is a sensors in lib2202, but we want the robot specific one
@@ -131,9 +132,8 @@ public class RobotSpec_ChadBot implements IRobotSpec {
 
   @Override
   public void setBindings() {
-    //HID_Xbox_Subsystem dc = RobotContainer.getSubsystem("DC");
-    // pick one of the next two lines
-    //BindingsCompetition.ConfigureCompetition(dc);
+    HID_Xbox_Subsystem dc = RobotContainer.getSubsystem("DC");
+    Comp_ChadBot.ConfigureCompetition(dc);
     // BindingsOther.ConfigureOther(dc);
 
   }
