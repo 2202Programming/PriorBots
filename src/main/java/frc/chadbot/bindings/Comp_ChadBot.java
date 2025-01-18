@@ -3,7 +3,6 @@ package frc.chadbot.bindings;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib2202.builder.RobotContainer;
@@ -14,7 +13,6 @@ import frc.lib2202.subsystem.hid.HID_Xbox_Subsystem;
 import frc.lib2202.subsystem.swerve.SwerveDrivetrain;
 import frc.robot2024.Constants.Tag_Pose;
 import frc.robot2024.commands.Climber.Climb;
-import frc.robot2024.commands.Climber.ClimberVelocity;
 import frc.robot2024.commands.Intake.AngleCalibration;
 import frc.robot2024.commands.Intake.EjectNote;
 import frc.robot2024.commands.Intake.InIntake;
@@ -71,19 +69,14 @@ public final class Comp_ChadBot {
             return;
         }
 
-        var climber = RobotContainer.getSubsystem(Climber.class);
+       
         var AmpMechanism = RobotContainer.getSubsystem(AmpMechanism.class);
 
         Trigger ManualShoot = sideboard.sw16();
-        Trigger ClimberCalibrate = sideboard.sw11();
         Trigger ShooterCalibrate = sideboard.sw12();
         Trigger IntakeCalibrate = sideboard.sw13();
 
         // Switchboard buttons too
-        sideboard.sw21().onTrue(new SequentialCommandGroup (
-            new InstantCommand( ()-> {AmpMechanism.setServo(AmpMechanism.field_goal); }),
-            new WaitCommand(0.5),
-            new Climb(Climber.ExtendPosition)));
         sideboard.sw22().onTrue(new Climb(Climber.ClimbPosition));
         sideboard.sw23().onTrue(new MoveToAnglePos(Intake.DownPos, Intake.TravelUp));
         sideboard.sw24().toggleOnTrue(new InstantCommand( ()-> {AmpMechanism.setServo(AmpMechanism.parked); }));
@@ -115,9 +108,7 @@ public final class Comp_ChadBot {
         // Calibration commands
         ShooterCalibrate.and(operator.povUp()).onTrue(new CalibrateWithLS()); 
         ShooterCalibrate.and(operator.povDown()).whileTrue(new ShooterAngleVelMove(-2.0));
-        ClimberCalibrate.and(operator.povUp()).whileTrue(new ClimberVelocity(Climber.ClimbCalibrateVel));
-        ClimberCalibrate.and(operator.povDown()).whileTrue(new ClimberVelocity(-Climber.ClimbCalibrateVel));
-        ClimberCalibrate.and(operator.povLeft()).onTrue(new InstantCommand( ()-> {climber.setClimberPos(0.0); }));
+
     }
 }
     
