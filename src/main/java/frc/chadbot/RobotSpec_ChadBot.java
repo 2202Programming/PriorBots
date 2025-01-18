@@ -108,22 +108,22 @@ public class RobotSpec_ChadBot implements IRobotSpec {
     ModuleConfig[] modules = new ModuleConfig[4];
     modules[CornerID.FrontLeft.getIdx()] = new ModuleConfig(CornerID.FrontLeft,
         CAN.DT_FL_CANCODER, CAN.DT_FL_DRIVE, CAN.DT_FL_ANGLE,
-        -175.60)
-        .setInversions(false, true, false);
+        3.764)
+        .setInversions(false, false, false);
 
     modules[CornerID.FrontRight.getIdx()] = new ModuleConfig(CornerID.FrontRight,
         CAN.DT_FR_CANCODER, CAN.DT_FR_DRIVE, CAN.DT_FR_ANGLE, // 30, 26, 27,
-        -162.15)
+        17.682)
         .setInversions(true, false, false);
 
     modules[CornerID.BackLeft.getIdx()] = new ModuleConfig(CornerID.BackLeft,
         CAN.DT_BL_CANCODER, CAN.DT_BL_DRIVE, CAN.DT_BL_ANGLE, // 28, 22, 23,
-        -115.40)
+        63.31)
         .setInversions(false, false, false);
 
     modules[CornerID.BackRight.getIdx()] = new ModuleConfig(CornerID.BackRight,
         CAN.DT_BR_CANCODER, CAN.DT_BR_DRIVE, CAN.DT_BR_ANGLE, // 31, 24, 25,
-        158.81)
+        -20.912)
         .setInversions(true, false, false);
 
     return modules;
