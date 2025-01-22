@@ -1,8 +1,9 @@
 package frc.robot2019.commands.drive.shift;
 
-import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot2019.Robot;
+import frc.lib2202.builder.RobotContainer;
+import frc.robot2019.OI;
+import frc.robot2019.subsystems.DriveTrainSubsystem;
 
 /**
  * An example command. You can replace me with your own command.
@@ -14,13 +15,18 @@ public class ThrottleCommand extends Command {
   private double stepValue;
   private double startValue;
 
+  final private DriveTrainSubsystem driveTrain;
+  final OI m_oi;
+
   /**
    * 
    * @param rampTime Ramp up time in seconds
    */
   public ThrottleCommand(double rampTime, double startValue, double endValue) {
+    driveTrain = RobotContainer.getSubsystem(DriveTrainSubsystem.class);
+    m_oi = RobotContainer.getObject("OI");
     // Use addRequirements() here to declare subsystem dependencies
-    addRequirements(Robot.driveTrain);
+    addRequirements(driveTrain);
     maxCycles = (int) Math.ceil(rampTime / CYCLE_TIME_IN_SECONDS);
     this.startValue = startValue;
     stepValue = (endValue - startValue) / maxCycles;
@@ -38,16 +44,16 @@ public class ThrottleCommand extends Command {
   // right motors
   @Override
   public void execute() {
-    double throttle = Robot.m_oi.getDriverController().getY(Hand.kLeft) * (startValue + stepValue * cycleCount);
-    double turnRate = Robot.m_oi.getDriverController().getX(Hand.kRight) * (startValue + stepValue * cycleCount);
+    double throttle = m_oi.getDriverController().getLeftY(/*Hand.kLeft*/) * (startValue + stepValue * cycleCount);
+    double turnRate = m_oi.getDriverController().getRightX(/*Hand.kRight*/) * (startValue + stepValue * cycleCount);
     cycleCount++;
-    Robot.driveTrain.ArcadeDrive(throttle, turnRate, true);
+    driveTrain.ArcadeDrive(throttle, turnRate, true);
   }
 
   @Override
   public boolean isFinished() {
-    double leftSpeed = Math.abs(Robot.driveTrain.getLeftEncoderTalon().getSelectedSensorVelocity());
-    double rightSpeed = Math.abs(Robot.driveTrain.getRightEncoderTalon().getSelectedSensorVelocity());
+    double leftSpeed = Math.abs(driveTrain.getLeftEncoderTalon().getSelectedSensorVelocity());
+    double rightSpeed = Math.abs(driveTrain.getRightEncoderTalon().getSelectedSensorVelocity());
     double curSpeed = (leftSpeed + rightSpeed) / 2.0;
     double shiftSpeed = AutomaticGearShiftCommand.DOWNSHIFT_SPEED_LOW * AutomaticGearShiftCommand.MAXSPEED_IN_COUNTS_PER_SECOND;
     return cycleCount >= maxCycles || curSpeed < shiftSpeed;

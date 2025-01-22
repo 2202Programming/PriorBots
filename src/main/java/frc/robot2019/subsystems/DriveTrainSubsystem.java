@@ -6,13 +6,13 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.Sendable;
-import edu.wpi.first.wpilibj.SpeedController;
 //import edu.wpi.first.wpilibj.SpeedControllerGroup;
 //import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.lib2202.builder.RobotContainer;
 import frc.robot2019.RobotMap;
 import frc.robot2019.commands.drive.ArcadeDriveCommand;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -57,13 +57,16 @@ public class DriveTrainSubsystem extends SubsystemBase {
   private NetworkTableEntry cameraSelect;
   private long logTimer;
 
-  public DriveTrainSubsystem() {    
-    addChild("Middle Left CIM", (Sendable) middleLeftMotor);
-    addChild("Back Left CIM", (Sendable) backLeftMotor);
-    addChild("Front Right CIM", (Sendable) frontRightMotor);
-    addChild("Middle Right CIM", (Sendable) middleRightMotor);
-    addChild("Back Right CIM", (Sendable) backRightMotor);
-    addChild("Front Left CIM", (Sendable) frontLeftMotor);
+  final CameraSubsystem cameraSubsystem;
+
+  public DriveTrainSubsystem() {
+    cameraSubsystem = RobotContainer.getSubsystem(CameraSubsystem.class);
+    addChild("Middle Left CIM",   middleLeftMotor);
+    addChild("Back Left CIM",     backLeftMotor);
+    addChild("Front Right CIM",   frontRightMotor);
+    addChild("Middle Right CIM",  middleRightMotor);
+    addChild("Back Right CIM",    backRightMotor);
+    addChild("Front Left CIM",    frontLeftMotor);
     
     leftEncoder = (WPI_TalonSRX) frontLeftMotor;
     leftEncoder.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 10);
@@ -93,6 +96,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
     
     cameraSelect = NetworkTableInstance.getDefault().getEntry("/PiSwitch");
     logTimer = System.currentTimeMillis();
+    initDefaultCommand();
   }
 
   public void log(int interval) {
@@ -120,7 +124,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
     talon.configPeakOutputReverse(-0.95);
   }
 
-  @Override
+
   public void initDefaultCommand() {
     leftEncoder.setSelectedSensorPosition(0);
     rightEncoder.setSelectedSensorPosition(0);
@@ -203,7 +207,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
    */
   public void invertControls() {
     inversionConstant *= -1;
-    Robot.cameraSubsystem.toggleDriveCamera();
+    cameraSubsystem.toggleDriveCamera();
     
     //post to network tables which drive camera to show based on control direction
     if (inversionConstant>0) {
@@ -377,6 +381,6 @@ public class DriveTrainSubsystem extends SubsystemBase {
    * @param talon the talon to be logged.
    */
   public void logTalon(WPI_TalonSRX talon) {
-    SmartDashboard.putNumber(talon.getName() + " Current", talon.getOutputCurrent());
+    SmartDashboard.putNumber(talon.getDescription() + " Current", talon.getStatorCurrent());
   }
 }

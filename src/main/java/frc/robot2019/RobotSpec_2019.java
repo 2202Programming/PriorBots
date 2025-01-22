@@ -1,30 +1,28 @@
-/*----------------------------------------------------------------------------*/
-/* Copyright (c) 2017-2018 FIRST. All Rights Reserved.                        */
-/* Open Source Software - may be modified and shared by FRC teams. The code   */
-/* must be accompanied by the FIRST BSD license file in the root directory of */
-/* the project.                                                               */
-/*----------------------------------------------------------------------------*/
-
 package frc.robot2019;
 
-import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.PowerDistribution;      ///was .PowerDistributionPanel;
-import edu.wpi.first.wpilibj.TimedRobot;
+import static edu.wpi.first.units.Units.DegreesPerSecond;
+import static edu.wpi.first.units.Units.FeetPerSecond;
+import static frc.lib2202.Constants.MperFT;
+
+import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.lib2202.builder.IRobotSpec;
+import frc.lib2202.builder.RobotContainer;
+import frc.lib2202.builder.RobotLimits;
+import frc.lib2202.builder.SubsystemConfig;
+import frc.lib2202.subsystem.swerve.IHeadingProvider;
+import frc.lib2202.subsystem.swerve.config.ChassisConfig;
+import frc.lib2202.subsystem.swerve.config.ModuleConfig;
 import frc.robot2019.commands.CommandManager;
 import frc.robot2019.commands.CommandManager.Modes;
-import frc.robot2019.commands.arm.MoveArmAtHeight;
-import frc.robot2019.commands.climb.CheckSolenoids;
-import frc.robot2019.commands.climb.ClimbGroup;
-import frc.robot2019.commands.climb.ClimbUpPartial;
-import frc.robot2019.commands.climb.Level2ClimbGroup;
-import frc.robot2019.commands.climb.PullUpPartial;
-import frc.robot2019.commands.intake.WristTrackAngle;
-import frc.robot2019.commands.util.Angle;
-import frc.robot2019.commands.util.CancelCommand;
+/*
+import frc.lib2202.util.PIDFController;
+import frc.robot2019.Constants;  // some added constants for port
+import frc.robot2019.RobotMap;  // most of the constants from that year
+import frc.robot2019.OI;        // bindings  old way of doing things
+*/
 import frc.robot2019.subsystems.ArmSubsystem;
 import frc.robot2019.subsystems.CameraSubsystem;
 import frc.robot2019.subsystems.CargoTrapSubsystem;
@@ -32,187 +30,121 @@ import frc.robot2019.subsystems.ClimberSubsystem;
 import frc.robot2019.subsystems.DriveTrainSubsystem;
 import frc.robot2019.subsystems.GearShifterSubsystem;
 import frc.robot2019.subsystems.IntakeSubsystem;
-import frc.robot2019.subsystems.SensorSubsystem;
+import frc.robot2019.subsystems.SensorSubsystem;  
 
-/**
- * The VM is configured to automatically run this class, and to call the
- * functions corresponding to each mode, as described in the TimedRobot
- * documentation. If you change the name of this class or the package after
- * creating this project, you must also update the build.gradle file in the
- * project.
- */
-public class RobotSpec_2019 extends TimedRobot {
-  //common constants for robot
-  public static double dT = kDefaultPeriod;  // Robots sample period (seconds) 
-  //THis years bounding box beyond frame of robot. Use this in limit calcs in subsystems.
-  public static double kProjectConstraint = 26.0; //inches from frame (accounting for the suction cup length)
-  //public static double kForwardProjectMin = 18.0; //inches from arm pivot x-axis to bumper
-  //public static double kReverseProjectMin = 18.0; //inches from arm pivot x-axis to bumper
-  
-  //physical devices and subsystems
-  public static DriveTrainSubsystem driveTrain = new DriveTrainSubsystem();
-  public static GearShifterSubsystem gearShifter = new GearShifterSubsystem(driveTrain.kShiftPoint);
-  public static IntakeSubsystem intake = new IntakeSubsystem();
-  public static CargoTrapSubsystem cargoTrap = new CargoTrapSubsystem();
-  public static ArmSubsystem arm = new ArmSubsystem();
-  public static ClimberSubsystem climber = new ClimberSubsystem();
-  public static PowerDistribution pdp = new PowerDistribution();   //auto type: Rev or ctre
-  public static CameraSubsystem cameraSubsystem = new CameraSubsystem();
-  public static SensorSubsystem sensorSubystem = new SensorSubsystem();
 
-  public static OI m_oi = new OI(); //OI Depends on the subsystems and must be last (boolean is whether we are testing or not)
+public class RobotSpec_2019 implements IRobotSpec {
 
-  public static CommandManager m_cmdMgr;    //fix the public later
-  private RobotTest m_testRobot;
+    boolean teleOpRunOnce = true;
 
-  boolean doneOnce = false;   //single execute our zero 
-  private Integer currentCamera = 1;
+    // Create list of subsystems this robot uses, remember their periodic() are called in order of this list
+    final SubsystemConfig config = new SubsystemConfig(
+            "Robot_2019", "fixme")
+            // deferred construction via Supplier<Object> lambda
+            .add(PowerDistribution.class, "PDP", () -> {
+                var pdp = new PowerDistribution(RobotMap.CAN_PDP_ID, ModuleType.kCTRE);  //todo check if rev or ctre
+                pdp.clearStickyFaults();
+                return pdp;
+            })
+            .add(DriveTrainSubsystem.class)
+            .add(GearShifterSubsystem.class)
+            .add(ArmSubsystem.class)
+            .add(CameraSubsystem.class)
+            .add(IntakeSubsystem.class)
+            .add(CargoTrapSubsystem.class)
+            .add(IntakeSubsystem.class)
+            .add(SensorSubsystem.class)  //creates SerialPortSS and LimeLightSS inside
+            //.add(SerialPortSubsystem.class)
+            //.add(LimeLightSubsystem.class)
+            .add(ClimberSubsystem.class)    // no longer exists on robot
+            // non-subystem objects
+            .add(OI.class, "OI", () -> {return new OI(); })  //lots of bindings here, uses subsystems
+            // setup cmd mgr - code copied from Robot.old_reference
+            .add(CommandManager.class, "CommandManager", () -> {
+                var m_cmdMgr = new CommandManager();
+                //not sure if both are really needed
+                m_cmdMgr.setMode(Modes.Construction);   // schedules the mode's function
+                m_cmdMgr.setMode(Modes.SettingZeros);   // schedules the mode's function    
+                return m_cmdMgr;
+            } )
+            ;  //end of subsystems
 
-  /**
-   * This function is run when the robot is first started up and should be used
-   * for any initialization code.
-   */
-  @Override
-  public void robotInit() {
-    // Create the test subsystem
-    m_testRobot  = new RobotTest();
-    m_cmdMgr = new CommandManager();
-    m_cmdMgr.setMode(Modes.Construction);   // schedules the mode's function
-    sensorSubystem.disableLED(); //disable blinding green LED that Trevor hates
-    NetworkTableEntry cameraSelect = NetworkTableInstance.getDefault().getEntry("/PiSwitch");
-    // 0=front cam, 1= rear cam, 2 = arm  (pi camera server defines this - could change)
-    cameraSelect.setDouble(1);    
-    m_cmdMgr.setMode(Modes.SettingZeros);   // schedules the mode's function    
-    Command level3Climb = new ClimbGroup(100, -5.0);  // extend/retract in inches
-    m_oi.climbButton.whenPressed(level3Climb);
-    m_oi.climbButton.whenReleased(new CancelCommand(level3Climb));
-    Command level2Climb = new Level2ClimbGroup(15.0, -5.0);
-    m_oi.shortClimbButton.whenPressed(level2Climb);
-    m_oi.shortClimbButton.whenReleased(new CancelCommand(level2Climb));
-  }
+    boolean swerve = false;
 
-  /**
-   * This function is called every robot packet, no matter the mode. Use this for
-   * items like diagnostics that you want ran during disabled, autonomous,
-   * teleoperated and test.
-   *
-   * <p>
-   * This runs after the mode specific periodic functions, but before LiveWindow
-   * and SmartDashboard integrated updating.
-   */
-  @Override
-  public void robotPeriodic() {
-    logSmartDashboardSensors(500); //call smartdashboard logging, 500ms update rate
-    sensorSubystem.processSensors();
-  }
-
-  /**
-   * This function is called once each time the robot enters Disabled mode. You
-   * can use it to reset any subsystem information you want to clear when the
-   * robot is disabled.
-   */
-  @Override
-  public void disabledInit() {
-    sensorSubystem.disableLED(); //disable blinding green LED that Trevor hates
-  }
-
-  @Override
-  public void disabledPeriodic() {
-    CommandScheduler.getInstance().run();
-    sensorSubystem.disableLED(); //disable blinding green LED that Trevor hates
-  }
-
-  /**
-   * This autonomous (along with the chooser code above) shows how to select
-   * between different autonomous modes using the dashboard. The sendable chooser
-   * code works with the Java SmartDashboard. If you prefer the LabVIEW Dashboard,
-   * remove all of the chooser code and uncomment the getString code to get the
-   * auto name from the text box below the Gyro
-   *
-   * <p>
-   * You can add additional auto modes by adding additional commands to the
-   * chooser code above (like the commented example) or additional comparisons to
-   * the switch structure below with additional strings & commands.
-   */
-  @Override
-  public void autonomousInit() {
-    resetAllDashBoardSensors();
-    CommandScheduler.getInstance().add(new CheckSolenoids());
-
-    if(!doneOnce) {
-      m_cmdMgr.setMode(Modes.HuntGameStart);   // schedules the mode's function
-      doneOnce = true;
-    }
-  }
-
-  /**
-   * This function is called periodically during autonomous.
-   */
-  @Override
-  public void autonomousPeriodic() {
-    m_cmdMgr.execute();
-    CommandScheduler.getInstance().run();
-  }
-
-  @Override
-  public void teleopInit() {
-    // This makes sure that the autonomous stops running when
-    // teleop starts running. If you want the autonomous to
-    // continue until interrupted by another command, remove
-    // this line or comment it out.
-    resetAllDashBoardSensors();
-    if(!doneOnce) {
-      m_cmdMgr.setMode(Modes.HuntGameStart);   // schedules the mode's function
-      doneOnce = true;
-    }
-  }
-
-  /**
-   * This function is called periodically during operator control.
-   */
-  @Override
-  public void teleopPeriodic() {
-    m_cmdMgr.execute();
-    Scheduler.getInstance().run();
-  }
-
-   @Override
-   public void testInit() {
-     m_testRobot.initialize();
-     sensorSubystem.disableLED(); //active limelight LED when operational
-     Scheduler.getInstance().enable();   //### hack? or required?  Seems required otherwise nothing runs 
-   }
-
-  /**
-   * This function is called periodically during test mode.
-   */
-  @Override
-  public void testPeriodic() {
-    Scheduler.getInstance().run();
-    m_testRobot.periodic();
-  }
-
-  private void logSmartDashboardSensors(int interval) {
-    //calls subsystem smartdashboard logging functions, instructs them to only update every interval # of ms
+    // Robot Speed Limits -  TODO, make this this bot's drive command use these limits
+    // swerve library uses these by default, but 2019 likely hardwired in various places
+    RobotLimits robotLimits = new RobotLimits(FeetPerSecond.of(15.0), DegreesPerSecond.of(180.0));
     
-    //picking hopefully non-overlapping time intervals so all the logging isn't done at the same cycle
-    sensorSubystem.log(interval); //tell limelight to post to dashboard every Xms
-    driveTrain.log(interval+3); //tell drivertrain to post to dashboard every Xms
-    //serialSubsystem.log(interval+7); //tell serial to post to dashboard every Xms
-    arm.log(interval+11);
-    gearShifter.log(interval+17); //tell gearshifter to post to dashboard every Xms
-    m_cmdMgr.log(interval+23);
-    intake.log(interval+29);
-    climber.log(interval+31);
-    SmartDashboard.putNumber("Vaccum Pressure", intake.getVacuumSensor().getRawVacuum() / (Math.pow(2, 12 + 4) / 4));
-    
-    SmartDashboard.putData(Scheduler.getInstance()); 
-    SmartDashboard.putData(arm);
-    SmartDashboard.putData(intake);
-}
+    // Chassis
+    double kWheelCorrectionFactor = 1.0;
+    double kSteeringGR = 21.428;
+    double kDriveGR = 6.12;
+    double kWheelDiameter = MperFT * 4.0 / 12.0; // [m]
 
-  private void resetAllDashBoardSensors() {
-    driveTrain.getLeftEncoderTalon().setSelectedSensorPosition(0);
-    driveTrain.getRightEncoderTalon().setSelectedSensorPosition(0);
-  }
+    final ChassisConfig chassisConfig = new ChassisConfig(
+            //TODO - fix numbers they could still be used for corner definitions on a non-swerve bot
+            MperFT * (24.875 / 12.0) / 2.0, // x
+            MperFT * (20.5 / 12.0) / 2.0, // y
+            kWheelCorrectionFactor, // scale [] <= 1.0
+            kWheelDiameter,
+            kSteeringGR,
+            kDriveGR,
+            // don't new these pids, not a swerve bot.
+            null, //new PIDFController(0.085, 0.00055, 0.0, 0.21292), // drive
+            null //new PIDFController(0.01, 0.0, 0.0, 0.0) // angle
+    );
+
+    public RobotSpec_2019() {        
+        // finally add this spec to the config
+        config.setRobotSpec(this);
+    }
+
+    // Required method that use the specs above
+
+    @Override
+    public RobotLimits getRobotLimits() {
+        return robotLimits;
+    }
+
+    @Override
+    public IHeadingProvider getHeadingProvider() {
+        return RobotContainer.getSubsystem(SensorSubsystem.class);
+    }
+
+    @Override
+    public ChassisConfig getChassisConfig() {
+        return chassisConfig;
+    }
+
+    @Override
+    public ModuleConfig[] getModuleConfigs() {
+        // not a swerve bot, null is ok
+        return null;
+    }
+
+    @Override
+    public void setBindings() {
+        //TODO FIX THIS
+    }
+
+
+    @Override
+    public SendableChooser<Command> getRegisteredCommands() {      
+        // used sideboard buttons this year and not Dashboard UX chooser  
+        return null;
+    }
+
+    @Override
+    public void setDefaultCommands() {
+        // subsystems might set their own default commands from old initDefaultCommand()
+      
+    }
+    @Override
+    public void teleopInit(){         
+        if (teleOpRunOnce) {
+            // add cmd and schedule here as needed
+            teleOpRunOnce = false;
+        }
+        //add any other cmds/schedule as needed 
+    }
 }

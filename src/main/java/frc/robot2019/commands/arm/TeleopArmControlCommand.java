@@ -2,32 +2,34 @@ package frc.robot2019.commands.arm;
 
 import java.util.function.DoubleSupplier;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot2019.Robot;
+import frc.lib2202.builder.RobotContainer;
+import frc.robot2019.OI;
 import frc.robot2019.commands.util.MathUtil;
 import frc.robot2019.subsystems.ArmSubsystem;
 
 public class TeleopArmControlCommand extends Command {
-    private ArmSubsystem arm;
+    final private ArmSubsystem arm;
+    final OI m_oi;
+
     DoubleSupplier heightCmdFunct;
     DoubleSupplier projectionCmdFunct;
 
     private double height_cmd;
     private double projection_cmd;
-    XboxController in;
+    final XboxController in;
     // private PositionEnum[] orderedPositions = { PositionEnum.CargoLow, PositionEnum.CargoMid, PositionEnum.CargoHigh,
     //        PositionEnum.HatchLow, PositionEnum.HatchMid, PositionEnum.HatchHigh };
 
     public TeleopArmControlCommand(DoubleSupplier heightCmdFunct, DoubleSupplier projectionCmdFunct) {
-        addRequirements(Robot.arm);
-        arm = Robot.arm;
+        arm = RobotContainer.getSubsystem(ArmSubsystem.class);
+        m_oi = RobotContainer.getObject("OI");
+        addRequirements(arm);        
         this.heightCmdFunct = heightCmdFunct;
         this.projectionCmdFunct = projectionCmdFunct;
 
-        //TODO: fix the way button is handled. 
-        in = Robot.m_oi.getAssistantController();
+        in = m_oi.getAssistantController();
     }
 
     @Override
@@ -64,9 +66,9 @@ public class TeleopArmControlCommand extends Command {
     //TODO: DEREK/BILLY compare states in the controlManager for heights
     private void updatePositionVector() {
         //TODO Implement states
-        if (in.getBumper(Hand.kLeft)) {
+        if (in.getLeftBumper() /*Hand.kLeft)*/) {
             // Go to Lower State
-        } else if (in.getBumper(Hand.kRight)) {
+        } else if (in.getRightBumper(/*Hand.kRight*/)) {
             // Go To Higher State
         } else {
             // TODO: Bind to real controls and add rate limiting
@@ -82,10 +84,5 @@ public class TeleopArmControlCommand extends Command {
     @Override
     public boolean isFinished() {
         return false;
-    }
-
-    @Override
-    public void interrupted() {
-        return;
     }
 }

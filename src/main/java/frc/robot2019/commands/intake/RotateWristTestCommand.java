@@ -2,8 +2,8 @@ package frc.robot2019.commands.intake;
 
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.lib2202.builder.Robot;
 import frc.lib2202.builder.RobotContainer;
+import frc.robot2019.OI;
 import frc.robot2019.subsystems.IntakeSubsystem;
 
 /**
@@ -17,13 +17,16 @@ import frc.robot2019.subsystems.IntakeSubsystem;
  * 
  */
 public class RotateWristTestCommand extends Command {
-  private XboxController ctrl = Robot.m_oi.getAssistantController();
+  private XboxController ctrl;
   private double[] positions = {-30, 0, 30, 0};
   private int currentIndex = 0;
   final IntakeSubsystem intake;
+  final OI m_oi;
   
   public RotateWristTestCommand() {
      intake = RobotContainer.getSubsystem(IntakeSubsystem.class);
+     m_oi = RobotContainer.getObject("OI");
+     ctrl = m_oi.getAssistantController();
     addRequirements(intake);
   }
 

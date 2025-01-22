@@ -1,24 +1,26 @@
 package frc.robot2019.commands.drive;
 
-import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot2019.Robot;
-import frc.robot2019.commands.util.ExpoShaper;
+import frc.lib2202.builder.RobotContainer;
+import frc.lib2202.subsystem.hid.ExpoShaper;
+import frc.robot2019.OI;
 import frc.robot2019.subsystems.DriveTrainSubsystem;
 /**
  * An example command. You can replace me with your own command.
  */
 public class CopilotControlCommand extends Command {
-  private DriveTrainSubsystem driveTrain;
+  final private DriveTrainSubsystem driveTrain;
+  final OI m_oi;
   private ExpoShaper speedShaper;
   private ExpoShaper rotationShaper;
   private double maxSpeed;
   private double maxRotation;
 
   public CopilotControlCommand(double maxSpeed, double maxRotation) {
+    driveTrain = RobotContainer.getSubsystem(DriveTrainSubsystem.class);
+    m_oi = RobotContainer.getObject("OI");
     // Use addRequirements() here to declare subsystem dependencies
-    addRequirements(Robot.driveTrain);
-    driveTrain = Robot.driveTrain;
+    addRequirements(driveTrain);
     this.maxSpeed = maxSpeed;
     this.maxRotation = maxRotation;
 
@@ -38,11 +40,11 @@ public class CopilotControlCommand extends Command {
   // Temporary until we get the XboxController wrapper for joystick
   @Override
   public void execute() {
-    //Robot.driveTrain.ArcadeDrive(0.90, 0, true);
-    double s = maxSpeed * speedShaper.expo(Robot.m_oi.getAssistantController().getY(Hand.kRight));
+    //driveTrain.ArcadeDrive(0.90, 0, true);
+    double s = maxSpeed * speedShaper.expo(m_oi.getAssistantController().getRightY()); //Hand.kRight));
     //soften the input by limiting the max input
-    double rot = maxRotation * rotationShaper.expo(0.8 * Robot.m_oi.getAssistantController().getX(Hand.kRight));
-    Robot.driveTrain.ArcadeDrive(s, rot, false);
+    double rot = maxRotation * rotationShaper.expo(0.8 * m_oi.getAssistantController().getRightX()); //Hand.kRight));
+    driveTrain.ArcadeDrive(s, rot, false);
   }
 
   @Override

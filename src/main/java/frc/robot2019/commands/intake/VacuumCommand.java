@@ -23,7 +23,7 @@ public class VacuumCommand extends Command {
 
     public VacuumCommand(boolean enable, double timeout) {
         intake = RobotContainer.getSubsystem(IntakeSubsystem.class);
-        // addRequirements(Robot.intake.getVacuumSubsystem());
+        // addRequirements(intake.getVacuumSubsystem());
         this.setName("vac=" + enable);
         this.enable = enable;
         this.timeout = timeout;

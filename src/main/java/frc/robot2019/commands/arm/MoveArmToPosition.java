@@ -7,20 +7,22 @@
 
 package frc.robot2019.commands.arm;
 
-import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot2019.Robot;
+import static frc.lib2202.Constants.DT;
+
+import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.lib2202.builder.RobotContainer;
 import frc.robot2019.commands.util.MathUtil;
 import frc.robot2019.commands.util.RateLimiter;
 import frc.robot2019.commands.util.RateLimiter.InputModel;
 import frc.robot2019.subsystems.ArmSubsystem;
 import frc.robot2019.subsystems.ArmSubsystem.Position;
 
-public class MoveArmToPosition extends Command {
+public class MoveArmToPosition extends WaitCommand {
     double timeout;
     double height;
     double projection;
     double error;
-    private ArmSubsystem arm;
+    final private ArmSubsystem arm;
 
     // Phyical values from sub-systems as needed
     private Position armPosition;
@@ -28,22 +30,23 @@ public class MoveArmToPosition extends Command {
     private RateLimiter projectionLimiter;
 
     public MoveArmToPosition(double height, double projection, double error, double timeout) {
-        addRequirements(Robot.arm);
+        super(timeout);
+        arm = RobotContainer.getSubsystem(ArmSubsystem.class);
+        addRequirements(arm);
         this.height = height;
         this.projection = projection;
         this.timeout = timeout;
         this.error = Math.abs(error);
 
-        arm = Robot.arm;
-        projectionLimiter = new RateLimiter(Robot.dT, () -> this.projection, // inputFunc gripperX_cmd
+        projectionLimiter = new RateLimiter(DT, () -> this.projection, // inputFunc gripperX_cmd
                 arm::getProjection, // phy position func
-                Robot.arm.MIN_PROJECTION, // output min
-                Robot.arm.MAX_PROJECTION, // output max
+                arm.MIN_PROJECTION, // output min
+                arm.MAX_PROJECTION, // output max
                 -50.0, // inches/sec // falling rate limit
                 50.0, // inches/sec //raising rate limit
                 InputModel.Position);
 
-        heightLimiter = new RateLimiter(Robot.dT, () -> this.height, // gripperH_cmd var as set by this module
+        heightLimiter = new RateLimiter(DT, () -> this.height, // gripperH_cmd var as set by this module
                 arm::getHeight, // phy position func
                 ArmStatePositioner.kHeightMin, // output min
                 ArmStatePositioner.kHeightMax, // output max
@@ -54,7 +57,7 @@ public class MoveArmToPosition extends Command {
 
     @Override
     public void initialize() {
-        setTimeout(timeout);
+        super.initialize(); //setTimeout(timeout);
         heightLimiter.initialize();
         projectionLimiter.initialize();
     }
@@ -95,11 +98,11 @@ public class MoveArmToPosition extends Command {
 
     @Override
     public boolean isFinished() {
-        armPosition = Robot.arm.getArmPosition();
+        armPosition = arm.getArmPosition();
         double h_err = Math.abs(armPosition.height - height);
         double x_err = Math.abs(armPosition.projection - projection);
         boolean posGood = (h_err < error) && (x_err < error);
-        return posGood || isTimedOut();
+        return posGood || super.isFinished();
     }
 
     public void setHeightLimiter(double minHeight, double maxHeight, double fallSpeed, double raiseSpeed) {

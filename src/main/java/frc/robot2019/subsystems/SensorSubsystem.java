@@ -1,12 +1,14 @@
 package frc.robot2019.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.lib2202.subsystem.swerve.IHeadingProvider;
 import frc.robot2019.RobotMap;
 
 import java.lang.Math;
 
-public class SensorSubsystem extends SubsystemBase {
+public class SensorSubsystem extends SubsystemBase implements IHeadingProvider {
 
   public static SerialPortSubsystem serialSubsystem;
   public static LimeLightSubsystem limeLight;
@@ -151,6 +153,12 @@ public class SensorSubsystem extends SubsystemBase {
     if (constant*a == 0) return 0;
     else return (Math.sqrt(1/(constant*a))) - 6;//6 is magic number...
 
+  }
+
+  @Override
+  public Rotation2d getRotation2d() {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'getRotation2d'");
   }
 
 }

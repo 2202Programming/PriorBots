@@ -6,8 +6,6 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.wpilibj.Joystick;
 
-import edu.wpi.first.wpilibj.motorcontrol.MotorController;
-import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 //import edu.wpi.first.wpilibj2.command.PIDSubsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
@@ -20,30 +18,30 @@ import frc.robot2019.commands.drive.ArcadeDriveCommand;
 public class PIDDriveTrainSubsystem extends SubsystemBase {
 
   // Individual Motors
-  private MotorController frontLeftMotor = new WPI_TalonSRX(RobotMap.FL_TALON_CAN_ID);
-  private MotorController middleLeftMotor = new WPI_TalonSRX(RobotMap.ML_TALON_CAN_ID);
-  private MotorController backLeftMotor = new WPI_TalonSRX(RobotMap.BL_TALON_CAN_ID);
-  private MotorController frontRightMotor = new WPI_TalonSRX(RobotMap.FR_TALON_CAN_ID);
-  private MotorController middleRightMotor = new WPI_TalonSRX(RobotMap.MR_TALON_CAN_ID);
-  private MotorController backRightMotor = new WPI_TalonSRX(RobotMap.BR_TALON_CAN_ID);
+  private WPI_TalonSRX frontLeftMotor = new WPI_TalonSRX(RobotMap.FL_TALON_CAN_ID);
+  private WPI_TalonSRX middleLeftMotor = new WPI_TalonSRX(RobotMap.ML_TALON_CAN_ID);
+  private WPI_TalonSRX backLeftMotor = new WPI_TalonSRX(RobotMap.BL_TALON_CAN_ID);
+  private WPI_TalonSRX frontRightMotor = new WPI_TalonSRX(RobotMap.FR_TALON_CAN_ID);
+  private WPI_TalonSRX middleRightMotor = new WPI_TalonSRX(RobotMap.MR_TALON_CAN_ID);
+  private WPI_TalonSRX backRightMotor = new WPI_TalonSRX(RobotMap.BR_TALON_CAN_ID);
   private WPI_TalonSRX leftEncoder;
   private WPI_TalonSRX rightEncoder;
 
 
   // Motor groups
-  private MotorControllerGroup leftMotors, rightMotors;
+  private WPI_TalonSRX leftMotors, rightMotors;
 
   private DifferentialDrive drive;
 
   private short inversionConstant;
 
   public PIDDriveTrainSubsystem(double p, double i, double d, double f) {
-    addChild("Middle Left CIM", (Sendable) middleLeftMotor);
-    addChild("Back Left CIM", (Sendable) backLeftMotor);
-    addChild("Front Right CIM", (Sendable) frontRightMotor);
-    addChild("Middle Right CIM", (Sendable) middleRightMotor);
-    addChild("Back Right CIM", (Sendable) backRightMotor);
-    addChild("Front Left CIM", (Sendable) frontLeftMotor);
+    addChild("Middle Left CIM",   middleLeftMotor);
+    addChild("Back Left CIM",     backLeftMotor);
+    addChild("Front Right CIM",   frontRightMotor);
+    addChild("Middle Right CIM",  middleRightMotor);
+    addChild("Back Right CIM",    backRightMotor);
+    addChild("Front Left CIM",    frontLeftMotor);
     
     leftEncoder = (WPI_TalonSRX) frontLeftMotor;
     leftEncoder.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 10);
@@ -52,14 +50,22 @@ public class PIDDriveTrainSubsystem extends SubsystemBase {
     rightEncoder.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 10);
     rightEncoder.setSensorPhase(true);
 
-    leftMotors = new MotorControllerGroup(frontLeftMotor, middleLeftMotor, backLeftMotor);
-    rightMotors = new MotorControllerGroup(frontRightMotor, middleRightMotor, backRightMotor);
+    // create left group
+    middleLeftMotor.follow(frontLeftMotor);
+    backLeftMotor.follow(frontLeftMotor);
+    leftMotors = frontLeftMotor;
+
+    //rightMotors = new MotorControllerGroup(frontRightMotor, middleRightMotor, backRightMotor);
+    middleRightMotor.follow(frontRightMotor);
+    backRightMotor.follow(frontRightMotor);
+    rightMotors = frontRightMotor;
 
     drive = new DifferentialDrive(leftMotors, rightMotors);
     inversionConstant = 1;
+
+    initDefaultCommand();
   }
 
-  @Override
   public void initDefaultCommand() {
     leftEncoder.setSelectedSensorPosition(0);
     rightEncoder.setSelectedSensorPosition(0);

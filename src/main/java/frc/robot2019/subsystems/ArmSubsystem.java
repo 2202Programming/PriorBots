@@ -4,13 +4,10 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
-
-import frc.lib2202.builder.RobotContainer;
-
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot2019.Robot;
+import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot2019.Constants;
 import frc.robot2019.RobotMap;
 import frc.robot2019.commands.arm.ArmStatePositioner;
 import frc.robot2019.commands.arm.ArmZero;
@@ -58,7 +55,7 @@ public class ArmSubsystem extends ExtendedSubSystem {
   public final double PIVOT_TO_FRONT = 16.5; // inches pivot center to the frame
   public final double MIN_FRONT_PROJECTION = PIVOT_TO_FRONT - 6.5; // inches from pivot to close arm position
   public final double MIN_BACK_PROJECTION = -MIN_FRONT_PROJECTION;
-  public final double MAX_PROJECTION = PIVOT_TO_FRONT + Robot.kProjectConstraint; //
+  public final double MAX_PROJECTION = PIVOT_TO_FRONT + Constants.kProjectConstraint; //
   public final double MIN_PROJECTION = -MAX_PROJECTION - 1.0; // In inches with a offset because the pivot isn't in the
                                                               // center
 
@@ -131,6 +128,8 @@ public class ArmSubsystem extends ExtendedSubSystem {
     zeroArm(); // will also get called on transition to teleOp, should arms be moved
 
     extensionOverrided = false;
+
+    setDefaultCommand(new ArmStatePositioner());
   }
   // Put methods for controlling this subsystem
   // here. Call these from Commands.
@@ -269,7 +268,7 @@ public class ArmSubsystem extends ExtendedSubSystem {
    * @return extension (desired_l), in inches.
    */
   public double getExtension() {
-    int counts = armExtensionMotor.getSelectedSensorPosition();
+    double counts = armExtensionMotor.getSelectedSensorPosition();
     // L0 + phi correction
     return (L0 + (getRealAngle() - PHI0) * k_dl_dphi) + (counts * kIn_per_count);
   }
@@ -344,11 +343,7 @@ public class ArmSubsystem extends ExtendedSubSystem {
   public boolean isExtensionOverrided() {
     return extensionOverrided;
   }
-  @Override
-  public void initDefaultCommand() {
-    setDefaultCommand(new ArmStatePositioner());
-  }
-
+ 
   /**
    * Gets the command used to zero the arm subsystem.
    * 
@@ -394,8 +389,8 @@ public class ArmSubsystem extends ExtendedSubSystem {
    * @param talon the WPI_TalonSRX to log.
    */
   private void logTalon(WPI_TalonSRX talon) {
-    SmartDashboard.putNumber(talon.getName() + " Current", talon.getOutputCurrent());
-    SmartDashboard.putNumber(talon.getName() + " Percent Output", talon.getMotorOutputPercent());
+    SmartDashboard.putNumber(talon.getDescription() + " Current", talon.getStatorCurrent());
+    SmartDashboard.putNumber(talon.getDescription() + " Percent Output", talon.getMotorOutputPercent());
   }
 
 }

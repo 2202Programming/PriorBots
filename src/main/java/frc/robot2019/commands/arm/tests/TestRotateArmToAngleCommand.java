@@ -1,17 +1,19 @@
 package frc.robot2019.commands.arm.tests;
 
-import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot2019.Robot;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.lib2202.builder.RobotContainer;
+import frc.robot2019.subsystems.ArmSubsystem;
 
-public class TestRotateArmToAngleCommand extends Command {
+public class TestRotateArmToAngleCommand extends WaitCommand {
     final private double kTolerance = 2.0;
     private double angle;
-    private double timeout;
+    final ArmSubsystem arm;
 
     public TestRotateArmToAngleCommand(double angle, double timeout) {
+        super(timeout);
+        arm = RobotContainer.getSubsystem(ArmSubsystem.class);
         this.angle = angle;
-        this.timeout = timeout;
-        addRequirements(Robot.arm);
+        addRequirements(arm);
     }
     
     public TestRotateArmToAngleCommand(double angle)
@@ -21,15 +23,15 @@ public class TestRotateArmToAngleCommand extends Command {
 
     @Override
     public void initialize() {
-        setTimeout(timeout);
+        super.initialize(); // setTimeout(timeout);
     }
     @Override
     public void execute() {
-        Robot.arm.setAngle(angle);
+        arm.setAngle(angle);
     }
 
     public boolean isFinished() {
-        boolean pos = Math.abs(Robot.arm.getRealAngle() - angle) < kTolerance; 
-        return pos || isTimedOut();  
+        boolean pos = Math.abs(arm.getRealAngle() - angle) < kTolerance; 
+        return pos || super.isFinished();  
     }
 }

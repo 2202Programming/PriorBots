@@ -8,16 +8,17 @@
 package frc.robot2019.commands.arm;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot2019.Robot;
+import frc.lib2202.builder.RobotContainer;
 import frc.robot2019.subsystems.ArmSubsystem;
 
 public class ArmZero extends Command {
-  ArmSubsystem arm = Robot.arm;
+  final ArmSubsystem arm;
 
   /**
    * Creates an ArmZero command. This command zeros the arm's encoder.
    */
   public ArmZero() {
+    arm = RobotContainer.getSubsystem(ArmSubsystem.class);
     addRequirements(arm);
   }
 
