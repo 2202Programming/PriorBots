@@ -1,6 +1,7 @@
 package frc.robot2019.commands.arm;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot2019.Robot;
+import frc.lib2202.builder.RobotContainer;
+import frc.robot2019.subsystems.ArmSubsystem;
 
 public class MoveDownToCapture extends Command {
     /*
@@ -20,17 +21,17 @@ public class MoveDownToCapture extends Command {
     private double curCalcHeight;
     private double endHeight;
     private double down_cmd;   //inches to move down for pickup
-
+    final ArmSubsystem arm;
+    
     public MoveDownToCapture(double down){
-        addRequirements(Robot.arm);
-        down_cmd = down;
-
-        
+        arm = RobotContainer.getSubsystem(ArmSubsystem.class);
+        addRequirements(arm);
+        down_cmd = down;        
     }
 
     public void initialize() {
-        curProjection = (armInitialLength + Robot.arm.getExtension()) * Math.cos(Robot.arm.getRealAngle());
-        curCalcHeight = Math.sqrt((Robot.arm.getExtension() + armInitialLength) * (Robot.arm.getExtension() + armInitialLength) - curProjection * curProjection);
+        curProjection = (armInitialLength +arm.getExtension()) * Math.cos(arm.getRealAngle());
+        curCalcHeight = Math.sqrt((arm.getExtension() + armInitialLength) * (arm.getExtension() + armInitialLength) - curProjection * curProjection);
         endHeight = curCalcHeight + down_cmd; //Move down 5 inches (increase bc increasing distance from x-axis)
         /*
         Alternative method of calculating height
@@ -44,10 +45,10 @@ public class MoveDownToCapture extends Command {
         double angle = 90 + Math.toDegrees(Math.atan(endHeight / curProjection));
         double extension = Math.sqrt(endHeight * endHeight + curProjection * curProjection) - armInitialLength;
         //Move to the endHeight while maintaining curProjection
-        Robot.arm.setAngle(angle);
+       arm.setAngle(angle);
         //Add 90 bc calc goes below x axis
 
-        Robot.arm.setExtension(extension);
+       arm.setExtension(extension);
 
     }
 

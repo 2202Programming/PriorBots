@@ -1,8 +1,8 @@
 package frc.robot2019.commands.intake;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.lib2202.builder.Robot;
 import frc.lib2202.builder.RobotContainer;
+import frc.robot2019.commands.CommandManager;
 import frc.robot2019.commands.CommandManager.Modes;
 import frc.robot2019.commands.util.Angle;
 import frc.robot2019.subsystems.ArmSubsystem;
@@ -45,19 +45,21 @@ public class WristStatePositioner extends Command {
 
     final IntakeSubsystem intake;
     final ArmSubsystem arm;
+    final CommandManager m_cmdMgr;
 
     public WristStatePositioner() {
         intake = RobotContainer.getSubsystem(IntakeSubsystem.class);
         arm = RobotContainer.getSubsystem(ArmSubsystem.class);
+        m_cmdMgr = RobotContainer.getObject("CommandManager");
         addRequirements(intake);
     }
 
     @Override
     public void execute() {
         // Update position based on current mode
-        Modes curMode = Robot.m_cmdMgr.getCurMode();
-        int invert = Robot.arm.isInverted() ? 1 : 0;
-        int index = Robot.m_cmdMgr.getPositionIndex();
+        Modes curMode = m_cmdMgr.getCurMode();
+        int invert = arm.isInverted() ? 1 : 0;
+        int index = m_cmdMgr.getPositionIndex();
         if (curMode != prevMode || index != prevIndex) {
             // Update position only if state changes to allow something to override position
             // for that state
@@ -82,11 +84,11 @@ public class WristStatePositioner extends Command {
         if (interrupted) interrupted();
     }
 
-    //@Override  TODO test this idiom
+    //@Override  TODO test this idiom 2025 port to new lib2202
     public void interrupted() {
         // Update position based on current mode
-        Modes curMode = Robot.m_cmdMgr.getCurMode();
-        int index = Robot.m_cmdMgr.getPositionIndex();
+        Modes curMode = m_cmdMgr.getCurMode();
+        int index = m_cmdMgr.getPositionIndex();
         if (curMode != prevMode || index != prevIndex) {
             // Update position only if state changes to allow something to override position
             // for that state

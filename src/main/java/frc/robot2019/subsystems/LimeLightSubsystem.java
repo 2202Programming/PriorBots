@@ -6,8 +6,8 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.lib2202.builder.RobotContainer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot2019.Robot;
 
 public class LimeLightSubsystem extends SubsystemBase {
 
@@ -90,7 +90,8 @@ public class LimeLightSubsystem extends SubsystemBase {
 
 
         //put cameraselect value into network tables
-        if(Robot.driveTrain.getInversionConstant()>0) cameraSelect.setDouble(0);
+        DriveTrainSubsystem driveTrain = RobotContainer.getSubsystem(DriveTrainSubsystem.class);
+        if(driveTrain.getInversionConstant()>0) cameraSelect.setDouble(0);
         else cameraSelect.setDouble(1);
 
         return;

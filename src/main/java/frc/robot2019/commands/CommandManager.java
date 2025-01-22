@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.lib2202.builder.Robot;
 import frc.lib2202.builder.RobotContainer;
+import frc.robot2019.OI;
 import frc.robot2019.commands.arm.ArmStatePositioner;
 import frc.robot2019.commands.arm.EmptyArmCommand;
 import frc.robot2019.commands.arm.MoveArmToPosition;
@@ -105,29 +106,30 @@ public class CommandManager {
     //Subsystems used 
     final IntakeSubsystem intake;
     final ArmSubsystem arm;
+    final OI m_oi;
 
     public CommandManager() {
         intake = RobotContainer.getSubsystem(IntakeSubsystem.class);
         arm = RobotContainer.getSubsystem(ArmSubsystem.class);
-
+        m_oi = RobotContainer.getObject("OI");
         //state machine mode
         currentMode = Modes.Construction;
         
         // bind commands to buttons
-        Robot.m_oi.heightDownSelect.whenPressed(new CallFunctionCmd(this::cycleDown));
-        Robot.m_oi.heightUpSelect.whenPressed(new CallFunctionCmd(this::cycleUp));
-        Robot.m_oi.captureRelease.whenPressed(new CallFunctionCmd(this::triggerCaptureRelease));
-        Robot.m_oi.flip.whenPressed(new FlipCmd());
-        Robot.m_oi.endDriveMode.whenPressed(new CallFunctionCmd(this::endDriveState));
-        Robot.m_oi.goToPrevMode.whenPressed(new CallFunctionCmd(this::goToPrevMode));
+        m_oi.heightDownSelect.onTrue(new CallFunctionCmd(this::cycleDown));
+        m_oi.heightUpSelect.onTrue(new CallFunctionCmd(this::cycleUp));
+        m_oi.captureRelease.onTrue(new CallFunctionCmd(this::triggerCaptureRelease));
+        m_oi.flip.onTrue(new FlipCmd());
+        m_oi.endDriveMode.onTrue(new CallFunctionCmd(this::endDriveState));
+        m_oi.goToPrevMode.onTrue(new CallFunctionCmd(this::goToPrevMode));
 
         // Rumble on vacuum
         VacuumSensorSystem vs = intake.getVacuumSensor();
         if ((vs != null) && vs.isGood()) {
-            // Command vacRumble = new RumbleCommand(Robot.m_oi.getAssistantController(), vs::hasVacuum);
+            // Command vacRumble = new RumbleCommand(m_oi.getAssistantController(), vs::hasVacuum);
             // capture trigger on vacuum
             Trigger capTrigger = new Trigger(vs::hasVacuum);
-            capTrigger.whenActive(new CallFunctionCmd(this::autoTriggerCapture));
+            capTrigger.onTrue(new CallFunctionCmd(this::autoTriggerCapture));
         }
 
         logTimer = System.currentTimeMillis();
@@ -411,29 +413,29 @@ public class CommandManager {
     private Command CmdFactoryZeroRobot() {
         Command grp = new CommandGroup("ZeroRobot");
         grp.addSequential(Robot.arm.zeroSubsystem());
-        grp.addSequential(Robot.intake.zeroSubsystem());
-        grp.addSequential(Robot.climber.zeroSubsystem());
+        grp.addSequential(intake.zeroSubsystem());
+        grp.addSequential(climber.zeroSubsystem());
         grp.addSequential(new CallFunctionCmd(this::initialize));
 
         // commands to come
-        /// grp.addParallel(Robot.cargoTrap.zeroSubsystem());
+        /// grp.addParallel(cargoTrap.zeroSubsystem());
         return grp;
     }
 
     private Command CmdFactoryHuntHatch() {
-        CommandGroup grp = new CommandGroup("HuntHatch");
+        Command grp = new CommandGroup("HuntHatch");
         grp.addSequential(new VacuumCommand(true, 0.0));
         return grp;
     }
 
     private Command CmdFactoryHuntCargo() {
-        CommandGroup grp = new CommandGroup("HuntCargo");
+        Command grp = new CommandGroup("HuntCargo");
         grp.addSequential(new VacuumCommand(true, 0.0));
         return grp;
     }
 
     private Command CmdFactoryHuntHatchFloor() {
-        CommandGroup grp = new CommandGroup("HuntHatchFloor");
+        Command grp = new CommandGroup("HuntHatchFloor");
         grp.addSequential(new VacuumCommand(true, 0.0));
         return grp;
     }
@@ -460,7 +462,7 @@ public class CommandManager {
     }
 
     private Command CmdFactoryCapture() {
-        CommandGroup grp = new CommandGroup("Capture");
+        Command grp = new CommandGroup("Capture");
         grp.addSequential(new VacuumCommand(true, 0.0)); // no timeout
         // grp.addSequential(new MoveDownToCapture(Capture_dDown), 3.5 ); //TODO: fix
         // 3.5 seconds const
@@ -469,18 +471,18 @@ public class CommandManager {
     }
 
     private Command CmdFactoryDrive() {
-        CommandGroup grp = new CommandGroup("Drive");
+        Command grp = new CommandGroup("Drive");
         return grp;
     }
 
     private Command CmdFactoryDelivery() {
-        CommandGroup grp = new CommandGroup("Deliver");
+        Command grp = new CommandGroup("Deliver");
         return grp;
     }
 
     private Command CmdFactoryRelease() {
         double vacTimeout = 0.2; // seconds
-        CommandGroup grp = new CommandGroup("Release");
+        Command grp = new CommandGroup("Release");
         // grp.AddSequential(new Extend_Drive_To_Deliver());
         grp.addSequential(new VacuumCommand(false, vacTimeout));
         grp.addSequential(new RetractOnReleaseCommand(this, 4.0 /* inchs */, 1.0));
@@ -499,7 +501,7 @@ public class CommandManager {
 
     // TODO: Check for working w/ higher speeds
     private Command CmdFactoryFlipToBackFast() {
-        CommandGroup grp = new CommandGroup("FlipToBackFast");
+        Command grp = new Command("FlipToBackFast");
         grp.addSequential(new WristSetAngleCommand(0.0));
         grp.addSequential(new MoveArmToRawPosition(-35.0, 12.0, 1.0, 360));
         grp.addSequential(new PrevCmd());

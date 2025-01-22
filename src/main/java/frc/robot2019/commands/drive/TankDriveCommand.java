@@ -1,28 +1,32 @@
 package frc.robot2019.commands.drive;
 
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.GenericHID.Hand;
+
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot2019.Robot;
+import frc.lib2202.builder.RobotContainer;
+import frc.robot2019.OI;
 import frc.robot2019.subsystems.DriveTrainSubsystem;
 
 /**
  * An example command. You can replace me with your own command.
  */
 public class TankDriveCommand extends Command {
-  private DriveTrainSubsystem driveTrain = Robot.driveTrain;
-  private XboxController ctrl;
+  final private DriveTrainSubsystem driveTrain;
+  final private XboxController ctrl;
+  final OI m_oi;
 
   public TankDriveCommand() {
+    driveTrain = RobotContainer.getSubsystem(DriveTrainSubsystem.class);
+    m_oi = RobotContainer.getObject("OI");
+    ctrl = m_oi.getDriverController();
     // Use addRequirements() here to declare subsystem dependencies
-    addRequirements(Robot.driveTrain);
+    addRequirements(driveTrain);
   }
   
   // Called just before this Command runs the first time
   @Override
   public void initialize() {
     driveTrain.stop();
-    ctrl = Robot.m_oi.getDriverController();
   }
 
   // Read Controller Input from two joysticks.
@@ -31,7 +35,7 @@ public class TankDriveCommand extends Command {
   // Temporary until we get the XboxController wrapper for joystick
   @Override
   public void execute() {
-    Robot.driveTrain.tankDrive(ctrl.getY(Hand.kLeft), ctrl.getY(Hand.kRight), true);
+    driveTrain.tankDrive(ctrl.getLeftY(), ctrl.getRightY(), true);
   }
 
   @Override
@@ -44,8 +48,4 @@ public class TankDriveCommand extends Command {
     driveTrain.stop();
   }
 
-  @Override
-  public void interrupted() {
-    return;
-  }
 }

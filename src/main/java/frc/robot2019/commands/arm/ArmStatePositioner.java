@@ -1,9 +1,12 @@
 package frc.robot2019.commands.arm;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot2019.Robot;
+import frc.lib2202.builder.RobotContainer;
+import frc.robot2019.Constants;
+import frc.robot2019.OI;
+import frc.robot2019.commands.CommandManager;
 import frc.robot2019.commands.CommandManager.Modes;
-import frc.robot2019.commands.util.ExpoShaper;
+import frc.lib2202.subsystem.hid.ExpoShaper;
 import frc.robot2019.commands.util.LimitedIntegrator;
 import frc.robot2019.commands.util.MathUtil;
 import frc.robot2019.commands.util.RateLimiter;
@@ -11,7 +14,10 @@ import frc.robot2019.commands.util.RateLimiter.InputModel;
 import frc.robot2019.subsystems.ArmSubsystem;
 
 public class ArmStatePositioner extends Command {
-    private ArmSubsystem arm;
+    final private ArmSubsystem arm;
+    final OI m_oi;
+    final CommandManager m_cmdMgr;
+
     // Height of point of rotation for the arm in inches
     public static final double heightAdjustCap = 4.0; // inch/joy units TODO: put in better place
     public static final double kHeightMin = 2.0; // inches
@@ -38,11 +44,14 @@ public class ArmStatePositioner extends Command {
     private LimitedIntegrator projectionAdjustLimiter;
 
     public ArmStatePositioner() {
-        addRequirements(Robot.arm);
-        arm = Robot.arm;
+        arm = RobotContainer.getSubsystem(ArmSubsystem.class);
+        m_oi = RobotContainer.getObject("OI");
+        m_cmdMgr = RobotContainer.getObject("CommandManager");
 
-        ExpoShaper projectionShaper = new ExpoShaper(0.5, Robot.m_oi::extensionInput); // joystick defined in m_oi.
-        projectionAdjustLimiter = new LimitedIntegrator(Robot.dT, projectionShaper::get, // shaped joystick input
+        addRequirements(arm);
+
+        ExpoShaper projectionShaper = new ExpoShaper(0.5, m_oi::extensionInput); // joystick defined in m_oi.
+        projectionAdjustLimiter = new LimitedIntegrator(Constants.dT, projectionShaper::get, // shaped joystick input
                 -30.0, // kGain, 25 in/sec on the joystick (neg. gain, forward stick is neg.)
                 -25.0, // xmin inches true pos limit enforced by arm sub-sys
                 25.0, // x_max inches
@@ -50,15 +59,15 @@ public class ArmStatePositioner extends Command {
                 30.0); // dx_raise rate inch/sec
         projectionAdjustLimiter.setDeadZone(0.5); // in/sec deadzone
 
-        projectionLimiter = new RateLimiter(Robot.dT, this::getProjectionCommanded, // inputFunc gripperX_cmd
+        projectionLimiter = new RateLimiter(Constants.dT, this::getProjectionCommanded, // inputFunc gripperX_cmd
                 arm::getProjection, // phy position func
-                Robot.arm.MIN_PROJECTION, // output min
-                Robot.arm.MAX_PROJECTION, // output max
+                arm.MIN_PROJECTION, // output min
+                arm.MAX_PROJECTION, // output max
                 -75.0, // inches/sec // falling rate limit
                 75.0, // inches/sec //raising rate limit
                 InputModel.Position);
 
-        heightLimiter = new RateLimiter(Robot.dT, this::getHeightCommanded, // gripperH_cmd var as set by this module
+        heightLimiter = new RateLimiter(Constants.dT, this::getHeightCommanded, // gripperH_cmd var as set by this module
                 arm::getHeight, // phy position func
                 kHeightMin, // output min
                 kHeightMax, // output max
@@ -78,8 +87,8 @@ public class ArmStatePositioner extends Command {
     @Override
     public void execute() {
         // Update position based on current mode
-        Modes curMode = Robot.m_cmdMgr.getCurMode();
-        int positionIndex = Robot.m_cmdMgr.getPositionIndex();
+        Modes curMode = m_cmdMgr.getCurMode();
+        int positionIndex = m_cmdMgr.getPositionIndex();
         if (curMode != prevMode || positionIndex != prevIndex) {
             // Update position only if state changes to allow something to override position
             // for that state
@@ -135,14 +144,16 @@ public class ArmStatePositioner extends Command {
     }
 
     @Override
-    public void interrupted() {
-        Modes curMode = Robot.m_cmdMgr.getCurMode();
-        int positionIndex = Robot.m_cmdMgr.getPositionIndex();
-        if (curMode != prevMode || positionIndex != prevIndex) {
-            // Update position only if state changes to allow something to override position
-            // for that state
-            updatePosition(curMode, positionIndex);
-        }
+    public void end(boolean interrupted) {
+        Modes curMode = m_cmdMgr.getCurMode();
+        int positionIndex = m_cmdMgr.getPositionIndex();
+
+        if (interrupted &&
+            (curMode != prevMode || positionIndex != prevIndex)) {
+                // Update position only if state changes to allow something to override position
+                // for that state
+                updatePosition(curMode, positionIndex);
+            }
     }
 
     private void updatePosition(Modes curMode, int index) {
@@ -205,13 +216,13 @@ public class ArmStatePositioner extends Command {
     }
 
     public double getHeightCommanded() {
-        double h_driverOffset = heightAdjustCap * Robot.m_oi.adjustHeight(); // driver contrib from triggers
+        double h_driverOffset = heightAdjustCap * m_oi.adjustHeight(); // driver contrib from triggers
         double h = stateH - h_driverOffset; // state machine + driver so both are rate filtered
         return h;
     }
 
     public double getProjectionCommanded() {
-        int invertMultiplier = Robot.arm.isInverted()? -1 : 1;
+        int invertMultiplier = arm.isInverted()? -1 : 1;
         double x_driverOffset = invertMultiplier * projectionAdjustLimiter.get(); // co-driver's offset.
         double x = stateP + x_driverOffset;
         return x;

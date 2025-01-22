@@ -14,7 +14,6 @@ import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot2019.RobotMap;
-import frc.robot2019.commands.climb.ClimbZero;
 import edu.wpi.first.wpilibj2.command.Command;
 
 /**
@@ -93,7 +92,9 @@ public class ClimberSubsystem extends ExtendedSubSystem {
     }
 
     public Command zeroSubsystem() {
-        return new ClimbZero();
+        return new edu.wpi.first.wpilibj2.command.InstantCommand(() ->{
+            //do nothing, don't have a climber anymore
+        });   //ClimbZero();
     }
 
     public void zeroClimber() {

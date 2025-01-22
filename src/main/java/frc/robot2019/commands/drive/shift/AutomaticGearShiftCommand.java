@@ -1,8 +1,8 @@
 package frc.robot2019.commands.drive.shift;
 
-import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot2019.Robot;
+import frc.lib2202.builder.RobotContainer;
+import frc.robot2019.OI;
 import frc.robot2019.subsystems.DriveTrainSubsystem;
 import frc.robot2019.subsystems.GearShifterSubsystem;
 import frc.robot2019.subsystems.GearShifterSubsystem.Gear;
@@ -22,19 +22,21 @@ public class AutomaticGearShiftCommand extends Command {
   public static final double DOWNSHIFT_THROTTLE_HIGH = 0.6;
   public static final double DEADZONE = 0.02;
   public static final double TURNING_DEADZONE = 500; // Maximum difference allowed between left and right speeds in counts per
-                                               // second during shifting (TODO: Find real value)
+                                                     // second during shifting (TODO: Find real value)
   private final double MAX_OUTPUT = 1.0;
   private final double RIGHT_SIDE_INVERT_MULTIPLIER = -1.0;
 
-  private GearShifterSubsystem gearShifter;
-  private DriveTrainSubsystem driveTrain;
+  final private GearShifterSubsystem gearShifter;
+  final private DriveTrainSubsystem driveTrain;
+  final OI m_oi;
 
   public AutomaticGearShiftCommand() {
+    driveTrain = RobotContainer.getSubsystem(DriveTrainSubsystem.class);
+    gearShifter = RobotContainer.getSubsystem(GearShifterSubsystem.class);
+    m_oi = RobotContainer.getObject("OI");
     // Use addRequirements() here to declare subsystem dependencies
-    addRequirements(Robot.gearShifter);
-    gearShifter = Robot.gearShifter;
-    driveTrain = Robot.driveTrain;
-  }
+    addRequirements(gearShifter);
+      }
 
   /**
    * Shifts the gear once the current speed passes a threshold
@@ -79,10 +81,10 @@ public class AutomaticGearShiftCommand extends Command {
    * @return The minimum throttle
    */
   private double getThrottle(boolean squareInputs) {
-    double xSpeed = limit(Robot.m_oi.getDriverController().getY(Hand.kLeft));
+    double xSpeed = limit(m_oi.getDriverController().getLeftY());//Hand.kLeft));
     xSpeed = applyDeadband(xSpeed, DEADZONE);
 
-    double zRotation = limit(Robot.m_oi.getDriverController().getX(Hand.kLeft));
+    double zRotation = limit(m_oi.getDriverController().getLeftX());//Hand.kLeft));
     zRotation = applyDeadband(zRotation, DEADZONE);
 
     // Square the inputs (while preserving the sign) to increase fine control

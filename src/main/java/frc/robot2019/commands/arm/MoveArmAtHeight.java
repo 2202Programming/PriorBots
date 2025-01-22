@@ -2,8 +2,10 @@ package frc.robot2019.commands.arm;
 
 import java.util.function.DoubleSupplier;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot2019.Robot;
+import frc.lib2202.builder.RobotContainer;
 import frc.robot2019.commands.util.MathUtil;
+import frc.robot2019.subsystems.ArmSubsystem;
+import frc.robot2019.subsystems.IntakeSubsystem;
 
 /** 
  * 
@@ -16,15 +18,17 @@ import frc.robot2019.commands.util.MathUtil;
  */
 
 public class MoveArmAtHeight extends Command {
-    //ArmSubsystem  arm = Robot.arm;
+    final ArmSubsystem  arm; 
+    final IntakeSubsystem intake;
 
     // Length of the arm from pivot point without extension in inches
     @SuppressWarnings("unused")
-    private final double armInitialLength = Robot.arm.EXTEND_MIN + Robot.arm.ARM_BASE_LENGTH
-            + Robot.intake.WristDistToPivot + Robot.arm.L0;
+    private final double armInitialLength;
+    // moved to inside ctor so arm/intake are initialized, otherwise make static
+    // = arm.EXTEND_MIN + arm.ARM_BASE_LENGTH + intake.WristDistToPivot + arm.L0;
 
     // Height of point of rotation for the arm in inches
-    private final double pivotHeight = Robot.arm.ARM_PIVOT_HEIGHT;
+    private final double pivotHeight; // = arm.ARM_PIVOT_HEIGHT;
 
     // Make an h' to more easily construct a triangle, relative to pivot height
     private double h;
@@ -37,7 +41,12 @@ public class MoveArmAtHeight extends Command {
     DoubleSupplier heightCmdFunct;
 
     public MoveArmAtHeight(DoubleSupplier heightCmdFunct, DoubleSupplier extCmdFunct) {
-        addRequirements(Robot.arm);
+        arm = RobotContainer.getSubsystem(ArmSubsystem.class);
+        intake = RobotContainer.getSubsystem(IntakeSubsystem.class);
+        // CONSTANTS MOVED FROM     PRE-CTOR
+        armInitialLength = arm.EXTEND_MIN + arm.ARM_BASE_LENGTH + intake.WristDistToPivot + arm.L0;
+        pivotHeight = arm.ARM_PIVOT_HEIGHT;
+        addRequirements(arm);
         this.heightCmdFunct = heightCmdFunct;
         this.extCmdFunct = extCmdFunct;
     }
@@ -56,30 +65,30 @@ public class MoveArmAtHeight extends Command {
         h = Math.abs(pivotHeight - h_cmd);           //h (inches) above or below piviot in mag
         
         //Roughly limit the extension based on game limits and robot geometry
-        xProjection = MathUtil.limit(l_cmd, Robot.arm.MIN_PROJECTION, Robot.arm.MAX_PROJECTION);
+        xProjection = MathUtil.limit(l_cmd, arm.MIN_PROJECTION, arm.MAX_PROJECTION);
 
         double tanRatio = (belowPiv) ? h / xProjection : xProjection / h;
         // Rotate to maintain height as projection changes
         double angle = Math.toDegrees(Math.atan(tanRatio));
         angle -= (belowPiv) ? 90.0 : 0.0;
 
-        angle = MathUtil.limit(angle, Robot.arm.PHI_MIN, Robot.arm.PHI_MAX); 
+        angle = MathUtil.limit(angle, arm.PHI_MIN, arm.PHI_MAX); 
         
         double projLen= Math.sqrt( h*h + xProjection * xProjection);    //total length of arm, from pivot point
-        double ext  = projLen - (Robot.arm.ARM_BASE_LENGTH + Robot.arm.WRIST_LENGTH);   // extension required
+        double ext  = projLen - (arm.ARM_BASE_LENGTH + arm.WRIST_LENGTH);   // extension required
         
         @SuppressWarnings("unused")
-        double compLen = Robot.arm.getCompLen(angle);
+        double compLen = arm.getCompLen(angle);
 
         //limit within range, TODO: do we need to account for phi/ext interaction here?
-        ext = MathUtil.limit(ext, Robot.arm.EXTEND_MIN, Robot.arm.EXTEND_MAX);
+        ext = MathUtil.limit(ext, arm.EXTEND_MIN, arm.EXTEND_MAX);
 
         // Extend to allow for change in projection
-        Robot.arm.setExtension(ext);   //absolute ext needed projection
-        Robot.arm.setAngle(angle);     //angle required for height
+        arm.setExtension(ext);   //absolute ext needed projection
+        arm.setAngle(angle);     //angle required for height
         /*
          * Alternative extension calculation xProjection /
-         * Math.cos(Robot.arm.getAngle()) - armInitialLength
+         * Math.cos(arm.getAngle()) - armInitialLength
          */
     }
 

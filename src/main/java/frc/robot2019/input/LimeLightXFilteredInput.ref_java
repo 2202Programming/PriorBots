@@ -1,16 +1,20 @@
 package frc.robot2019.input;
 
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.PIDSourceType;
 import edu.wpi.first.wpilibj.filters.LinearDigitalFilter;
-import frc.robot2019.Robot;
 
-public class LimeLightXFilteredInput implements PIDSource{
+
+public class LimeLightXFilteredInput extends PIDController{
     private PIDSourceType sourceType;
-    private LinearDigitalFilter lowPassFilter;
+    private LinearFilter lowPassFilter;
 
 	//Wrapper class to get X Values from the LimeLightSubsystem
 	public LimeLightXFilteredInput() {
+        super()
+        this.
         sourceType = PIDSourceType.kDisplacement;
         lowPassFilter = LinearDigitalFilter.movingAverage(new LimeLightXValueInput(), 5);
     }

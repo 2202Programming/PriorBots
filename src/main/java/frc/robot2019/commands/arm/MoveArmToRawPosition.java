@@ -1,7 +1,9 @@
 package frc.robot2019.commands.arm;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot2019.Robot;
+import frc.lib2202.builder.RobotContainer;
+import frc.robot2019.Constants;
+import frc.robot2019.subsystems.ArmSubsystem;
 
 //Commands the arm to follow an arc
 public class MoveArmToRawPosition extends Command {
@@ -11,9 +13,11 @@ public class MoveArmToRawPosition extends Command {
     private double tolerance;
     private double step;
     private double degreesPerSecond;
+    final ArmSubsystem arm;
 
     public MoveArmToRawPosition(double angle, double extension, double endTolerance, double degreesPerSecond) {
-        addRequirements(Robot.arm);
+        arm = RobotContainer.getSubsystem(ArmSubsystem.class);
+        addRequirements(arm);
         this.endAngle = angle;
         this.extension = extension;
         this.degreesPerSecond = degreesPerSecond;
@@ -22,17 +26,17 @@ public class MoveArmToRawPosition extends Command {
 
     @Override
     public void initialize() {
-        curAngle = Robot.arm.getRealAngle();
-        step = Math.copySign(degreesPerSecond * Robot.kDefaultPeriod, endAngle - curAngle); // step is the # of
+        curAngle = arm.getRealAngle();
+        step = Math.copySign(degreesPerSecond * Constants.dT, endAngle - curAngle); // step is the # of
                                                                                             // degrees to change per
                                                                                             // cycle
     }
 
     @Override
     public void execute() {
-        Robot.arm.setExtension(extension);
-        if (Math.abs(Robot.arm.getExtension() - extension) <= 0.5 || Robot.arm.isExtensionOverrided()) {
-            Robot.arm.setAngle(curAngle);
+        arm.setExtension(extension);
+        if (Math.abs(arm.getExtension() - extension) <= 0.5 || arm.isExtensionOverrided()) {
+            arm.setAngle(curAngle);
 
             if (step < 0) {
                 curAngle = Math.max(curAngle + step, endAngle);
@@ -43,11 +47,7 @@ public class MoveArmToRawPosition extends Command {
     }
 
     public boolean isFinished() {
-        return Math.abs(Robot.arm.getRealAngle() - endAngle) <= tolerance;
-    }
-
-    @Override
-    public void end(boolean interrupted) {
+        return Math.abs(arm.getRealAngle() - endAngle) <= tolerance;
     }
 
 }

@@ -1,20 +1,20 @@
 package frc.robot2019.commands.drive;
 
-import edu.wpi.first.wpilibj.PIDController;
-import edu.wpi.first.wpilibj.GenericHID.Hand;
+import edu.wpi.first.math.controller.PIDController;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot2019.Robot;
-import frc.robot2019.commands.util.ExpoShaper;
+import frc.lib2202.builder.RobotContainer;
+import frc.lib2202.subsystem.hid.ExpoShaper;
+import frc.robot2019.OI;
 import frc.robot2019.input.LimeLightXFilteredInput;
-import frc.robot2019.output.FakePIDOutput;
 import frc.robot2019.subsystems.DriveTrainSubsystem;
+import frc.robot2019.subsystems.SensorSubsystem;
 
 /**
  * An example command. You can replace me with your own command.
  */
 public class LimeLightArcadeDriveCommand extends Command {
-  private DriveTrainSubsystem driveTrain;
   private final double P = 0.22;
   private final double I = 0.0;
   private final double D = 0.3;
@@ -22,11 +22,19 @@ public class LimeLightArcadeDriveCommand extends Command {
   private ExpoShaper speedShaper;
   private double maxSpeed;
 
+  final SensorSubsystem sensorSubsystem;
+  final DriveTrainSubsystem driveTrain;
+  final private OI m_oi;
+
   public LimeLightArcadeDriveCommand(double maxSpeed) {
+    driveTrain = RobotContainer.getSubsystem(DriveTrainSubsystem.class);
+    sensorSubsystem = RobotContainer.getSubsystem(SensorSubsystem.class);
+    m_oi = RobotContainer.getObject("OI");
     // Use addRequirements() here to declare subsystem dependencies
-    addRequirements(Robot.driveTrain);
-    driveTrain = Robot.driveTrain;
-    controller = new PIDController(P, I, D, new LimeLightXFilteredInput(), new FakePIDOutput());
+    addRequirements(driveTrain);
+    controller = new PIDController(P, I, D);
+    var tbd =  new LimeLightXFilteredInput();
+    
     speedShaper = new ExpoShaper(0.6); // 0 no change, 1.0 max flatness
     this.maxSpeed = maxSpeed;
   }
@@ -40,7 +48,7 @@ public class LimeLightArcadeDriveCommand extends Command {
     controller.setPercentTolerance(1);
     controller.setContinuous(true);
     controller.enable();
-    Robot.sensorSubystem.enableLED();
+    sensorSubsystem.enableLED();
     execute();
   }
 
@@ -52,7 +60,7 @@ public class LimeLightArcadeDriveCommand extends Command {
   public void execute() {
     // We invert the PID controller value so the feedback loop is negative and not
     // positive
-    double speed = maxSpeed * speedShaper.expo(Robot.m_oi.getDriverController().getY(Hand.kLeft));
+    double speed = maxSpeed * speedShaper.expo(m_oi.getDriverController().getLeftY()); // Hand.kLeft));
     double rotation = -controller.get();
  
     if (Math.abs(rotation) <= 0.12) {
@@ -61,7 +69,7 @@ public class LimeLightArcadeDriveCommand extends Command {
 
     SmartDashboard.putNumber("PID Error", controller.getError());
 
-    Robot.driveTrain.ArcadeDrive(speed, rotation, true);
+    driveTrain.ArcadeDrive(speed, rotation, true);
     SmartDashboard.putData(controller);
   }
 
@@ -72,7 +80,7 @@ public class LimeLightArcadeDriveCommand extends Command {
 
   @Override
   public void end(boolean interrupted) {
-    Robot.sensorSubystem.disableLED();
+    sensorSubsystem.disableLED();
     controller.reset();
     driveTrain.stop();
   }

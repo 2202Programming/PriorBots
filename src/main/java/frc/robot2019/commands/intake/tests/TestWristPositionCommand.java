@@ -3,20 +3,24 @@ package frc.robot2019.commands.intake.tests;
 import java.util.function.DoubleSupplier;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot2019.Robot;
+import frc.lib2202.builder.RobotContainer;
 import frc.robot2019.commands.util.RateLimiter;
 import frc.robot2019.commands.util.RateLimiter.InputModel;
+import frc.robot2019.subsystems.IntakeSubsystem;
+import frc.robot2019.Constants;
 
 public class TestWristPositionCommand extends Command {
     RateLimiter wristPC;
+    final IntakeSubsystem intake;
 
     public TestWristPositionCommand(DoubleSupplier getter) {
-        addRequirements(Robot.intake);
-        wristPC = new RateLimiter(Robot.dT,
+        intake = RobotContainer.getSubsystem(IntakeSubsystem.class);
+        addRequirements(intake);
+        wristPC = new RateLimiter(Constants.dT,
                 getter, 
-                Robot.intake::getAngle,
-                Robot.intake.WristMinDegrees, 
-                Robot.intake.WristMaxDegrees, 
+                intake::getAngle,
+                intake.WristMinDegrees, 
+                intake.WristMaxDegrees, 
                -60.0,   // dx_fall deg/sec 
                 180.0,  // dx_raise deg/se
                 InputModel.Position);
@@ -33,7 +37,7 @@ public class TestWristPositionCommand extends Command {
 
     public void execute() {
         wristPC.execute();
-        Robot.intake.setAngle(wristPC.get());
+        intake.setAngle(wristPC.get());
     }
 
     // This is just a test, it doesn't finish. Enjoy moving the wrist with the controller.

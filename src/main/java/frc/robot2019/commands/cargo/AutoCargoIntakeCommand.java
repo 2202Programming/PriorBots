@@ -1,33 +1,33 @@
 package frc.robot2019.commands.cargo;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot2019.Robot;
+import frc.lib2202.builder.RobotContainer;
 import frc.robot2019.subsystems.CargoTrapSubsystem;
 
 public class AutoCargoIntakeCommand extends Command {
-    private CargoTrapSubsystem trap;
+    final private CargoTrapSubsystem cargoTrap;
     private double speed;
 
     public AutoCargoIntakeCommand(double speed) {
-        addRequirements(Robot.cargoTrap);
-        trap = Robot.cargoTrap;
+        cargoTrap = RobotContainer.getSubsystem(CargoTrapSubsystem.class);
+        addRequirements(cargoTrap);
         this.speed = speed;
     }
 
     @Override
     public void initialize() {
-        trap.deployTrap();        
+        cargoTrap.deployTrap();        
     }
 
     @Override
     public void execute() {
-        trap.setIntake(speed);
+        cargoTrap.setIntake(speed);
     }
 
     @Override
     public void end(boolean interrupted) {
-        trap.retractTrap();
-        trap.setIntake(0);
+        cargoTrap.retractTrap();
+        cargoTrap.setIntake(0);
     }
 
     @Override

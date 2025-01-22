@@ -2,33 +2,39 @@ package frc.robot2019.commands.arm.tests;
 
 import java.util.function.DoubleConsumer;
 
-import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot2019.Robot;
+import frc.lib2202.builder.RobotContainer;
 import frc.robot2019.commands.util.RateLimiter;
 import frc.robot2019.commands.util.RateLimiter.InputModel;
-
+import frc.robot2019.subsystems.ArmSubsystem;
+import frc.robot2019.Constants;
+import frc.robot2019.OI;
 public class TestArmRateCmd extends ParallelCommandGroup {
 
     RateLimiter armRC;
     RateLimiter extenderRC;
 
+    final ArmSubsystem arm;
+    final OI m_oi;
+
     public TestArmRateCmd() {
-        armRC = new RateLimiter(Robot.dT,
+        arm = RobotContainer.getSubsystem(ArmSubsystem.class);
+        m_oi = RobotContainer.getObject("OI");
+        armRC = new RateLimiter(Constants.dT,
                 this::getShoulderCmd, 
-                Robot.arm::getRealAngle, 
-                Robot.arm.PHI_MIN, // ShoulderMinDegrees,
-                Robot.arm.PHI_MAX, // ShoulderMaxDegrees,
+                arm::getRealAngle, 
+                arm.PHI_MIN, // ShoulderMinDegrees,
+                arm.PHI_MAX, // ShoulderMaxDegrees,
                 -3.0, // dx_falling  
                 5.0, // dx_raising
                 InputModel.Position); // expo
 
 
-        extenderRC = new RateLimiter(Robot.dT,
+        extenderRC = new RateLimiter(Constants.dT,
             this::getExtenderCmd, 
-            Robot.arm::getExtension,
+            arm::getExtension,
             5.0,  //Robot.arm.EXTEND_MIN, // inches,
             15.0, //Robot.arm.EXTEND_MAX, // inches
             -5.0, // dx_falling
@@ -40,7 +46,7 @@ public class TestArmRateCmd extends ParallelCommandGroup {
             final DoubleConsumer outfunct;
 
             RateCmd(RateLimiter _rc, DoubleConsumer _outfunct) {
-                addRequirements(Robot.arm);
+                addRequirements(arm);
                 rc = _rc;
                 outfunct = _outfunct;
             }
@@ -58,8 +64,8 @@ public class TestArmRateCmd extends ParallelCommandGroup {
             public boolean isFinished() { return false;  }
         }
 
-        RateCmd shoulderCmd = new RateCmd(armRC, Robot.arm::setAngle);
-        RateCmd extenderCmd = new RateCmd(extenderRC, Robot.arm::setExtension);
+        RateCmd shoulderCmd = new RateCmd(armRC, arm::setAngle);
+        RateCmd extenderCmd = new RateCmd(extenderRC, arm::setExtension);
         addCommands(shoulderCmd, extenderCmd);
     }
 
@@ -70,9 +76,9 @@ public class TestArmRateCmd extends ParallelCommandGroup {
     // ### TODO: move the binding functions to a less hidden place - DPL
     // Bind the control to our functions
     public double getShoulderCmd() {
-        return Robot.m_oi.getAssistantController().getY(Hand.kRight);
+        return m_oi.getAssistantController().getRightY(); //Hand.kRight);
     }
     public double getExtenderCmd() {
-        return Robot.m_oi.getAssistantController().getX(Hand.kRight);
+        return m_oi.getAssistantController().getRightX(); //Hand.kRight);
     }
 }

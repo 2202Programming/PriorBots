@@ -1,12 +1,9 @@
 package frc.robot2019.input;
 
-import edu.wpi.first.wpilibj.PIDSource;
-import edu.wpi.first.wpilibj.PIDSourceType;
-import frc.robot2019.Robot;
+import java.util.function.DoubleSupplier;
 
-public class LimeLightXValueInput implements PIDSource{
-    private PIDSourceType sourceType;
 
+public class LimeLightXValueInput implements DoubleSupplier{
 	//Wrapper class to get X Values from the LimeLightSubsystem
 	public LimeLightXValueInput() {
         sourceType = PIDSourceType.kDisplacement;
@@ -20,7 +17,7 @@ public class LimeLightXValueInput implements PIDSource{
     @Override
     public double pidGet() {
         if(sourceType == PIDSourceType.kDisplacement) 
-            return Robot.sensorSubystem.getX();
+            return sensorSubystem.getX();
         else 
             return 0;
     }

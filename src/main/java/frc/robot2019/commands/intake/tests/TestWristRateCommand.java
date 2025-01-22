@@ -1,22 +1,28 @@
 package frc.robot2019.commands.intake.tests;
 
-import edu.wpi.first.wpilibj.GenericHID.Hand;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot2019.Robot;
+import edu.wpi.first.wpilibj2.command.Command;
+import frc.lib2202.builder.RobotContainer;
+import frc.robot2019.Constants;
+import frc.robot2019.OI;
 import frc.robot2019.commands.util.RateLimiter;
 import frc.robot2019.commands.util.RateLimiter.InputModel;
+import frc.robot2019.subsystems.IntakeSubsystem;
 
 public class TestWristRateCommand extends Command {
     RateLimiter wristRC;
+    final IntakeSubsystem intake;
+    final OI m_oi;
 
     public TestWristRateCommand() {
-        addRequirements(Robot.intake);
-        wristRC = new RateLimiter(Robot.dT,
+        intake = RobotContainer.getSubsystem(IntakeSubsystem.class);
+        m_oi = RobotContainer.getObject("OI");
+        addRequirements(intake);
+        wristRC = new RateLimiter(Constants.dT,
                 this::getCmd, 
-                Robot.intake::getAngle, 
-                Robot.intake.WristMinDegrees -10, 
-                Robot.intake.WristMaxDegrees+ 10, 
+                intake::getAngle, 
+                intake.WristMinDegrees -10, 
+                intake.WristMaxDegrees+ 10, 
                 -80.0, // dx_fall deg/sec 
                 180.0,  // dx_raise deg/ses
                 InputModel.Rate);
@@ -28,7 +34,7 @@ public class TestWristRateCommand extends Command {
 
     // Must supply a function to get a user's command in normalized units
     public double getCmd() {
-        double   temp =  Robot.m_oi.getAssistantController().getY(Hand.kLeft);
+        double   temp =  m_oi.getAssistantController().getLeftY(); //Hand.kLeft);
         return temp;
     }
     
@@ -39,7 +45,7 @@ public class TestWristRateCommand extends Command {
     
     public void execute() {
         wristRC.execute();
-        Robot.intake.setAngle(wristRC.get());
+        intake.setAngle(wristRC.get());
     }
 
     // This is just a test, it doesn't finish. Enjoy moving the write with the
