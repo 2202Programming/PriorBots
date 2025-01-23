@@ -5,6 +5,8 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.chadbot.commands.IntakeCommand;
+import frc.chadbot.commands.IntakeCommand.IntakeMode;
 import frc.lib2202.builder.RobotContainer;
 import frc.lib2202.command.swerve.AllianceAwareGyroReset;
 import frc.lib2202.command.swerve.RobotCentricDrive;
@@ -69,44 +71,38 @@ public final class Comp_ChadBot {
             return;
         }
 
-       
-        var AmpMechanism = RobotContainer.getSubsystem(AmpMechanism.class);
+        operator.b().onTrue(new IntakeCommand(IntakeMode.ExpellCargo));
+        operator.x().onTrue(new IntakeCommand(IntakeMode.LoadCargo));
 
-        Trigger ManualShoot = sideboard.sw16();
-        Trigger ShooterCalibrate = sideboard.sw12();
-        Trigger IntakeCalibrate = sideboard.sw13();
+
+        //Trigger ManualShoot = sideboard.sw16();
+        //Trigger ShooterCalibrate = sideboard.sw12();
+        //Trigger IntakeCalibrate = sideboard.sw13();
 
         // Switchboard buttons too
-        sideboard.sw23().onTrue(new MoveToAnglePos(Intake.DownPos, Intake.TravelUp));
-        sideboard.sw24().toggleOnTrue(new InstantCommand( ()-> {AmpMechanism.setServo(AmpMechanism.parked); }));
+        //sideboard.sw23().onTrue(new MoveToAnglePos(Intake.DownPos, Intake.TravelUp));
 
         /***************************************************************************************/
         // REAL COMPETITION BINDINGS.
-        operator.a().whileTrue(new IntakeSequence(false)
-                .andThen(new ShooterAngleSetPos(36.0)));
-        operator.b().whileTrue(new EjectNote()); // eject note from intake
-        operator.x().whileTrue(new InIntake(false)); // works ---> seq for stay in intake for amp shoot
-        IntakeCalibrate.and(operator.povUp()).onTrue(new AngleCalibration(-25.0));// intake calibrate
-        IntakeCalibrate.and(operator.povDown()).whileTrue(new TestIntake(0.0));
         
-        //amp shooting
-        ManualShoot.and(operator.rightBumper()).onTrue(new SequentialCommandGroup (
-            new InstantCommand( ()-> {AmpMechanism.setServo(AmpMechanism.extended); }),
-            new ShooterServoSequence(45.5, 2200).andThen(new InstantCommand( ()-> {
-                AmpMechanism.setServo(AmpMechanism.parked); }))));      
+        //operator.b().whileTrue(new EjectNote()); // eject note from intake
+        //operator.x().whileTrue(new InIntake(false)); // works ---> seq for stay in intake for amp shoot
+        //IntakeCalibrate.and(operator.povUp()).onTrue(new AngleCalibration(-25.0));// intake calibrate
+        //IntakeCalibrate.and(operator.povDown()).whileTrue(new TestIntake(0.0));
+           
         // speaker shooting                                                                                            
-        ManualShoot.and(operator.rightTrigger()).onTrue(new ShooterServoSequence()); // was 35
-        ManualShoot.and(operator.leftTrigger()).onTrue(new ShooterServoSequenceDebug());
+       // ManualShoot.and(operator.rightTrigger()).onTrue(new ShooterServoSequence()); // was 35
+        //ManualShoot.and(operator.leftTrigger()).onTrue(new ShooterServoSequenceDebug());
 
         // AutoShootm 
-        ManualShoot.negate().and(operator.rightBumper())
-            .onTrue(new AutoShooting(ShootingTarget.Speaker, 45.0, 3000.0));
-        ManualShoot.negate().and(operator.rightTrigger())
-            .onTrue(new AutoShooting(ShootingTarget.Speaker, 36.0, 3200.0));
+        //ManualShoot.negate().and(operator.rightBumper())
+           // .onTrue(new AutoShooting(ShootingTarget.Speaker, 45.0, 3000.0));
+        //ManualShoot.negate().and(operator.rightTrigger())
+           // .onTrue(new AutoShooting(ShootingTarget.Speaker, 36.0, 3200.0));
         
         // Calibration commands
-        ShooterCalibrate.and(operator.povUp()).onTrue(new CalibrateWithLS()); 
-        ShooterCalibrate.and(operator.povDown()).whileTrue(new ShooterAngleVelMove(-2.0));
+        //ShooterCalibrate.and(operator.povUp()).onTrue(new CalibrateWithLS()); 
+        //ShooterCalibrate.and(operator.povDown()).whileTrue(new ShooterAngleVelMove(-2.0));
 
     }
 }

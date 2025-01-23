@@ -329,9 +329,7 @@ public class Custom_ChadBot {
                 operator.rightTrigger().onTrue(new ShooterSequence(3500.0));
                 break;
             case comp_not_comp:
-                var sideboard = dc.SwitchBoard();
-                var AmpMechanism = RobotContainer.getSubsystem(AmpMechanism.class);
-                SmartDashboard.putNumber("AMP MECHANISM DEBUG", 0.5);                
+                var sideboard = dc.SwitchBoard();              
                 // Switchboard buttons too
                 sideboard.sw21().onTrue(new Climb(Climber.ExtendPosition));
                 sideboard.sw22().onTrue(new Climb(Climber.ClimbPosition));
@@ -354,10 +352,6 @@ public class Custom_ChadBot {
                 operator.leftTrigger().onTrue(new ShooterServoSequenceDebug());
                 // Calibration commands
                 operator.povUp().onTrue(new CalibrateWithLS());
-                operator.povLeft().onTrue(
-                        new InstantCommand(() -> {
-                            AmpMechanism.setServo(AmpMechanism.desiredPos);
-                        }));
 
             default:
                 break;
