@@ -88,7 +88,7 @@ public class OI {
   //@SuppressWarnings({ "resource", })
   public OI() {
     arm = RobotContainer.getSubsystem(ArmSubsystem.class);
-    climber = RobotContainer.getSubsystem(ClimberSubsystem.class);
+    climber = RobotContainer.getSubsystemOrNull(ClimberSubsystem.class);
     m_oi = this;  
 
     // Wait until we get the first switchboard input - hack we know.

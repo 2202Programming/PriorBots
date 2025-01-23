@@ -101,12 +101,9 @@ public class IntakeSubsystem extends ExtendedSubSystem {
     addChild("In:CargoSw", cargoSwitch); //dpl not using 3/14/2019
     addChild("In:VacSol", vacuumSol); //switched to spark
 
-
-
     logTimer = System.currentTimeMillis();
   }
 
-  //TODO - deal with INITDefaultCommand
   public void initDefaultCommand() {
     setDefaultCommand(new WristStatePositioner());
   }
@@ -277,8 +274,8 @@ public class IntakeSubsystem extends ExtendedSubSystem {
       super(channel);
       kMaxServoAngle = maxDegrees;
       kMinServoAngle = minDegrees;
-      kDefaultMaxServoPWM = (int)maxPWMuS;
-      kDefaultMinServoPWM = (int)minPWMuS;
+      kDefaultMaxServoPWM = (int)(maxPWMuS*1000.0);  //new api
+      kDefaultMinServoPWM = (int)(minPWMuS*1000.0);
       
       // compute range once
       kServoRange = kMaxServoAngle - kMinServoAngle;
