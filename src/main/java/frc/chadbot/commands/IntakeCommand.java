@@ -91,6 +91,9 @@ public class IntakeCommand extends Command {
   @Override
   public boolean isFinished() {
 
+
+//THE PROBLEM IS HERE ---->
+
     //Possible TODO - may want to finish or reset on Cargo COUNT
     return finished;  // never finishes, this can be a default command
   }

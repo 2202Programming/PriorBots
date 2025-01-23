@@ -58,6 +58,12 @@ public final class Comp_ChadBot {
         driver.leftTrigger().whileTrue(new RobotCentricDrive(drivetrain, dc));
         driver.y().onTrue(new AllianceAwareGyroReset(true));
         driver.rightTrigger().whileTrue(new TargetCentricDrive(Tag_Pose.ID4, Tag_Pose.ID7));
+        
+        driver.b().onTrue(new IntakeCommand(IntakeMode.ExpellCargo));
+        driver.b().onFalse(new IntakeCommand(IntakeMode.Stop));
+
+        driver.x().onTrue(new IntakeCommand(IntakeMode.LoadCargo));
+        driver.x().onFalse(new IntakeCommand(IntakeMode.Stop));
     }
 
 
@@ -71,8 +77,7 @@ public final class Comp_ChadBot {
             return;
         }
 
-        operator.b().onTrue(new IntakeCommand(IntakeMode.ExpellCargo));
-        operator.x().onTrue(new IntakeCommand(IntakeMode.LoadCargo));
+
 
 
         //Trigger ManualShoot = sideboard.sw16();
