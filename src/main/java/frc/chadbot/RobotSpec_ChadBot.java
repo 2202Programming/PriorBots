@@ -44,8 +44,7 @@ public class RobotSpec_ChadBot implements IRobotSpec {
       //rest of Chad's subsystems
       .add(Intake_Subsystem.class)
       .add(Magazine_Subsystem.class)
-      .add(Positioner_Subsystem.class)
-      .add(AmpMechanism.class);
+      .add(Positioner_Subsystem.class);
 
   boolean swerve = true;
 
