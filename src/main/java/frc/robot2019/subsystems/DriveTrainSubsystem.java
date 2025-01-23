@@ -96,7 +96,6 @@ public class DriveTrainSubsystem extends SubsystemBase {
     
     cameraSelect = NetworkTableInstance.getDefault().getEntry("/PiSwitch");
     logTimer = System.currentTimeMillis();
-    initDefaultCommand();
   }
 
   public void log(int interval) {

@@ -17,6 +17,7 @@ import frc.lib2202.subsystem.swerve.config.ChassisConfig;
 import frc.lib2202.subsystem.swerve.config.ModuleConfig;
 import frc.robot2019.commands.CommandManager;
 import frc.robot2019.commands.CommandManager.Modes;
+import frc.robot2019.commands.arm.ArmStatePositioner;
 /*
 import frc.lib2202.util.PIDFController;
 import frc.robot2019.Constants;  // some added constants for port
@@ -36,7 +37,7 @@ import frc.robot2019.subsystems.SensorSubsystem;
 public class RobotSpec_2019 implements IRobotSpec {
 
     boolean teleOpRunOnce = true;
-
+    // To test in sim, use $env:serialnum ='fixme'  in the debugger cmd shell
     // Create list of subsystems this robot uses, remember their periodic() are called in order of this list
     final SubsystemConfig config = new SubsystemConfig(
             "Robot_2019", "fixme")
@@ -46,18 +47,17 @@ public class RobotSpec_2019 implements IRobotSpec {
                 pdp.clearStickyFaults();
                 return pdp;
             })
-            .add(DriveTrainSubsystem.class)
-            .add(GearShifterSubsystem.class)
-            .add(ArmSubsystem.class)
-            .add(CameraSubsystem.class)
-            .add(IntakeSubsystem.class)
-            .add(CargoTrapSubsystem.class)
-            .add(IntakeSubsystem.class)
+            .add(CameraSubsystem.class) 
             .add(SensorSubsystem.class)  //creates SerialPortSS and LimeLightSS inside
             //.add(SerialPortSubsystem.class)
             //.add(LimeLightSubsystem.class)
+            .add(DriveTrainSubsystem.class)     //uses cameraSS
+            .add(GearShifterSubsystem.class)
+            .add(ArmSubsystem.class)          
+            .add(IntakeSubsystem.class)
+            .add(CargoTrapSubsystem.class)           
             .add(ClimberSubsystem.class)    // no longer exists on robot
-            // non-subystem objects
+            // non-subystem objects, OI arm must exist
             .add(OI.class, "OI", () -> {return new OI(); })  //lots of bindings here, uses subsystems
             // setup cmd mgr - code copied from Robot.old_reference
             .add(CommandManager.class, "CommandManager", () -> {
@@ -136,9 +136,13 @@ public class RobotSpec_2019 implements IRobotSpec {
 
     @Override
     public void setDefaultCommands() {
-        // subsystems might set their own default commands from old initDefaultCommand()
-      
+        //this is after everything is constructed
+        RobotContainer.getSubsystem(DriveTrainSubsystem.class).initDefaultCommand();
+        RobotContainer.getSubsystem(ArmSubsystem.class).setDefaultCommand(new ArmStatePositioner());
+        RobotContainer.getSubsystem(IntakeSubsystem.class).initDefaultCommand();
+        RobotContainer.getSubsystem(CargoTrapSubsystem.class).initDefaultCommand();
     }
+    
     @Override
     public void teleopInit(){         
         if (teleOpRunOnce) {

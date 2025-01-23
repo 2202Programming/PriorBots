@@ -128,8 +128,6 @@ public class ArmSubsystem extends ExtendedSubSystem {
     zeroArm(); // will also get called on transition to teleOp, should arms be moved
 
     extensionOverrided = false;
-
-    setDefaultCommand(new ArmStatePositioner());
   }
   // Put methods for controlling this subsystem
   // here. Call these from Commands.
