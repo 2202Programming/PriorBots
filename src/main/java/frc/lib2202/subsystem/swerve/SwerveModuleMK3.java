@@ -7,12 +7,17 @@ import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
+import com.revrobotics.spark.config.EncoderConfigAccessor;
+import com.revrobotics.spark.config.SparkBaseConfig;
+import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.ClosedLoopSlot;
+import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.REVLibError;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkClosedLoopController;
+import com.revrobotics.spark.SparkFlex;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -32,6 +37,8 @@ import static frc.lib2202.Constants.DEGperRAD;
 
 public class SwerveModuleMK3 {
   public final String NT_Name = "DT";
+  @SuppressWarnings("rawtypes")
+  final Class mType;   // either SparkMax or SparkFlex
 
   // PID slot for angle and drive pid on SmartMax controller
   final ClosedLoopSlot kSlot = ClosedLoopSlot.kSlot0;
@@ -42,10 +49,10 @@ public class SwerveModuleMK3 {
   private final ChassisConfig cc;
 
   // Rev devices
-  private final SparkMax driveMotor;
-  private final SparkMaxConfig driveCfg;
-  private final SparkMax angleMotor;
-  private final SparkMaxConfig angleCfg;
+  private final SparkBase driveMotor;
+  private final SparkBaseConfig driveCfg;
+  private final SparkBase angleMotor;
+  private final SparkBaseConfig angleCfg;
   private final SparkClosedLoopController driveMotorPID;
   private final SparkClosedLoopController angleMotorPID; // sparkmax PID can only use internal NEO encoders
   private final RelativeEncoder angleEncoder; // aka internalAngle
@@ -103,8 +110,24 @@ public class SwerveModuleMK3 {
    */
   public String myprefix;
 
+  // Signature for flex
+  public SwerveModuleMK3(SparkFlex driveMtr, SparkFlex angleMtr, CANcoder absEnc,
+  boolean invertAngleMtr, boolean invertAngleCmd, boolean invertDrive, String prefix) {
+    this(SparkFlex.class, driveMtr,  angleMtr, absEnc, invertAngleMtr, invertAngleCmd, invertDrive, prefix );
+
+  }
+  // Contructor for original SparkMax
   public SwerveModuleMK3(SparkMax driveMtr, SparkMax angleMtr, CANcoder absEnc,
+  boolean invertAngleMtr, boolean invertAngleCmd, boolean invertDrive, String prefix) {
+    this(SparkMax.class, driveMtr,  angleMtr, absEnc, invertAngleMtr, invertAngleCmd, invertDrive, prefix );
+    }
+  
+  // generalized
+  public SwerveModuleMK3(
+    @SuppressWarnings("rawtypes") Class mType, 
+      SparkBase driveMtr, SparkBase angleMtr, CANcoder absEnc,
       boolean invertAngleMtr, boolean invertAngleCmd, boolean invertDrive, String prefix) {
+    this.mType = mType;
     driveMotor = driveMtr;
     angleMotor = angleMtr;
     absEncoder = absEnc;
@@ -127,7 +150,7 @@ public class SwerveModuleMK3 {
       // account for command sign differences if needed
     angleCmdInvert = (invertAngleCmd) ? -1.0 : 1.0;
     
-    driveCfg = new SparkMaxConfig();
+    driveCfg = (mType == SparkMax.class) ? new SparkMaxConfig() : new SparkFlexConfig();
     // Drive Motor config
     driveCfg.inverted(invertDrive)
             .idleMode(IdleMode.kBrake)
@@ -147,7 +170,7 @@ public class SwerveModuleMK3 {
     
     sleep(100);
     // Angle Motor config
-    angleCfg = new SparkMaxConfig();
+    angleCfg = (mType == SparkMax.class) ? new SparkMaxConfig() : new SparkFlexConfig();
     angleCfg.inverted(invertAngleMtr)
             .idleMode(IdleMode.kCoast)
             .smartCurrentLimit(limits.angleStallAmp, limits.freeAmp)
@@ -212,7 +235,10 @@ public class SwerveModuleMK3 {
 
   void realityCheckSparkMax(double angle_cancoder, double internal_angle) {
     boolean result = true;
-    var d_enc =  driveMotor.configAccessor.encoder;
+    // handle different mTypes
+    EncoderConfigAccessor  d_enc = (mType == SparkMax.class) ? 
+                  ((SparkMax)driveMotor).configAccessor.encoder :
+                  ((SparkFlex)driveMotor).configAccessor.encoder;
     if (Math.abs(
       d_enc.getPositionConversionFactor() - Math.PI * cc.wheelDiameter / cc.kDriveGR) > 0.1) {
       System.out.println("*** ERROR *** " + myprefix + " position conversion factor incorrect for drive");
@@ -226,7 +252,11 @@ public class SwerveModuleMK3 {
       System.out.println("Returned Vel CF: " + d_enc.getVelocityConversionFactor());
       result = false;
     }
-    var a_enc = angleMotor.configAccessor.encoder;
+    // handle different mTypes
+    EncoderConfigAccessor  a_enc = (mType == SparkMax.class) ? 
+                  ((SparkMax)driveMotor).configAccessor.encoder :
+                  ((SparkFlex)driveMotor).configAccessor.encoder;
+   
     if (Math.abs(a_enc.getPositionConversionFactor() - (360.0 / cc.kSteeringGR)) > 0.1) {
       System.out.println("*** ERROR *** " + myprefix + " position conversion factor incorrect for angle");
       System.out.println("Expected Angle Pos CF: " + 360.0 / cc.kSteeringGR);

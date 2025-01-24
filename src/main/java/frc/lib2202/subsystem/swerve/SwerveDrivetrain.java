@@ -8,8 +8,16 @@ import com.ctre.phoenix6.StatusSignal;
 //wip import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.hardware.CANcoder;
+//import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
+
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkFlex;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -20,6 +28,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib2202.builder.RobotContainer;
@@ -64,8 +73,15 @@ public class SwerveDrivetrain extends SubsystemBase {
 
   // pose/field measurements
   public final Field2d m_field; // Field2d based on odometry only
+  private RobotConfig GUIconfig;
+
 
   public SwerveDrivetrain() {
+      this(SparkMax.class);
+  }
+
+  @SuppressWarnings("rawtypes")
+  public SwerveDrivetrain(Class mtrClass) {
     m_field = new Field2d();
 
     cc = RobotContainer.getRobotSpecs().getChassisConfig();
@@ -95,9 +111,16 @@ public class SwerveDrivetrain extends SubsystemBase {
     // create cancoders and swerve modules
     for (int i = 0; i < mc.length; i++) {
       canCoders[i] = initCANcoder(mc[i].CANCODER_ID, mc[i].kAngleOffset);
+
+
       modules[i] = new SwerveModuleMK3(
-          new SparkMax(mc[i].DRIVE_MOTOR_ID, SparkMax.MotorType.kBrushless),
-          new SparkMax(mc[i].ANGLE_MOTOR_ID, SparkMax.MotorType.kBrushless),
+          mtrClass,
+          // handle either flex or max for modules
+          (mtrClass == SparkMax.class) ? new SparkMax(mc[i].DRIVE_MOTOR_ID, MotorType.kBrushless) : 
+                                         new SparkFlex(mc[i].DRIVE_MOTOR_ID, MotorType.kBrushless),
+          (mtrClass == SparkMax.class) ? new SparkMax(mc[i].ANGLE_MOTOR_ID, MotorType.kBrushless)  :
+                                         new SparkFlex(mc[i].ANGLE_MOTOR_ID, MotorType.kBrushless),
+
           canCoders[i],
           mc[i].kAngleMotorInvert,
           mc[i].kAngleCmdInvert,
@@ -113,6 +136,7 @@ public class SwerveDrivetrain extends SubsystemBase {
     meas_states = kinematics.toSwerveModuleStates(new ChassisSpeeds(0, 0, 0));
     m_pose = m_odometry.update(sensors.getRotation2d(), meas_pos);
 
+    configureAutoBuilder();
     offsetDebug();
   }
 
@@ -222,6 +246,48 @@ public class SwerveDrivetrain extends SubsystemBase {
     // this pose is only based on odometry, no vision
     m_pose = m_odometry.update(sensors.getRotation2d(), meas_pos);
     m_field.setRobotPose(m_odometry.getPoseMeters());
+  }
+
+  // AutoBuilder for PathPlanner - uses internal static vars in AutoBuilder
+  void configureAutoBuilder() {
+    try{
+      GUIconfig = RobotConfig.fromGUISettings();
+
+    // Configure the AutoBuilder last
+    AutoBuilder.configure(
+        this::getPose, // Robot pose supplier
+        this::autoPoseSet, // Method to reset odometry (will be called if your auto has a starting pose)
+        this::getChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+        this::driveRobotRelative, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
+        new PPHolonomicDriveController( // HolonomicPathFollowerConfig, this should likely live in your
+                                         // Constants class
+            new PIDConstants(7.0, 0.0, 0.0), // Translation PID constants
+            new PIDConstants(7.0, 0.0, 0.0)
+        ), // Rotation PID constants    
+        GUIconfig,
+        () -> {
+          // Boolean supplier that controls when the path will be mirrored for the red
+          // alliance
+          // This will flip the path being followed to the red side of the field.
+          // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+
+          var alliance = DriverStation.getAlliance();
+          if (alliance.isPresent()) {
+            return alliance.get() == DriverStation.Alliance.Red;
+          }
+          return false;
+        },
+        this // Reference to this subsystem to set requirements
+    );
+
+  } catch (Exception e) {
+    // Handle exception as needed
+    System.out.println("PATHING - Could not initialize PathPlanner check for ~/deploy/pathplanner/settings.json");
+    e.printStackTrace();
+    System.out.println("PATHING - End of stack trace --------------");
+  }
+
+
   }
 
   public void simulationInit() {

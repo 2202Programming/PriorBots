@@ -5,11 +5,11 @@ import static frc.lib2202.Constants.DT;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.revrobotics.REVLibError;
 import com.revrobotics.spark.ClosedLoopSlot;
+import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkClosedLoopController;
-import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.config.SparkBaseConfig;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.util.sendable.SendableBuilder;
@@ -106,15 +106,15 @@ public class PIDFController extends PIDController {
      * @param smartMaxVel   optional, 0.1 [units/s]
      * @param smartMaxAccel optional 0.01 [units/s^2]
      */
-    public void copyTo(SparkMax motorController, SparkMaxConfig motorConfig, ClosedLoopSlot slot) {
+    public void copyTo(SparkBase motorController, SparkBaseConfig motorConfig, ClosedLoopSlot slot) {
         copyTo(motorController, motorConfig, slot, m_smartMaxVel, m_smartMaxAccel);
     }
 
-    public void copyTo(SparkMax motorController, SparkMaxConfig motorConfig) {
+    public void copyTo(SparkBase motorController, SparkBaseConfig motorConfig) {
         copyTo(motorController, motorConfig, ClosedLoopSlot.kSlot0, m_smartMaxVel, m_smartMaxAccel);
     }
 
-    public void copyTo(SparkMax motorController, SparkMaxConfig motorConfig, ClosedLoopSlot slot, 
+    public void copyTo(SparkBase motorController, SparkBaseConfig motorConfig, ClosedLoopSlot slot, 
                        double smartMaxVel, double smartMaxAccel) {
         m_smartMaxVel = smartMaxVel;
         m_smartMaxAccel = smartMaxAccel;
@@ -135,7 +135,7 @@ public class PIDFController extends PIDController {
         System.out.println("*** ERROR *** SparkMax Flash Failed during copyTo command. Error val=" + driveError);
     }
 
-    public void copyTo(WPI_TalonSRX motor, int slotIdx){
+ public void copyTo(WPI_TalonSRX motor, int slotIdx){
         // ClosedLoopSlot slot = new ClosedLoopSlot(slotIdx);
         motor.config_kP(slotIdx, this.getP());
         motor.config_kI(slotIdx, this.getI());
@@ -149,12 +149,12 @@ public class PIDFController extends PIDController {
         //TODO Do we have to call motor.configureAllSettings() ??? AS        
     }
 
-    public void copyChangesTo(SparkMax controller, SparkMaxConfig motorConfig, PIDFController updated) {
+    public void copyChangesTo(SparkBase controller, SparkBaseConfig motorConfig, PIDFController updated) {
         copyChangesTo(controller, motorConfig, ClosedLoopSlot.kSlot0, updated);
     }
 
     // compares an updated PIDF with this one and updates it and the hardware
-    public void copyChangesTo(SparkMax motorController, SparkMaxConfig motorConfig, ClosedLoopSlot slot, PIDFController updated) {
+    public void copyChangesTo(SparkBase motorController, SparkBaseConfig motorConfig, ClosedLoopSlot slot, PIDFController updated) {
         boolean changed = false;
         var pidCfg =  motorConfig.closedLoop;
 
@@ -193,7 +193,5 @@ public class PIDFController extends PIDController {
             motorController.configureAsync(motorConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);                
         }
     }
-
-    //TODO - add back for the CTRE controllers (find in older repo)
 
 }
