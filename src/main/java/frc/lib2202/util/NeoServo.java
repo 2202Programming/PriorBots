@@ -96,7 +96,7 @@ public class NeoServo implements VelocityControlled {
                 .outputRange(-1.0, 1.0);
             
             // dpl 1/4/2025 looks like only kQuadrature is only type supported.
-            ctrlCfg.alternateEncoder
+            ctrlCfg.encoder
                 .countsPerRevolution(kCPR)
                 .inverted(false);
                 /*******************  may need these 
