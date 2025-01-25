@@ -5,8 +5,17 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.chadbot.Constants.Shooter;
 import frc.chadbot.commands.IntakeCommand;
+import frc.chadbot.commands.MagazineGatedCommand;
+import frc.chadbot.commands.MoveIntake;
+import frc.chadbot.commands.MoveIntake.DeployMode;
 import frc.chadbot.commands.IntakeCommand.IntakeMode;
+import frc.chadbot.commands.Shoot.RPMShootCommand;
+import frc.chadbot.commands.Shoot.ShootCommand;
+import frc.chadbot.commands.Shoot.VelShootCommand;
+import frc.chadbot.commands.Shoot.VelShootGatedCommand;
+import frc.chadbot.subsystems.shooter.FlyWheelRPM;
 import frc.lib2202.builder.RobotContainer;
 import frc.lib2202.command.swerve.AllianceAwareGyroReset;
 import frc.lib2202.command.swerve.RobotCentricDrive;
@@ -44,7 +53,8 @@ public final class Comp_ChadBot {
 
 
     private static void DriverBinding(HID_Xbox_Subsystem dc) {
-        CommandXboxController  driver;
+        CommandXboxController driver;
+
         if (dc.Driver() instanceof CommandXboxController) {
             driver = (CommandXboxController)dc.Driver();
         } else {
@@ -59,26 +69,40 @@ public final class Comp_ChadBot {
         driver.y().onTrue(new AllianceAwareGyroReset(true));
         driver.rightTrigger().whileTrue(new TargetCentricDrive(Tag_Pose.ID4, Tag_Pose.ID7));
         
-        driver.b().onTrue(new IntakeCommand(IntakeMode.ExpellCargo));
-        driver.b().onFalse(new IntakeCommand(IntakeMode.Stop));
+        /*driver.b().whileTrue(new IntakeCommand(IntakeMode.ExpellCargo));
 
-        driver.x().onTrue(new IntakeCommand(IntakeMode.LoadCargo));
-        driver.x().onFalse(new IntakeCommand(IntakeMode.Stop));
-    }
-
+        driver.x().whileTrue(new IntakeCommand(IntakeMode.LoadCargo));*/    }
 
     static void OperatorBindings(HID_Xbox_Subsystem dc) {
         var sideboard = dc.SwitchBoard();
+
         CommandXboxController operator;
+
         if (dc.Operator() instanceof CommandXboxController) {
             operator = (CommandXboxController)dc.Operator();
-        }else {
+        } else {
             DriverStation.reportError("BindingsCompetition: Please use XBOX controller for Operator", false);
             return;
         }
 
+        // shoot commands
+        operator.povLeft().whileTrue(new VelShootCommand(Shooter.longVelocity));
 
 
+        //intake/expel commands
+        operator.rightBumper().whileTrue(
+            new SequentialCommandGroup(
+              new MoveIntake(DeployMode.Toggle),
+              new IntakeCommand((() -> 0.6), () -> 0.5, IntakeMode.LoadCargo)
+        ));
+    
+          operator.rightBumper().onFalse(
+            new SequentialCommandGroup(
+              new IntakeCommand((() -> 0.0), () -> 0.0, IntakeMode.Stop)
+              //new MoveIntake(DeployMode.Retract)
+          ));
+
+          operator.a().onTrue(new MoveIntake(DeployMode.Deploy));
 
         //Trigger ManualShoot = sideboard.sw16();
         //Trigger ShooterCalibrate = sideboard.sw12();

@@ -24,6 +24,7 @@ import frc.robot2024.subsystems.AmpMechanism;
 
 //Note there is a sensors in lib2202, but we want the robot specific one
 import frc.chadbot.subsystems.Sensors_Subsystem;
+import frc.chadbot.subsystems.shooter.Shooter_Subsystem;
 import frc.chadbot.Constants.CAN;
 import frc.chadbot.subsystems.Intake_Subsystem;
 import frc.chadbot.subsystems.Magazine_Subsystem;
@@ -44,7 +45,8 @@ public class RobotSpec_ChadBot implements IRobotSpec {
       //rest of Chad's subsystems
       .add(Intake_Subsystem.class)
       .add(Magazine_Subsystem.class)
-      .add(Positioner_Subsystem.class);
+      .add(Positioner_Subsystem.class)
+      .add(Shooter_Subsystem.class);
 
   boolean swerve = true;
 
