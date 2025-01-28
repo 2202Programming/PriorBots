@@ -84,8 +84,8 @@ public final class BindingsCompetition {
             new InstantCommand( ()-> {AmpMechanism.setServo(AmpMechanism.field_goal); }),
             new WaitCommand(0.5),
             new Climb(Climber.ExtendPosition)));
-        sideboard.sw22().onTrue(new Climb(Climber.ClimbPosition));
-        sideboard.sw23().onTrue(new MoveToAnglePos(Intake.DownPos, Intake.TravelUp));
+        operator.povUp().whileTrue(new ClimberVelocity(5.0));
+        operator.povDown().whileTrue(new ClimberVelocity(-5.0));
         sideboard.sw24().toggleOnTrue(new InstantCommand( ()-> {AmpMechanism.setServo(AmpMechanism.parked); }));
 
         /***************************************************************************************/
@@ -102,14 +102,14 @@ public final class BindingsCompetition {
             new InstantCommand( ()-> {AmpMechanism.setServo(AmpMechanism.extended); }),
             new ShooterServoSequence(45.5, 2200).andThen(new InstantCommand( ()-> {AmpMechanism.setServo(AmpMechanism.parked); }))));      
         // speaker shooting                                                                                            
-        ManualShoot.and(operator.rightTrigger()).onTrue(new ShooterServoSequence()); // was 35
-        ManualShoot.and(operator.leftTrigger()).onTrue(new ShooterServoSequenceDebug());
+        ManualShoot.negate().and(operator.rightTrigger()).onTrue(new ShooterServoSequence(40, 2500)); // was 35
+        ManualShoot.negate().and(operator.leftTrigger()).onTrue(new ShooterServoSequenceDebug());
 
         // AutoShootm 
-        ManualShoot.negate().and(operator.rightBumper())
-            .onTrue(new AutoShooting(ShootingTarget.Speaker, 45.0, 3000.0));
-        ManualShoot.negate().and(operator.rightTrigger())
-            .onTrue(new AutoShooting(ShootingTarget.Speaker, 36.0, 3200.0));
+        // ManualShoot.negate().and(operator.rightBumper())
+        //     .onTrue(new AutoShooting(ShootingTarget.Speaker, 45.0, 3000.0));
+        // ManualShoot.negate().and(operator.rightTrigger())
+        //     .onTrue(new AutoShooting(ShootingTarget.Speaker, 36.0, 3200.0));
         
         // Calibration commands
         ShooterCalibrate.and(operator.povUp()).onTrue(new CalibrateWithLS()); 
