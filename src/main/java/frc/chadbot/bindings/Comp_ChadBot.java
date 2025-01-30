@@ -10,6 +10,8 @@ import frc.chadbot.commands.IntakeCommand;
 import frc.chadbot.commands.MagazineGatedCommand;
 import frc.chadbot.commands.MoveIntake;
 import frc.chadbot.commands.MoveIntake.DeployMode;
+import frc.chadbot.commands.MovePositioner;
+import frc.chadbot.commands.MovePositioner.PositionerMode;
 import frc.chadbot.commands.IntakeCommand.IntakeMode;
 import frc.chadbot.commands.Shoot.RPMShootCommand;
 import frc.chadbot.commands.Shoot.ShootCommand;
@@ -44,7 +46,11 @@ import frc.robot2024.subsystems.Intake;
 /*
  * Please don't edit this without leads/mentor/driveteam review
  */
+
 public final class Comp_ChadBot {
+
+    
+    
 
     public static void ConfigureCompetition(HID_Xbox_Subsystem dc) {
         DriverBinding(dc);
@@ -74,6 +80,8 @@ public final class Comp_ChadBot {
         driver.x().whileTrue(new IntakeCommand(IntakeMode.LoadCargo));*/    }
 
     static void OperatorBindings(HID_Xbox_Subsystem dc) {
+        MagazineGatedCommand mag_default_cmd;
+        mag_default_cmd = new MagazineGatedCommand(1.0);
         var sideboard = dc.SwitchBoard();
 
         CommandXboxController operator;
@@ -90,49 +98,19 @@ public final class Comp_ChadBot {
 
 
         //intake/expel commands
-        operator.rightBumper().whileTrue(
-            new SequentialCommandGroup(
-              new MoveIntake(DeployMode.Toggle),
-              new IntakeCommand((() -> 0.6), () -> 0.5, IntakeMode.LoadCargo)
-        ));
-    
-          operator.rightBumper().onFalse(
-            new SequentialCommandGroup(
-              new IntakeCommand((() -> 0.0), () -> 0.0, IntakeMode.Stop)
-              //new MoveIntake(DeployMode.Retract)
-          ));
+        operator.leftBumper().onTrue(new MoveIntake(DeployMode.Toggle));
+        operator.a().whileTrue(new IntakeCommand((() -> 0.6), () -> 0.5, IntakeMode.LoadCargo));
+        operator.b().whileTrue(new IntakeCommand((() -> 0.35), () -> 0.5, IntakeMode.ExpellCargo));
 
-          operator.a().onTrue(new MoveIntake(DeployMode.Deploy));
+        // positioner binds
+        operator.rightBumper().onTrue(new MovePositioner(PositionerMode.Toggle));
 
-        //Trigger ManualShoot = sideboard.sw16();
-        //Trigger ShooterCalibrate = sideboard.sw12();
-        //Trigger IntakeCalibrate = sideboard.sw13();
+         operator.x().whileTrue(mag_default_cmd.getFeedCmd());
+         operator.y().whileTrue(mag_default_cmd.getEjectCmd());
 
-        // Switchboard buttons too
-        //sideboard.sw23().onTrue(new MoveToAnglePos(Intake.DownPos, Intake.TravelUp));
 
-        /***************************************************************************************/
-        // REAL COMPETITION BINDINGS.
-        
-        //operator.b().whileTrue(new EjectNote()); // eject note from intake
-        //operator.x().whileTrue(new InIntake(false)); // works ---> seq for stay in intake for amp shoot
-        //IntakeCalibrate.and(operator.povUp()).onTrue(new AngleCalibration(-25.0));// intake calibrate
-        //IntakeCalibrate.and(operator.povDown()).whileTrue(new TestIntake(0.0));
-           
-        // speaker shooting                                                                                            
-       // ManualShoot.and(operator.rightTrigger()).onTrue(new ShooterServoSequence()); // was 35
-        //ManualShoot.and(operator.leftTrigger()).onTrue(new ShooterServoSequenceDebug());
 
-        // AutoShootm 
-        //ManualShoot.negate().and(operator.rightBumper())
-           // .onTrue(new AutoShooting(ShootingTarget.Speaker, 45.0, 3000.0));
-        //ManualShoot.negate().and(operator.rightTrigger())
-           // .onTrue(new AutoShooting(ShootingTarget.Speaker, 36.0, 3200.0));
-        
-        // Calibration commands
-        //ShooterCalibrate.and(operator.povUp()).onTrue(new CalibrateWithLS()); 
-        //ShooterCalibrate.and(operator.povDown()).whileTrue(new ShooterAngleVelMove(-2.0));
-
+       
     }
 }
     
