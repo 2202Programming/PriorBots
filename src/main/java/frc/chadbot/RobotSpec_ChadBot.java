@@ -19,8 +19,6 @@ import frc.lib2202.subsystem.swerve.config.ChassisConfig;
 import frc.lib2202.subsystem.swerve.config.ModuleConfig;
 import frc.lib2202.subsystem.swerve.config.ModuleConfig.CornerID;
 import frc.chadbot.bindings.Comp_ChadBot;
-import frc.robot2024.subsystems.AmpMechanism;
-
 
 //Note there is a sensors in lib2202, but we want the robot specific one
 import frc.chadbot.subsystems.Sensors_Subsystem;

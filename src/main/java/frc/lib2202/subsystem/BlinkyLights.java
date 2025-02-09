@@ -41,16 +41,18 @@ public class BlinkyLights extends SubsystemBase {
     static public Color8Bit YELLOW = new Color8Bit(255, 255, 0);
 
     // State vars, handle N candle sets
-    ArrayList<CANdle> m_candles;
-    ArrayList<Color8Bit> colors;
+    final ArrayList<CANdle> m_candles;
+    final ArrayList<Color8Bit> m_colors;
     Color8Bit currentColor;
+    boolean useMultiColor = false;
 
     final BlinkyLightUser defaultUser;
 
     public BlinkyLights(int... can_ids){
         m_candles = new ArrayList<CANdle>();
-        colors = new ArrayList<Color8Bit>();
+        m_colors = new ArrayList<Color8Bit>();
         defaultUser = new BlinkyLightUser(this) {
+            
             @Override
             public Color8Bit colorProvider() {
                 return ORANGE;
@@ -61,8 +63,7 @@ public class BlinkyLights extends SubsystemBase {
             var candle = new CANdle(id);
             config(candle);
             m_candles.add(candle);
-            //default color
-            colors.add(WHITE);
+            m_colors.add(WHITE);      //default color
         }
         //set to default user's requests
         setCurrentUser(defaultUser);
@@ -97,6 +98,7 @@ public class BlinkyLights extends SubsystemBase {
     public void release() {
         currentUser = defaultUser;
         setColor(ORANGE);
+        useMultiColor(false);
     }
 
     /* Static methods to intercept robot state changes */
@@ -125,17 +127,26 @@ public class BlinkyLights extends SubsystemBase {
         currentUser.onTestInit();
     };
 
+    void useMultiColor(boolean multiColor){
+        useMultiColor = multiColor;
+    }
+
     void setColor(Color8Bit color) {
         for(int i = 0; i < m_candles.size(); i++) {
             m_candles.get(i).setLEDs(color.red, color.green, color.blue);
-            colors.set(i, color);
+            m_colors.set(i, color);
         }  
         currentColor = color;
     }
-    void setIndividualColor(int CANdleNum, Color8Bit color) {
-        if (CANdleNum < m_candles.size()) {
-            m_candles.get(CANdleNum).setLEDs(color.red, color.green, color.blue);
-            colors.set(CANdleNum, color);
+
+    void setMultiColor(ArrayList<Color8Bit> newColors) {
+        for(int i = 0; i < m_candles.size(); i++) {
+            var color = newColors.get(i);
+            if (color != m_colors.get(i)) { 
+                // set candle and save newcolor 
+                m_candles.get(i).setLEDs(color.red, color.green, color.blue);
+                m_colors.set(i, color);
+            }
         }
     }
 
@@ -149,13 +160,13 @@ public class BlinkyLights extends SubsystemBase {
     void setBlinking(Color8Bit color) {
         Animation animation = new StrobeAnimation(color.red, color.green, color.blue, 0, 0.5, 8);
         for(CANdle c : m_candles) {
-        c.animate(animation, 0);
+            c.animate(animation, 0);
         }
     }
 
     void stopBlinking() {
         for(CANdle c : m_candles) {
-        c.clearAnimation(0);
+            c.clearAnimation(0);
         }
     }
 
@@ -202,13 +213,24 @@ public class BlinkyLights extends SubsystemBase {
     public static class BlinkyLightUser extends Command {
 
         final BlinkyLights lights;
+        final ArrayList<Color8Bit> colors;
 
         public BlinkyLightUser() {
-            lights = RobotContainer.getObjectOrNull("LIGHTS");
+            this(RobotContainer.getSubsystem("LIGHTS"));
         }
 
         BlinkyLightUser(BlinkyLights lights) {
             this.lights = lights;
+            colors = new ArrayList<>(lights.m_candles.size());
+            //set defaults for individual colors
+            for (int i = 0; i < colors.size(); i++) {
+                colors.set(i, WHITE);
+            }
+            lights.useMultiColor(false);
+        }
+
+        public void useMultiColor(boolean multiColor){
+            lights.useMultiColor(multiColor);
         }
 
         public void onRobotInit() {
@@ -229,15 +251,18 @@ public class BlinkyLights extends SubsystemBase {
         };
         /**
          * Used in commands, override as you wish
-         * Order: Color, CANdleNum
-         * @return an object array that contains the Color to set to (first), and secondly, the CANdle number to set to
+         * Order: CANdleNum
+         * @return an Color8Bit array that contains the Color to set 
+         * each candle to. Set the colors in this array, they will get
+         * sent to the proper candles after calling:
+         *      
+         *      useIndividualColors(true)
+         *  then set your colors with:
+         *      colors.set(candleID, desiredColor)
          */
-        public ArrayList<Object> individualColorProvider() {
-            ArrayList<Object> arr = new ArrayList<>();
-            arr.add(WHITE);
-            arr.add(0);
-            return arr;
-        };
+         public  ArrayList<Color8Bit> getIndividualColors() {
+            return colors;
+         }       
 
         // used in commands, Override to your preferences
         public boolean requestBlink() {
@@ -269,22 +294,23 @@ public class BlinkyLights extends SubsystemBase {
         /*
          * Reads providers and send to CANDles.
          * 
-         * This can could be setup to happen less frequently
+         * This can could be setup to happen less frequently than every cycle
          */
         @Override
         public void execute() {
             Color8Bit newColor = myUser.colorProvider();
-            Color8Bit newIndividualColor = (Color8Bit) myUser.individualColorProvider().get(0);
-            // avoid CAN bus traffic if color isn't changing
-            for(int i = 0; i < m_candles.size(); i++) {
-                if (colors.get(i) != newIndividualColor) {
-                    setIndividualColor((int) myUser.individualColorProvider().get(1), newIndividualColor);
-                }
+            ArrayList<Color8Bit> individualColors = myUser.getIndividualColors();
+        
+            // multicolor mode
+            if (useMultiColor) {
+                setMultiColor(individualColors);
             }
-            if (!currentColor.equals(newColor)) {
+            // simple single color mode
+            else if (!currentColor.equals(newColor)) {
                 currentColor = newColor;
                 setColor(currentColor);
             }
+
             if (myUser.requestBlink() != blinkState) {
                 blinkState = myUser.requestBlink();
                 setBlinking(blinkState);

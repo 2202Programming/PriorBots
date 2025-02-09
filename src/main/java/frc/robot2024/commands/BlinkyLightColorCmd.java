@@ -4,8 +4,6 @@
 
 package frc.robot2024.commands;
 
-import java.util.ArrayList;
-
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
@@ -75,17 +73,11 @@ public class BlinkyLightColorCmd extends BlinkyLightUser {
     return false;
   }
 
-  // //required by blinkylightuser if you want the lights to change
-  // @Override
-  // public Color8Bit colorProvider() {
-  //   return myColor;
-  // }
+  //required by blinkylightuser if you want the lights to change
   @Override
-  public ArrayList<Object> individualColorProvider(){
-    ArrayList<Object> arr = new ArrayList<>();
-    arr.add(Color.kBlue);
-    arr.add(0);
-    return arr;
+  public Color8Bit colorProvider() {
+    return myColor;
   }
+
 
 }
