@@ -146,7 +146,7 @@ public class RobotSpec_CompBot2024 implements IRobotSpec {
 
         modules[CornerID.BackLeft.getIdx()] = new ModuleConfig(CornerID.BackLeft,
                 28, 22, 23,
-                28.125)
+                -150.380) //28.125)
                 .setInversions(true, true, false);
 
         modules[CornerID.BackRight.getIdx()] = new ModuleConfig(CornerID.BackRight,
