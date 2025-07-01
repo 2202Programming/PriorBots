@@ -136,22 +136,22 @@ public class RobotSpec_CompBot2024 implements IRobotSpec {
         ModuleConfig[] modules = new ModuleConfig[4];
         modules[CornerID.FrontLeft.getIdx()] = new ModuleConfig(CornerID.FrontLeft,
                 29, 24, 25,
-                -125.595)
+                55.2839)
                 .setInversions(true, true, false);
 
         modules[CornerID.FrontRight.getIdx()] = new ModuleConfig(CornerID.FrontRight,
                 30, 26, 27,
-                -114.785)
+                65.6544)
                 .setInversions(false, true, false);
 
         modules[CornerID.BackLeft.getIdx()] = new ModuleConfig(CornerID.BackLeft,
                 28, 22, 23,
-                -150.380) //28.125)
+                -150.9952) //28.125)
                 .setInversions(true, true, false);
 
         modules[CornerID.BackRight.getIdx()] = new ModuleConfig(CornerID.BackRight,
                 31, 20, 21,
-                -115.752)
+                64.6874)
                 .setInversions(false, true, false);
 
         return modules;
