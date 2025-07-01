@@ -57,10 +57,17 @@ public class BindingsOther {
     // enum for bindings add when needed
     public enum Bindings {
         Competition,
-        DriveTest, Shooter_test, IntakeTesting, auto_shooter_test, new_bot_test, comp_not_comp, Etude
+        DriveTest,
+        Shooter_test,
+        IntakeTesting,
+        auto_shooter_test,
+        new_bot_test,
+        comp_not_comp,
+        Etude,
+        parade2025
     }
 
-    static Bindings bindings = Bindings.DriveTest;
+    static Bindings bindings = Bindings.parade2025;
 
     public static void ConfigureOther(HID_Xbox_Subsystem dc) { 
         DriverBinding(dc);
@@ -81,6 +88,7 @@ public class BindingsOther {
     static void DriverBinding(HID_Xbox_Subsystem dc) {       
         var drivetrain = RobotContainer.getSubsystem(SwerveDrivetrain.class);
         var intake = RobotContainer.getSubsystem(Intake.class);
+        var AmpMechanism = RobotContainer.getSubsystem(AmpMechanism.class);
 
         PathPlannerPath blue1 = loadFromFile("blue1");
         PathPlannerPath red1 = loadFromFile("red1");
@@ -221,6 +229,42 @@ public class BindingsOther {
                 driver.rightTrigger().whileTrue(new TargetCentricDrive(Tag_Pose.ID4, Tag_Pose.ID7));
                 break;
 
+            case parade2025:
+                //LB: robot centric drive
+                driver.leftTrigger().whileTrue(new RobotCentricDrive(drivetrain, dc));
+
+                //Y: gyro reset
+                driver.y().onTrue(new AllianceAwareGyroReset(true));
+
+                //
+                driver.rightTrigger().onTrue(new SequentialCommandGroup (
+                    new InstantCommand( ()-> {AmpMechanism.setServo(AmpMechanism.extended); }),
+                    new ShooterServoSequence(45.5, 2200).andThen(new InstantCommand( ()-> {
+                        AmpMechanism.setServo(AmpMechanism.parked); }))));
+                
+                //
+                driver.leftBumper().onTrue(new ShooterSequence(2500)); //[RPM]
+
+                //
+                driver.rightBumper().onTrue(new ShooterSequence(3500)); //[RPM]
+
+                //
+                driver.povUp().whileTrue(new ShooterAngleVelMove(2.0)); // BE VERY CAREFUL
+
+                //
+                driver.povDown().whileTrue(new ShooterAngleVelMove(-2.0)); // BE VERY CAREFUL
+
+                //
+                driver.a().whileTrue(new IntakeSequence(false)
+                       .andThen(new ShooterAngleSetPos(36.0)));
+                
+                //
+                driver.b().onTrue(new CalibrateWithLS());
+
+                //
+                driver.x().onTrue(new AngleCalibration(-20.0));
+
+                break;
             default:
                 break;
         }
