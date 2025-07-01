@@ -161,8 +161,8 @@ public class RobotSpec_CompBot2024 implements IRobotSpec {
     public void setBindings() {
         HID_Xbox_Subsystem dc = RobotContainer.getSubsystem("DC");
         // pick one of the next two lines
-        BindingsCompetition.ConfigureCompetition(dc);
-        // BindingsOther.ConfigureOther(dc);
+        // BindingsCompetition.ConfigureCompetition(dc);
+        BindingsOther.ConfigureOther(dc);
 
     }
 
