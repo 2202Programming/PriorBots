@@ -85,7 +85,7 @@ public class RobotSpec_CompBot2024 implements IRobotSpec {
     boolean swerve = true;
 
     // Robot Speed Limits
-    double maxSpeedFPS = 15.0; // [ft/s] 
+    double maxSpeedFPS = 10.0; // [ft/s] 
     double maxRotationRateDPS = 360.0; // [deg/s]
     RobotLimits robotLimits = new RobotLimits(FeetPerSecond.of(15.0), DegreesPerSecond.of(180.0));
     
