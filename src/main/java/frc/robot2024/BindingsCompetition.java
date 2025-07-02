@@ -9,10 +9,8 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib2202.builder.RobotContainer;
 import frc.lib2202.command.swerve.AllianceAwareGyroReset;
 import frc.lib2202.command.swerve.RobotCentricDrive;
-import frc.lib2202.command.swerve.TargetCentricDrive;
 import frc.lib2202.subsystem.hid.HID_Xbox_Subsystem;
 import frc.lib2202.subsystem.swerve.SwerveDrivetrain;
-import frc.robot2024.Constants.Tag_Pose;
 import frc.robot2024.commands.Climber.Climb;
 import frc.robot2024.commands.Climber.ClimberVelocity;
 import frc.robot2024.commands.Intake.AngleCalibration;
@@ -56,8 +54,24 @@ public final class BindingsCompetition {
 
         // Driver buttons
         driver.leftTrigger().whileTrue(new RobotCentricDrive(drivetrain, dc));
+
         driver.y().onTrue(new AllianceAwareGyroReset(true));
-        driver.rightTrigger().whileTrue(new TargetCentricDrive(Tag_Pose.ID4, Tag_Pose.ID7));
+
+        //'Operator' Buttons
+        driver.rightTrigger().onTrue(new SequentialCommandGroup (new ShooterServoSequence(45.5, 2200)));
+
+        driver.leftBumper().onTrue(new ShooterServoSequence(40, 3000, false));
+        driver.rightBumper().onTrue(new ShooterServoSequence(55, 4000, false));
+
+        driver.a().whileTrue(new IntakeSequence(false)
+                .andThen(new ShooterAngleSetPos(36.0)));
+
+        driver.b().onTrue(new CalibrateWithLS());
+        driver.x().whileTrue(new AngleCalibration(-25.0));
+        driver.povLeft().whileTrue(new EjectNote());
+        driver.povUp().whileTrue(new ShooterAngleVelMove(3.0));
+        driver.povDown().whileTrue(new ShooterAngleVelMove(-3.0));
+
     }
 
 
