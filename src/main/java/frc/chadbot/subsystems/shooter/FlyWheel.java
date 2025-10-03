@@ -95,9 +95,6 @@ public class FlyWheel {
     motor.configFactoryDefault();
 
     // use the config to set all values at once
-    //TODO wtf is .copyTo() - er
-    // DPL - copyto is a helper for writing PID values to the device.  PIDF should have a method for Talon - need to find
-    // it in original branch.
     _copyTo(cfg.pid, motor, kPIDLoopIdx);
     motor.getAllConfigs(srxconfig);
 
