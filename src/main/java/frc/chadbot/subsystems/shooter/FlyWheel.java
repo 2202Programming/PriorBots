@@ -98,7 +98,7 @@ public class FlyWheel {
     //TODO wtf is .copyTo() - er
     // DPL - copyto is a helper for writing PID values to the device.  PIDF should have a method for Talon - need to find
     // it in original branch.
-    cfg.pid.copyTo(motor, kPIDLoopIdx);
+    _copyTo(cfg.pid, motor, kPIDLoopIdx);
     motor.getAllConfigs(srxconfig);
 
     srxconfig.slot1 = srxconfig.slot0;
@@ -116,6 +116,18 @@ public class FlyWheel {
     motor.configPeakOutputReverse(-1, kTimeoutMs);
     return motor.getLastError();
   }
+
+
+  //DPL 2025-10-02 old copyTo func for TalonSRX that some how got lost in PIDFControler
+  //replicated here to avoid lib2202 changes for now.
+  void _copyTo(PIDFController pidf, WPI_TalonSRX dest, int slot ) {
+    dest.config_kP(slot, pidf.getP());
+    dest.config_kI(slot, pidf.getI());
+    dest.config_kD(slot, pidf.getD());
+    dest.config_kF(slot, pidf.getF());
+    dest.config_IntegralZone(slot, pidf.getIZone());
+  }
+
 
   /**
    * Gets RPM as measured at the flywheel
@@ -143,7 +155,7 @@ public class FlyWheel {
   // This API is for testing/tuning only.
   public void setPID(double kP, double kI, double kD, double kF){
     cfg.pid.setPIDF(kP, kI, kD, kF);
-    cfg.pid.copyTo(motor, kPIDLoopIdx);
+    _copyTo(cfg.pid, motor, kPIDLoopIdx);
   }
 
   public double getP(){

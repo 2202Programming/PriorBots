@@ -14,9 +14,11 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import frc.chadbot.Constants;
 import frc.chadbot.Constants.DriveTrain;
+import frc.lib2202.subsystem.swerve.DriveTrainInterface;
 import frc.lib2202.subsystem.swerve.SwerveDrivetrain;
 import frc.lib2202.builder.RobotContainer;
-import frc.lib2202.subsystem.hid.HID_Xbox_Subsystem;
+import frc.lib2202.subsystem.OdometryInterface;
+import frc.lib2202.subsystem.hid.HID_Subsystem;
 
 public class DriveCmd extends DriveCmdClass {
 
@@ -37,9 +39,10 @@ public class DriveCmd extends DriveCmdClass {
     }
   }
 
-  final SwerveDrivetrain drivetrain;
-  final HID_Xbox_Subsystem dc;
+  final DriveTrainInterface drivetrain;
+  final HID_Subsystem dc;
   final SwerveDriveKinematics kinematics;
+  final OdometryInterface odo;
   // command behaviors
   DriveModeTypes driveMode = DriveModeTypes.fieldCentric;
   DriveModeTypes lastDriveMode = DriveModeTypes.fieldCentric;
@@ -92,7 +95,8 @@ public class DriveCmd extends DriveCmdClass {
 
   public DriveCmd() {
     this.drivetrain = RobotContainer.getSubsystem(SwerveDrivetrain.class);
-    this.dc = RobotContainer.getSubsystem(HID_Xbox_Subsystem.class);
+    this.dc = RobotContainer.getSubsystem(HID_Subsystem.class);
+    this.odo = RobotContainer.getSubsystem("odometry");   //TODO - use vpe when able
     addRequirements(drivetrain);
   
     this.kinematics = drivetrain.getKinematics();
@@ -145,7 +149,7 @@ public class DriveCmd extends DriveCmdClass {
     ySpeed = MathUtil.clamp(ySpeed, -Constants.DriveTrain.kMaxSpeed, Constants.DriveTrain.kMaxSpeed);
     rot = MathUtil.clamp(rot, -Constants.DriveTrain.kMaxAngularSpeed, Constants.DriveTrain.kMaxAngularSpeed);
 
-    currrentHeading = drivetrain.getPose().getRotation();
+    currrentHeading = odo.getPose().getRotation();
 
     // Now workout drive mode behavior
     switch (driveMode) {
@@ -162,12 +166,12 @@ public class DriveCmd extends DriveCmdClass {
         rot = 0;
         // set goal of angle PID to be heading (in degrees) from current position to
         // centerfield
-        double targetAngle = getHeading2Target(drivetrain.getPose(), centerField);
+        double targetAngle = getHeading2Target(odo.getPose(), centerField);
         targetAngle = targetAngle + 180; // flip since shooter is on "back" of robot
         if(targetAngle > 180){
           targetAngle = targetAngle - 360;
         }
-        double currentAngle = drivetrain.getPose().getRotation().getDegrees(); // from -180 to 180
+        double currentAngle = odo.getPose().getRotation().getDegrees(); // from -180 to 180
         double angleError = targetAngle - currentAngle;
         // feed both PIDs even if not being used.
         anglePid.setSetpoint(targetAngle);
@@ -190,7 +194,7 @@ public class DriveCmd extends DriveCmdClass {
       case intakeCentric:
         // set goal of angle PID to be commanded bearing (in degrees) from joysticks
         double m_targetAngle2 = filteredBearing;
-        double m_currentAngle2 = drivetrain.getPose().getRotation().getDegrees(); // from -180 to 180
+        double m_currentAngle2 = odo.getPose().getRotation().getDegrees(); // from -180 to 180
         double m_angleError2 = m_targetAngle2 - m_currentAngle2;
         // feed both PIDs even if not being used.
         intakeAnglePid.setSetpoint(m_targetAngle2);

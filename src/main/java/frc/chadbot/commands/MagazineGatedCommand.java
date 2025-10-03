@@ -4,13 +4,13 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
+//import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.chadbot.commands.MovePositioner.PositionerMode;
 import frc.chadbot.subsystems.Intake_Subsystem;
 import frc.chadbot.subsystems.Magazine_Subsystem;
 import frc.lib2202.builder.RobotContainer;
-import frc.lib2202.command.JoystickRumble;
-import frc.lib2202.subsystem.hid.HID_Xbox_Subsystem.Id;
+//import frc.lib2202.command.JoystickRumble;  //TODO -make Joystick rumble in lib2202
+//import frc.lib2202.subsystem.hid.HID_Subsystem.Id;
 
 /**
  * 
@@ -428,12 +428,12 @@ public class MagazineGatedCommand extends Command implements MagazineController 
     //rumble controllers if magazine is full
     void rumbleMag(){
         if (ball_count==2 && last_ball_count==1){ //turn on rumble for double ball notification
-            CommandScheduler.getInstance().schedule(new JoystickRumble(Id.Driver, 1, 2));
-            CommandScheduler.getInstance().schedule(new JoystickRumble(Id.Operator, 1, 2));
+            //CommandScheduler.getInstance().schedule(new JoystickRumble(Id.Driver, 1, 2));
+            //CommandScheduler.getInstance().schedule(new JoystickRumble(Id.Operator, 1, 2));
         }
         if (ball_count==1 && last_ball_count==0){ //turn on rumble for single ball notification
-            CommandScheduler.getInstance().schedule(new JoystickRumble(Id.Driver, 0.5, 1));
-            CommandScheduler.getInstance().schedule(new JoystickRumble(Id.Operator, 0.5, 1));
+            //CommandScheduler.getInstance().schedule(new JoystickRumble(Id.Driver, 0.5, 1));
+            //CommandScheduler.getInstance().schedule(new JoystickRumble(Id.Operator, 0.5, 1));
         }
         last_ball_count = ball_count;
     }

@@ -13,7 +13,10 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import frc.chadbot.Constants;
 import frc.chadbot.Constants.DriveTrain;
-import frc.lib2202.subsystem.hid.HID_Xbox_Subsystem;
+import frc.chadbot.subsystems.Sensors_Subsystem;
+import frc.lib2202.builder.RobotContainer;
+import frc.lib2202.subsystem.hid.HID_Subsystem;
+import frc.lib2202.subsystem.swerve.IHeadingProvider;
 import frc.lib2202.subsystem.swerve.SwerveDrivetrain;
 
 /* Current driving behavior:
@@ -28,8 +31,9 @@ import frc.lib2202.subsystem.swerve.SwerveDrivetrain;
 public class IntakeCentricDrive extends DriveCmdClass {
 
   final SwerveDrivetrain drivetrain;
-  final HID_Xbox_Subsystem dc;
+  final HID_Subsystem dc;
   final SwerveDriveKinematics kinematics;
+  final IHeadingProvider gyro;
 
   boolean lastShootMode = false;
   // output to Swerve Drivetrain
@@ -66,11 +70,12 @@ public class IntakeCentricDrive extends DriveCmdClass {
   private LinearFilter bearingFilter = LinearFilter.singlePoleIIR(0.1, 0.02);
   private double filteredBearing = 0;
 
-  public IntakeCentricDrive(SwerveDrivetrain drivetrain, HID_Xbox_Subsystem dc) {
+  public IntakeCentricDrive(SwerveDrivetrain drivetrain, HID_Subsystem dc) {
     this.drivetrain = drivetrain;
     addRequirements(drivetrain);
     this.dc = dc;
     this.kinematics = drivetrain.getKinematics();
+    this.gyro = RobotContainer.getSubsystem(Sensors_Subsystem.class);
 
     intakeAnglePid = new PIDController(angle_kp, angle_ki, angle_kd);
     intakeAnglePid.enableContinuousInput(-180, 180);
@@ -103,7 +108,7 @@ public class IntakeCentricDrive extends DriveCmdClass {
 
     // set goal of angle PID to be commanded bearing (in degrees) from joysticks
     m_targetAngle = new Rotation2d(filteredBearing);
-    Rotation2d m_currentAngle = drivetrain.getPose().getRotation(); // from -Pi to Pi
+    Rotation2d m_currentAngle =gyro.getHeading(); // from -Pi to Pi
     m_angleError = m_targetAngle;
     m_angleError.minus(m_currentAngle);
     intakeAnglePid.setSetpoint(m_targetAngle.getDegrees()); //PID already tuned in degrees

@@ -13,6 +13,8 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib2202.builder.RobotContainer;
 import frc.chadbot.Constants.Shooter;
+import frc.chadbot.subsystems.Sensors_Subsystem;
+import frc.lib2202.subsystem.swerve.IHeadingProvider;
 import frc.lib2202.subsystem.swerve.SwerveDrivetrain;
 import frc.lib2202.subsystem.Limelight;
 
@@ -32,6 +34,7 @@ public class LimelightAim extends Command {
   final SwerveDrivetrain drivetrain;
   final SwerveDriveKinematics kinematics;
   final Limelight limelight;
+  final IHeadingProvider gyro;
 
   // output to Swerve Drivetrain
   double xSpeed, ySpeed, rot;
@@ -75,6 +78,7 @@ public class LimelightAim extends Command {
 
   public LimelightAim() {
     this.drivetrain = RobotContainer.getSubsystem(SwerveDrivetrain.class);
+    this.gyro = RobotContainer.getSubsystem(Sensors_Subsystem.class);
     addRequirements(drivetrain);
     this.kinematics = drivetrain.getKinematics();
     this.limelight = RobotContainer.getSubsystem(Limelight.class);
@@ -109,7 +113,7 @@ public class LimelightAim extends Command {
     double min_rot = (Math.abs(llx) > pos_tol)  ? - Math.signum(llx) * min_rot_rate : 0.0;
     rot = MathUtil.clamp(limelightPidOutput + min_rot, -max_rot_rate, max_rot_rate) / 57.3;   //clamp in [deg/s] convert to [rad/s]
 
-    currentAngle = drivetrain.getPose().getRotation();
+    currentAngle = gyro.getHeading();//drivetrain.getPose().getRotation();
     output_states = kinematics
         .toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0, rot, currentAngle));
 

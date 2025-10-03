@@ -14,9 +14,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.chadbot.Constants;
 import frc.chadbot.Constants.DriveTrain;
 import frc.chadbot.Constants.Shooter;
+import frc.chadbot.subsystems.Sensors_Subsystem;
+import frc.lib2202.builder.RobotContainer;
 import frc.lib2202.subsystem.Limelight;
+import frc.lib2202.subsystem.swerve.IHeadingProvider;
 import frc.lib2202.subsystem.swerve.SwerveDrivetrain;
-import frc.lib2202.subsystem.hid.HID_Xbox_Subsystem;
+import frc.lib2202.subsystem.hid.HID_Subsystem;
 
 /* Current driving behavior:
   Starts in field centric
@@ -30,9 +33,10 @@ import frc.lib2202.subsystem.hid.HID_Xbox_Subsystem;
 public class HubCentricDrive extends DriveCmdClass {
 
   final SwerveDrivetrain drivetrain;
-  final HID_Xbox_Subsystem dc;
+  final HID_Subsystem dc;
   final SwerveDriveKinematics kinematics;
   final Limelight limelight;
+  final IHeadingProvider gyro;
 
   // output to Swerve Drivetrain
   double xSpeed, ySpeed, rot;
@@ -75,12 +79,13 @@ public class HubCentricDrive extends DriveCmdClass {
 
   final boolean PID_TUNING = false;
 
-  public HubCentricDrive(SwerveDrivetrain drivetrain, HID_Xbox_Subsystem dc, Limelight limelight) {
+  public HubCentricDrive(SwerveDrivetrain drivetrain, HID_Subsystem dc, Limelight limelight) {
     this.drivetrain = drivetrain;
     addRequirements(drivetrain);
     this.dc = dc;
     this.kinematics = drivetrain.getKinematics();
     this.limelight = limelight;
+    this.gyro = RobotContainer.getSubsystem(Sensors_Subsystem.class);
 
     // anglePid = new PIDController(angle_kp, angle_ki, angle_kd);
     limelightPid = new PIDController(limelight_kP, limelight_kI, limelight_kD);
@@ -122,7 +127,7 @@ public class HubCentricDrive extends DriveCmdClass {
     double min_rot = (Math.abs(llx) > pos_tol)  ? - Math.signum(llx) * min_rot_rate : 0.0;
     rot = MathUtil.clamp(limelightPidOutput + min_rot, -max_rot_rate, max_rot_rate) / 57.3;   //clamp in [deg/s] convert to [rad/s]
 
-    currentAngle = drivetrain.getPose().getRotation();
+    currentAngle = gyro.getHeading(); ///was drivetrain.getRotation();
     //convert field centric speeds to robot centric
     ChassisSpeeds tempChassisSpeed = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, currentAngle);
 

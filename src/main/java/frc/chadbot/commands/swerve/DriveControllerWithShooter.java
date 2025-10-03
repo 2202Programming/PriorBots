@@ -16,11 +16,13 @@ import frc.chadbot.commands.Shoot.VelShootCommand;
 import frc.chadbot.commands.Shoot.VelShootGatedCommand;
 import frc.chadbot.subsystems.shooter.Shooter_Subsystem;
 import frc.lib2202.builder.RobotContainer;
+import frc.lib2202.subsystem.OdometryInterface;
 
 public class DriveControllerWithShooter extends DriveControllerDrivetrain {
 
   public MagazineController magazineController;
   VelShootGatedCommand shootCommand;
+  OdometryInterface odo;
 
   private NetworkTableEntry NThasSolution;
 
@@ -32,6 +34,7 @@ public class DriveControllerWithShooter extends DriveControllerDrivetrain {
   public DriveControllerWithShooter(MagazineController magazineController)  {
     super();
     this.shooter = RobotContainer.getSubsystem(Shooter_Subsystem.class);
+    this.odo = RobotContainer.getSubsystem("odometry");
     this.magazineController = magazineController;
 
     //shootCommand = new VelShootCommand(45,false);  //right now just use fixed velocity; eventually replace with limelight distance estimated velocity
@@ -85,7 +88,7 @@ public class DriveControllerWithShooter extends DriveControllerDrivetrain {
     double distance = estimateDistance(); //distance from hub in meters
     double LLangle = limelight.getX();
 
-    Rotation2d correctionVectorRot = drivetrain.getPose().getRotation().minus(Rotation2d.fromDegrees(90));
+    Rotation2d correctionVectorRot = sensors.getHeading().minus(Rotation2d.fromDegrees(90));
    
     //correction vector if LL angle is not zero
     //Mag is distance * sine angle
@@ -93,7 +96,7 @@ public class DriveControllerWithShooter extends DriveControllerDrivetrain {
     Translation2d correctionVector = new Translation2d(distance * Math.sin(Math.toRadians(LLangle)),correctionVectorRot);
 
     //vector from robot to hub
-    Translation2d hubVector = new Translation2d(distance, drivetrain.getPose().getRotation()); 
+    Translation2d hubVector = new Translation2d(distance, sensors.getHeading()); 
     
     hubVector.plus(correctionVector);
 
@@ -102,14 +105,14 @@ public class DriveControllerWithShooter extends DriveControllerDrivetrain {
 
     //add together to get vector from origin to robot?
     hubVector.minus(hubCenter);
-    Pose2d updatedPose = new Pose2d(hubVector.getX(), hubVector.getY(), drivetrain.getPose().getRotation());
+    Pose2d updatedPose = new Pose2d(hubVector.getX(), hubVector.getY(), sensors.getHeading());
 
-    System.out.println("Original Pose: " + drivetrain.getPose());
+    System.out.println("Original Pose: " + odo.getPose());
     System.out.println("Updated Pose: " + updatedPose);
     System.out.println("Update occurred during a LL error of: " + LLangle);
 
     //reset pose with new X Y estimate, don't change heading
-    drivetrain.setPose(updatedPose);
+    odo.setPose(updatedPose);
   }
 
   //should estimate how many degrees to offset LL target in X direction to compensate for perpendicular velocity*hangtime

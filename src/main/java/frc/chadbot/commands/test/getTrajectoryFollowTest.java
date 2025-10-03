@@ -10,6 +10,8 @@ import java.util.Set;
 
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import frc.robot2024.subsystems.sensors.Sensors_Subsystem;
+import frc.lib2202.builder.RobotContainer;
+import frc.lib2202.subsystem.OdometryInterface;
 import frc.lib2202.subsystem.swerve.SwerveDrivetrain;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -23,8 +25,9 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 
 public class getTrajectoryFollowTest extends Command {
-  Sensors_Subsystem sensors;
-  SwerveDrivetrain drivetrain;
+  final Sensors_Subsystem sensors;
+  final SwerveDrivetrain drivetrain;
+  final OdometryInterface odo;
   Set<Subsystem> requirements;
   Command work;
 
@@ -33,6 +36,7 @@ public class getTrajectoryFollowTest extends Command {
   public  getTrajectoryFollowTest(Sensors_Subsystem ns, SwerveDrivetrain drivetrain) {
     sensors = ns;
     this.drivetrain = drivetrain;
+    this.odo = RobotContainer.getSubsystem("odometry");
     requirements = new  HashSet<Subsystem>();
     requirements.add(drivetrain);
 }
@@ -54,7 +58,7 @@ public class getTrajectoryFollowTest extends Command {
   
     SwerveControllerCommand swerveControllerCommand = new SwerveControllerCommand(
         exampleTrajectory,
-        drivetrain::getPose, // Functional interface to feed supplier
+        odo::getPose, // Functional interface to feed supplier
         drivetrain.getKinematics(),
         // Position controllers
         new PIDController(4.0, 0.0, 0.0),
@@ -67,7 +71,7 @@ public class getTrajectoryFollowTest extends Command {
         drivetrain);
 
     // Reset odometry to the starting pose of the trajectory.
-    drivetrain.setPose(exampleTrajectory.getInitialPose());
+    odo.setPose(exampleTrajectory.getInitialPose());
 
     // Run path following command, then stop at the end.
     work = swerveControllerCommand.andThen(() -> drivetrain.stop()).withTimeout(10);

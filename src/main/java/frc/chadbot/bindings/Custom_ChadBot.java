@@ -20,7 +20,8 @@ import frc.lib2202.command.swerve.RobotCentricDrive;
 import frc.lib2202.command.swerve.TargetCentricDrive;
 import frc.lib2202.command.swerve.calibrate.TestConstantVelocity;
 import frc.lib2202.command.swerve.calibrate.TestRotateVelocity;
-import frc.lib2202.subsystem.hid.HID_Xbox_Subsystem;
+import frc.lib2202.subsystem.OdometryInterface;
+import frc.lib2202.subsystem.hid.HID_Subsystem;
 import frc.lib2202.subsystem.swerve.SwerveDrivetrain;
 import frc.robot2024.Constants.Tag_Pose;
 import frc.robot2024.commands.Climber.Climb;
@@ -61,7 +62,7 @@ public class Custom_ChadBot {
 
     static Bindings bindings = Bindings.DriveTest;
 
-    public static void ConfigureOther(HID_Xbox_Subsystem dc) { 
+    public static void ConfigureOther(HID_Subsystem dc) { 
         DriverBinding(dc);
         OperatorBindings(dc);
     }
@@ -77,9 +78,10 @@ public class Custom_ChadBot {
         }
     }
 
-    static void DriverBinding(HID_Xbox_Subsystem dc) {       
-        var drivetrain = RobotContainer.getSubsystem(SwerveDrivetrain.class);
+    static void DriverBinding(HID_Subsystem dc) {       
+        var drivetrain = RobotContainer.getSubsystem(SwerveDrivetrain.class);        
         var intake = RobotContainer.getSubsystem(Intake.class);
+        OdometryInterface odo = RobotContainer.getSubsystem("odometry");
 
         PathPlannerPath blue1 = loadFromFile("blue1");
         PathPlannerPath red1 = loadFromFile("red1");
@@ -105,20 +107,20 @@ public class Custom_ChadBot {
                 // (zero-length path?)
                 if (blue1 != null)
                     driver.x().onTrue(new SequentialCommandGroup(
-                        new InstantCommand(drivetrain::printPose),
+                        new InstantCommand(odo::printPose),
                         AutoBuilder.pathfindThenFollowPath(blue1,
                                 new PathConstraints(3.0, 3.0,
                                         Units.degreesToRadians(540),
                                         Units.degreesToRadians(720))),
-                        new InstantCommand(drivetrain::printPose)));
+                        new InstantCommand(odo::printPose)));
                 if (red1 != null)
                     driver.b().onTrue(new SequentialCommandGroup(
-                        new InstantCommand(drivetrain::printPose),
+                        new InstantCommand(odo::printPose),
                         AutoBuilder.pathfindThenFollowPath(red1,
                                 new PathConstraints(3.0, 3.0,
                                         Units.degreesToRadians(540),
                                         Units.degreesToRadians(720))),
-                        new InstantCommand(drivetrain::printPose)));
+                        new InstantCommand(odo::printPose)));
 
                 // Start any watcher commands
                 new PDPMonitorCmd(); // auto scheduled, runs when disabled
@@ -128,18 +130,18 @@ public class Custom_ChadBot {
                 // (zero-length path?)
                 if (path_test_1m != null)
                     driver.a().onTrue(new SequentialCommandGroup(
-                        new InstantCommand(drivetrain::printPose),
+                        new InstantCommand(odo::printPose),
                         AutoBuilder.pathfindThenFollowPath(path_test_1m,
                                 new PathConstraints(3.0, 3.0, Units.degreesToRadians(540),
                                         Units.degreesToRadians(720))),
-                        new InstantCommand(drivetrain::printPose)));
+                        new InstantCommand(odo::printPose)));
 
                 driver.x().onTrue(new SequentialCommandGroup(
-                        new InstantCommand(drivetrain::printPose),
+                        new InstantCommand(odo::printPose),
                         AutoBuilder.pathfindToPose(new Pose2d(new Translation2d(1.73, 5.38), new Rotation2d(0.0)),
                                 new PathConstraints(3.0, 3.0, Units.degreesToRadians(540),
                                         Units.degreesToRadians(720))),
-                        new InstantCommand(drivetrain::printPose)));
+                        new InstantCommand(odo::printPose)));
                 break;
 
             // i dont like that test commands and bindings are in here but we need them ig
@@ -226,7 +228,7 @@ public class Custom_ChadBot {
     }
 
 
-    static void OperatorBindings(HID_Xbox_Subsystem dc) {        
+    static void OperatorBindings(HID_Subsystem dc) {        
         boolean skip_SS_only = false;
         CommandXboxController operator;
         // deal with xbox or joystick, these binding are xbox only

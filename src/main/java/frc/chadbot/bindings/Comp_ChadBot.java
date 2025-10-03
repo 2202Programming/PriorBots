@@ -15,7 +15,7 @@ import frc.lib2202.builder.RobotContainer;
 import frc.lib2202.command.swerve.AllianceAwareGyroReset;
 import frc.lib2202.command.swerve.RobotCentricDrive;
 import frc.lib2202.command.swerve.TargetCentricDrive;
-import frc.lib2202.subsystem.hid.HID_Xbox_Subsystem;
+import frc.lib2202.subsystem.hid.HID_Subsystem;
 import frc.lib2202.subsystem.swerve.SwerveDrivetrain;
 import frc.robot2024.Constants.Tag_Pose;
 
@@ -28,13 +28,13 @@ public final class Comp_ChadBot {
     
     
 
-    public static void ConfigureCompetition(HID_Xbox_Subsystem dc) {
+    public static void ConfigureCompetition(HID_Subsystem dc) {
         DriverBinding(dc);
         OperatorBindings(dc);
     }
 
 
-    private static void DriverBinding(HID_Xbox_Subsystem dc) {
+    private static void DriverBinding(HID_Subsystem dc) {
         CommandXboxController driver;
 
         if (dc.Driver() instanceof CommandXboxController) {
@@ -55,7 +55,7 @@ public final class Comp_ChadBot {
 
         driver.x().whileTrue(new IntakeCommand(IntakeMode.LoadCargo));*/    }
 
-    static void OperatorBindings(HID_Xbox_Subsystem dc) {
+    static void OperatorBindings(HID_Subsystem dc) {
         MagazineGatedCommand mag_default_cmd;
         mag_default_cmd = new MagazineGatedCommand(1.0);
         @SuppressWarnings("unused")

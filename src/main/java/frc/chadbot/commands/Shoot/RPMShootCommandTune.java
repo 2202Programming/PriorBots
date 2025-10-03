@@ -3,6 +3,7 @@ package frc.chadbot.commands.Shoot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.lib2202.builder.RobotContainer;
+import frc.lib2202.subsystem.OdometryInterface;
 import frc.lib2202.subsystem.swerve.SwerveDrivetrain;
 import frc.chadbot.Constants.Autonomous;
 import frc.chadbot.commands.IntakeCommand;
@@ -25,6 +26,7 @@ public class RPMShootCommandTune extends Command{
     final Intake_Subsystem intake;
     final Shooter_Subsystem shooter;
     final SwerveDrivetrain drivetrain;
+    final OdometryInterface odo;
 
     final double TESTANGLE = 0.0;
     final double TESTTOL = 0.02;
@@ -75,6 +77,7 @@ public class RPMShootCommandTune extends Command{
         this.shooter = RobotContainer.getSubsystem(Shooter_Subsystem.class);
         this.magazine = RobotContainer.getSubsystem(Magazine_Subsystem.class);
         this.drivetrain = RobotContainer.getSubsystem(SwerveDrivetrain.class);
+        this.odo = RobotContainer.getSubsystem("odometry");
         cmdSS = defaultShooterSettings;
     }
 
@@ -84,7 +87,7 @@ public class RPMShootCommandTune extends Command{
 
         currentShooterCommand = new VelShootCommand(new ShooterSettings(10, 0.0) , 20);
         CommandScheduler.getInstance().schedule(currentShooterCommand);
-        drivetrain.setPose(Autonomous.startPose1);
+        odo.setPose(Autonomous.startPose1);
 
         SmartDashboard.putNumber("Requested Flywheel P", r_upperP);
         SmartDashboard.putNumber("Requested Flywheel I", r_upperI);
@@ -112,7 +115,7 @@ public class RPMShootCommandTune extends Command{
         checkDashboard();
         getPID();
         checkPID();
-        distanceToTarget = PoseMath.poseDistance(drivetrain.getPose(), Autonomous.hubPose);
+        distanceToTarget = PoseMath.poseDistance(odo.getPose(), Autonomous.hubPose);
     }
 
     private void getPID(){

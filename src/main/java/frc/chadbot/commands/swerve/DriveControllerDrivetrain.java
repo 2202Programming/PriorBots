@@ -18,7 +18,7 @@ import frc.chadbot.subsystems.Sensors_Subsystem;
 import frc.chadbot.subsystems.shooter.Shooter_Subsystem;
 import frc.lib2202.builder.RobotContainer;
 import frc.lib2202.subsystem.Limelight;
-import frc.lib2202.subsystem.hid.HID_Xbox_Subsystem;
+import frc.lib2202.subsystem.hid.HID_Subsystem;
 import frc.lib2202.subsystem.swerve.SwerveDrivetrain;
 
 public class DriveControllerDrivetrain extends Command implements SolutionProvider {
@@ -39,7 +39,7 @@ public class DriveControllerDrivetrain extends Command implements SolutionProvid
 
   //subsystems
   SwerveDrivetrain drivetrain;
-  HID_Xbox_Subsystem dc;
+  HID_Subsystem dc;
   Shooter_Subsystem shooter;
   Limelight limelight;
   Sensors_Subsystem sensors;
@@ -97,7 +97,7 @@ public class DriveControllerDrivetrain extends Command implements SolutionProvid
 
   public DriveControllerDrivetrain()  {
     this.drivetrain = RobotContainer.getSubsystem(SwerveDrivetrain.class);
-    this.dc = RobotContainer.getSubsystem(HID_Xbox_Subsystem.class);
+    this.dc = RobotContainer.getSubsystem(HID_Subsystem.class);
     this.limelight = RobotContainer.getSubsystem(Limelight.class);
     this.sensors = RobotContainer.getSubsystem(Sensors_Subsystem.class);
 

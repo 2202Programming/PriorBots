@@ -13,6 +13,7 @@ import frc.chadbot.subsystems.shooter.Shooter_Subsystem.ShooterSettings;
 import frc.lib2202.builder.RobotContainer;
 import frc.lib2202.subsystem.Limelight;
 import frc.lib2202.subsystem.LimelightHelpers;
+import frc.lib2202.subsystem.OdometryInterface;
 import frc.lib2202.subsystem.swerve.SwerveDrivetrain;
 import frc.lib2202.util.PoseMath;
 
@@ -29,6 +30,7 @@ public class VelShootCommand extends Command implements SolutionProvider{
     final SolutionProvider solutionProvider;
     final Limelight limelight;
     final SwerveDrivetrain drivetrain;
+    final OdometryInterface odo;
       
     final double TESTANGLE = 0.0;
     final double TESTTOL = 0.02;
@@ -109,6 +111,7 @@ public class VelShootCommand extends Command implements SolutionProvider{
         this.magazine = RobotContainer.getSubsystem(Magazine_Subsystem.class);
         this.limelight = RobotContainer.getSubsystem(Limelight.class);
         this.drivetrain = RobotContainer.getSubsystem(SwerveDrivetrain.class);
+        this.odo = RobotContainer.getSubsystem("odometry");
 
         // the default solution provider is always true
         this.solutionProvider = (solutionProvider ==null) ? this : solutionProvider;
@@ -241,7 +244,7 @@ public class VelShootCommand extends Command implements SolutionProvider{
     }
 
     public void calculateDistance(){
-        currentDistance = PoseMath.poseDistance(drivetrain.getPose(), Autonomous.hubPose); //crappy estimate from odometery
+        currentDistance = PoseMath.poseDistance(odo.getPose(), Autonomous.hubPose); //crappy estimate from odometery
         if (limelight.getTarget() && limelight.getLEDStatus()){
             //calculate current distance with limelight area instead of odometery, use our ll's name to get from NT.
             currentDistance = estimateDistance(limelight.getName()); 

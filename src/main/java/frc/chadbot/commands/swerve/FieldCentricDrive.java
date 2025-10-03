@@ -8,8 +8,10 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import frc.chadbot.Constants;
 import frc.chadbot.Constants.DriveTrain;
+import frc.chadbot.subsystems.Sensors_Subsystem;
 import frc.lib2202.builder.RobotContainer;
-import frc.lib2202.subsystem.hid.HID_Xbox_Subsystem;
+import frc.lib2202.subsystem.hid.HID_Subsystem;
+import frc.lib2202.subsystem.swerve.IHeadingProvider;
 import frc.lib2202.subsystem.swerve.SwerveDrivetrain;
 
 /* Current driving behavior:
@@ -24,8 +26,9 @@ import frc.lib2202.subsystem.swerve.SwerveDrivetrain;
 public class FieldCentricDrive extends DriveCmdClass {
 
   final SwerveDrivetrain drivetrain;
-  final HID_Xbox_Subsystem dc;
+  final HID_Subsystem dc;
   final SwerveDriveKinematics kinematics;
+  final IHeadingProvider gyro;
 
   // output to Swerve Drivetrain
   double xSpeed, ySpeed, rot;
@@ -41,7 +44,9 @@ public class FieldCentricDrive extends DriveCmdClass {
   
   public FieldCentricDrive() {
     this.dc = RobotContainer.getSubsystem("DC");       //driverControls aka HID_Xbox_Subsystem
-    this.drivetrain = RobotContainer.getSubsystem(SwerveDrivetrain.class);  
+    this.drivetrain = RobotContainer.getSubsystem(SwerveDrivetrain.class); 
+    this.gyro = RobotContainer.getSubsystem(Sensors_Subsystem.class);
+
     addRequirements(drivetrain);
     this.kinematics = drivetrain.getKinematics();
   }
@@ -62,7 +67,7 @@ public class FieldCentricDrive extends DriveCmdClass {
     ySpeed = MathUtil.clamp(ySpeed, -Constants.DriveTrain.kMaxSpeed, Constants.DriveTrain.kMaxSpeed);
     rot = MathUtil.clamp(rot, -Constants.DriveTrain.kMaxAngularSpeed, Constants.DriveTrain.kMaxAngularSpeed);
 
-    currrentHeading = drivetrain.getPose().getRotation();
+    currrentHeading = gyro.getHeading();
     //convert field centric speeds to robot centric
     ChassisSpeeds tempChassisSpeed = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, currrentHeading);
 

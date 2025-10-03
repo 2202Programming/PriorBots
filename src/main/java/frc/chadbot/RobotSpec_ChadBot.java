@@ -4,29 +4,28 @@ import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.FeetPerSecond;
 import static frc.lib2202.Constants.MperFT;
 
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj2.command.Command;
+import frc.chadbot.Constants.CAN;
+import frc.chadbot.bindings.Comp_ChadBot;
+import frc.chadbot.subsystems.Intake_Subsystem;
+import frc.chadbot.subsystems.Magazine_Subsystem;
+import frc.chadbot.subsystems.Positioner_Subsystem;
+//Note there is a sensors in lib2202, but we want the robot specific one
+import frc.chadbot.subsystems.Sensors_Subsystem;
+import frc.chadbot.subsystems.shooter.Shooter_Subsystem;
 import frc.lib2202.builder.IRobotSpec;
 import frc.lib2202.builder.RobotContainer;
 import frc.lib2202.builder.RobotLimits;
 import frc.lib2202.builder.SubsystemConfig;
 import frc.lib2202.command.swerve.FieldCentricDrive;
 import frc.lib2202.subsystem.Limelight;
-import frc.lib2202.subsystem.hid.HID_Xbox_Subsystem;
+import frc.lib2202.subsystem.Odometry;
+import frc.lib2202.subsystem.OdometryInterface;
+import frc.lib2202.subsystem.hid.HID_Subsystem;
 import frc.lib2202.subsystem.swerve.IHeadingProvider;
 import frc.lib2202.subsystem.swerve.SwerveDrivetrain;
 import frc.lib2202.subsystem.swerve.config.ChassisConfig;
 import frc.lib2202.subsystem.swerve.config.ModuleConfig;
 import frc.lib2202.subsystem.swerve.config.ModuleConfig.CornerID;
-import frc.chadbot.bindings.Comp_ChadBot;
-
-//Note there is a sensors in lib2202, but we want the robot specific one
-import frc.chadbot.subsystems.Sensors_Subsystem;
-import frc.chadbot.subsystems.shooter.Shooter_Subsystem;
-import frc.chadbot.Constants.CAN;
-import frc.chadbot.subsystems.Intake_Subsystem;
-import frc.chadbot.subsystems.Magazine_Subsystem;
-import frc.chadbot.subsystems.Positioner_Subsystem;
 
 
 public class RobotSpec_ChadBot implements IRobotSpec {
@@ -37,8 +36,14 @@ public class RobotSpec_ChadBot implements IRobotSpec {
       .add(Sensors_Subsystem.class)
       .add(Limelight.class)
       .add(SwerveDrivetrain.class) // must be after LL and Sensors
-      .add(HID_Xbox_Subsystem.class, "DC", () -> {
-        return new HID_Xbox_Subsystem(0.3, 0.9, 0.05);
+      .add(HID_Subsystem.class, "DC", () -> {
+        return new HID_Subsystem(0.3, 0.9, 0.05);
+      })
+      //TODO update to VPE when in lib2202
+      .add(OdometryInterface.class, "odometry", () -> {
+          var obj = new Odometry();
+          obj.new OdometryWatcher();
+          return obj;
       })
       //rest of Chad's subsystems
       .add(Shooter_Subsystem.class)
@@ -91,22 +96,6 @@ public class RobotSpec_ChadBot implements IRobotSpec {
 
   @Override
   public ModuleConfig[] getModuleConfigs() {
-    // from original constants
-    // WheelOffsets chadBotOffsets = new WheelOffsets(-175.60, -115.40, -162.15, 158.81); //FL BL FR BR
-    // CANModuleConfig swerveBotCAN_FL = new CANModuleConfig(7, 20, 21);
-    // CANModuleConfig swerveBotCAN_FR = new CANModuleConfig(30, 26, 27);
-    // CANModuleConfig swerveBotCAN_BL = new CANModuleConfig(28, 22, 23);
-    // CANModuleConfig swerveBotCAN_BR = new CANModuleConfig(31, 24, 25);
-    // CANConfig chadBotCANConfig = new CANConfig(swerveBotCAN_FL, swerveBotCAN_FR,
-    // swerveBotCAN_BL, swerveBotCAN_BR);
-
-    // ChassisInversionSpecs chadBotChassisInversionSpecs = new
-    // ChassisInversionSpecs(
-    // new ModuleInversionSpecs(true, false, false), // FR
-    // new ModuleInversionSpecs(false, false, false), // FL
-    // new ModuleInversionSpecs(true, false, false), // BR
-    // new ModuleInversionSpecs(false, false, false)); // BL
-
     ModuleConfig[] modules = new ModuleConfig[4];
     modules[CornerID.FrontLeft.getIdx()] = new ModuleConfig(CornerID.FrontLeft,
         CAN.DT_FL_CANCODER, CAN.DT_FL_DRIVE, CAN.DT_FL_ANGLE,
@@ -133,21 +122,12 @@ public class RobotSpec_ChadBot implements IRobotSpec {
 
   @Override
   public void setBindings() {
-    HID_Xbox_Subsystem dc = RobotContainer.getSubsystem("DC");
+    HID_Subsystem dc = RobotContainer.getSubsystem("DC");
     Comp_ChadBot.ConfigureCompetition(dc);
     // BindingsOther.ConfigureOther(dc);
 
   }
 
-  @Override
-  public boolean burnFlash() {
-    return true;
-  }
-
-  @Override
-  public SendableChooser<Command> getRegisteredCommands() {
-    return null;  //RegisteredCommands.RegisterCommands();
-  }
 
   @Override
     public void setDefaultCommands() {
