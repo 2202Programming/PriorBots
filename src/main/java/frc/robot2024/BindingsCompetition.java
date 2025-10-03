@@ -10,8 +10,8 @@ import frc.lib2202.builder.RobotContainer;
 import frc.lib2202.command.swerve.AllianceAwareGyroReset;
 import frc.lib2202.command.swerve.RobotCentricDrive;
 import frc.lib2202.command.swerve.TargetCentricDrive;
-import frc.lib2202.subsystem.hid.HID_Xbox_Subsystem;
-import frc.lib2202.subsystem.swerve.SwerveDrivetrain;
+import frc.lib2202.subsystem.hid.HID_Subsystem;
+import frc.lib2202.subsystem.swerve.DriveTrainInterface;
 import frc.robot2024.Constants.Tag_Pose;
 import frc.robot2024.commands.Climber.Climb;
 import frc.robot2024.commands.Climber.ClimberVelocity;
@@ -37,13 +37,13 @@ import frc.robot2024.subsystems.Intake;
  */
 public final class BindingsCompetition {
 
-    public static void ConfigureCompetition(HID_Xbox_Subsystem dc) {
+    public static void ConfigureCompetition(HID_Subsystem dc) {
         DriverBinding(dc);
         OperatorBindings(dc);
     }
 
 
-    private static void DriverBinding(HID_Xbox_Subsystem dc) {
+    private static void DriverBinding(HID_Subsystem dc) {
         CommandXboxController  driver;
         if (dc.Driver() instanceof CommandXboxController) {
             driver = (CommandXboxController)dc.Driver();
@@ -52,7 +52,7 @@ public final class BindingsCompetition {
             return;
         }
 
-        var drivetrain = RobotContainer.getSubsystem(SwerveDrivetrain.class);
+        DriveTrainInterface drivetrain = RobotContainer.getSubsystem("drivetrain");
 
         // Driver buttons
         driver.leftTrigger().whileTrue(new RobotCentricDrive(drivetrain, dc));
@@ -61,7 +61,7 @@ public final class BindingsCompetition {
     }
 
 
-    static void OperatorBindings(HID_Xbox_Subsystem dc) {
+    static void OperatorBindings(HID_Subsystem dc) {
         var sideboard = dc.SwitchBoard();
         CommandXboxController operator;
         if (dc.Operator() instanceof CommandXboxController) {

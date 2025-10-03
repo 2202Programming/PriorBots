@@ -6,8 +6,6 @@ import static frc.lib2202.Constants.MperFT;
 
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.lib2202.builder.IRobotSpec;
 import frc.lib2202.builder.RobotContainer;
@@ -17,11 +15,9 @@ import frc.lib2202.command.swerve.AllianceAwareGyroReset;
 import frc.lib2202.command.swerve.FieldCentricDrive;
 import frc.lib2202.command.swerve.RobotCentricDrive;
 import frc.lib2202.subsystem.Limelight;
-import frc.lib2202.subsystem.VisionPoseEstimator;
 import frc.lib2202.subsystem.hid.HID_Xbox_Subsystem;
 import frc.lib2202.subsystem.hid.TMJoystickController;
 import frc.lib2202.subsystem.hid.TMJoystickController.ButtonType;
-import frc.lib2202.subsystem.swerve.DTMonitorCmd;
 import frc.lib2202.subsystem.swerve.IHeadingProvider;
 import frc.lib2202.subsystem.swerve.SwerveDrivetrain;
 import frc.lib2202.subsystem.swerve.config.ChassisConfig;
@@ -48,9 +44,9 @@ public class RobotSpec_AlphaBot2024 implements IRobotSpec {
       .add(Sensors_Subsystem.class)
       .add(Limelight.class)
       .add(SwerveDrivetrain.class) // must be after LL and Sensors
-      .add(VisionPoseEstimator.class)
+      //.add(VisionPoseEstimator.class)  //restore when vpe moved into 2022 lib
       //below are optional watchers for shuffeleboard data - disable if need too.
-      .add(Command.class, "DT_Monitor", () -> {return new DTMonitorCmd();})
+      //.add(Command.class, "DT_Monitor", () -> {return new DTMonitorCmd();})  //deprecated in recent lib2202
       ;
       
   // Robot Speed Limits
@@ -144,12 +140,7 @@ public class RobotSpec_AlphaBot2024 implements IRobotSpec {
     }
   }
 
-  @Override
-  public SendableChooser<Command> getRegisteredCommands() {    
-    //    AutoPPConfig.ConfigureAutoBuilder();
-    //    return RegisteredCommands.RegisterCommands();
-    return null;
-  }
+
 
   @Override
     public void setDefaultCommands() {

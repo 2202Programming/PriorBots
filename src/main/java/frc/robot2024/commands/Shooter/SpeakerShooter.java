@@ -13,13 +13,12 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.lib2202.builder.RobotContainer;
 import frc.robot2024.Constants.Tag_Pose;
 import frc.robot2024.subsystems.ShooterServo;
-//import frc.robot2024.subsystems.ShooterServo.ShooterServoWatcherCmd;
-import frc.lib2202.subsystem.swerve.SwerveDrivetrain;
+import frc.lib2202.subsystem.OdometryInterface;
 
 public class SpeakerShooter extends InstantCommand {
-  private SwerveDrivetrain drivetrain;
-  // private ShooterServoWatcherCmd shooterNT;
-
+  //SwerveDrivetrain drivetrain;
+  OdometryInterface odo;
+  
   // Keep these constants here, not needed elsewhere
   // TODO:Check this value. - Estimate
   private final double SHOOTER_Y_OFFSET = 0.55; // [m] pivotal point of shooter from the center
@@ -57,7 +56,8 @@ public class SpeakerShooter extends InstantCommand {
    * the target is the vertex of the polar coordinate
    */
   public SpeakerShooter() {
-    drivetrain = RobotContainer.getSubsystem(SwerveDrivetrain.class);
+    //drivetrain = RobotContainer.getSubsystem(SwerveDrivetrain.class);
+    odo = RobotContainer.getSubsystemOrNull("odometry");
     rpm_given = false;
     // addRequirements(shooter) not be needed, this cmd schedules another
   }
@@ -77,7 +77,7 @@ public class SpeakerShooter extends InstantCommand {
   @Override
   public void initialize() {
     // get robot pose in field coordinates
-    Pose2d pose = drivetrain.getPose();
+    Pose2d pose = odo.getPose();
     Translation2d pos = pose.getTranslation();
 
     if (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) {

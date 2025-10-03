@@ -6,7 +6,7 @@ import frc.lib2202.builder.RobotLimits;
 import frc.lib2202.builder.SubsystemConfig;
 import frc.lib2202.command.swerve.FieldCentricDrive;
 import frc.lib2202.subsystem.Limelight;
-import frc.lib2202.subsystem.hid.HID_Xbox_Subsystem;
+import frc.lib2202.subsystem.hid.HID_Subsystem;
 import frc.lib2202.subsystem.swerve.IHeadingProvider;
 import frc.lib2202.subsystem.swerve.SwerveDrivetrain;
 import frc.lib2202.subsystem.swerve.config.ChassisConfig;
@@ -19,16 +19,13 @@ import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.FeetPerSecond;
 import static frc.lib2202.Constants.MperFT;
 
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj2.command.Command;
-
 public class RobotSpec_DoofBot implements IRobotSpec {
 
     final SubsystemConfig ssConfig = new SubsystemConfig("2023-DoofBot", "TBD-123456-TBD")
             .add(Sensors_Subsystem.class)
             .add(Limelight.class)
-            .add(HID_Xbox_Subsystem.class, "DC", () -> {
-                return new HID_Xbox_Subsystem(0.3, 0.9, 0.05);
+            .add(HID_Subsystem.class, "DC", () -> {
+                return new HID_Subsystem(0.3, 0.9, 0.05);
             })
             .add(SwerveDrivetrain.class); // TODO fix doof specs
 
@@ -103,20 +100,10 @@ public class RobotSpec_DoofBot implements IRobotSpec {
 
     @Override
     public void setBindings() {
-        HID_Xbox_Subsystem dc = RobotContainer.getSubsystem("DC");
+        HID_Subsystem dc = RobotContainer.getSubsystem("DC");
         // pick one of the next two lines
         BindingsCompetition.ConfigureCompetition(dc);
         // BindingsOther.ConfigureOther(dc);
-    }
-
-    @Override
-    public boolean burnFlash() {
-        return burnFlash;
-    }
-
-    @Override
-    public SendableChooser<Command> getRegisteredCommands() {
-        return null;
     }
 
     @Override

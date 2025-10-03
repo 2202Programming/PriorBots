@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import frc.lib2202.builder.RobotContainer;
 import frc.robot2024.Constants.Tag_Pose;
 import frc.lib2202.command.TargetWatcherCmd;
-import frc.lib2202.subsystem.swerve.SwerveDrivetrain;
+import frc.lib2202.subsystem.OdometryInterface;
 
 /** Add your docs here. */
 public class DistanceInterpretor extends TargetWatcherCmd {
@@ -27,16 +27,16 @@ public class DistanceInterpretor extends TargetWatcherCmd {
         return singleton;
     }
 
-    // hook into drivetrain for distance
-    final SwerveDrivetrain drivetrain;
+    // hook into drivetrain for distance    
+    final OdometryInterface odo;
     Translation2d targetTranslation2d; // speaker target location
 
     InterpolatingTreeMap<Double, Double> ang_table;
     InterpolatingTreeMap<Double, Double> rpm_table;
     double meas_dist; // set in calc
 
-    private DistanceInterpretor() {
-        drivetrain = RobotContainer.getSubsystem(SwerveDrivetrain.class);
+    private DistanceInterpretor() {        
+        odo = RobotContainer.getSubsystemOrNull("odometry");
 
         InverseInterpolator<Double> distance = InverseInterpolator.forDouble();
         Interpolator<Double> angle = Interpolator.forDouble();
@@ -100,7 +100,7 @@ public class DistanceInterpretor extends TargetWatcherCmd {
 
     // Implementations for TargetWatcherCmd
     public void calculate() {
-        meas_dist = drivetrain.getDistanceToTranslation(targetTranslation2d);
+        meas_dist = odo.getDistanceToTranslation(targetTranslation2d);
     }
 
     public double getTargetAngle() {

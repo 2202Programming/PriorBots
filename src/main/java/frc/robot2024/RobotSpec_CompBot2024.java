@@ -4,6 +4,8 @@ import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.FeetPerSecond;
 import static frc.lib2202.Constants.MperFT;
 
+import com.pathplanner.lib.commands.PathfindingCommand;
+
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -13,11 +15,13 @@ import frc.lib2202.builder.RobotContainer;
 import frc.lib2202.builder.RobotLimits;
 import frc.lib2202.builder.SubsystemConfig;
 import frc.lib2202.command.swerve.FieldCentricDrive;
-//import frc.lib2202.command.swerve.RobotCentricDrive;
 import frc.lib2202.subsystem.BlinkyLights;
 import frc.lib2202.subsystem.Limelight;
-import frc.lib2202.subsystem.hid.HID_Xbox_Subsystem;
-import frc.lib2202.subsystem.swerve.DTMonitorCmd;
+import frc.lib2202.subsystem.Odometry;
+import frc.lib2202.subsystem.OdometryInterface;
+import frc.lib2202.subsystem.hid.HID_Subsystem;
+import frc.lib2202.subsystem.swerve.AutoPPConfigure;
+import frc.lib2202.subsystem.swerve.DriveTrainInterface;
 import frc.lib2202.subsystem.swerve.IHeadingProvider;
 import frc.lib2202.subsystem.swerve.SwerveDrivetrain;
 import frc.lib2202.subsystem.swerve.config.ChassisConfig;
@@ -49,14 +53,16 @@ public class RobotSpec_CompBot2024 implements IRobotSpec {
             .add(BlinkyLights.class, "LIGHTS", () -> {
                 return new BlinkyLights(CAN.CANDLE1, CAN.CANDLE2);
             })
-            .add(HID_Xbox_Subsystem.class, "DC", () -> {
-                return new HID_Xbox_Subsystem(0.3, 0.9, 0.05);
+            .add(HID_Subsystem.class, "DC", () -> {
+                return new HID_Subsystem(0.3, 0.9, 0.05);
             })
             .add(Sensors_Subsystem.class)
             .add(Limelight.class)
-            .add(SwerveDrivetrain.class) // must be after LL and Sensors
-            .add(Command.class, "DT_Monitor", () -> {
-                return new DTMonitorCmd();
+            .addAlias(SwerveDrivetrain.class, "drivetrain") // must be after LL and Sensors
+            .add(OdometryInterface.class, "odometry", () -> {
+                var obj = new Odometry();
+                obj.new OdometryWatcher();
+                return obj;
             })
             .add(Intake.class)
             .add(Command.class, "IntakeWatcher", () -> {
@@ -80,8 +86,6 @@ public class RobotSpec_CompBot2024 implements IRobotSpec {
                 return DistanceInterpretor.getSingleton();
             });
 
-    // set this true at least once after robot hw stabilizes
-    boolean burnFlash = false;
     boolean swerve = true;
 
     // Robot Speed Limits
@@ -159,21 +163,33 @@ public class RobotSpec_CompBot2024 implements IRobotSpec {
 
     @Override
     public void setBindings() {
-        HID_Xbox_Subsystem dc = RobotContainer.getSubsystem("DC");
+        HID_Subsystem dc = RobotContainer.getSubsystem("DC");
+        OdometryInterface odo = RobotContainer.getSubsystemOrNull("odometry");
+        DriveTrainInterface sdt = RobotContainer.getSubsystemOrNull("drivetrain");
+        
+        // Initialize PathPlanner, if we have needed Subsystems
+        if (odo != null && sdt != null) {
+            AutoPPConfigure.configureAutoBuilder(sdt, odo);
+            PathfindingCommand.warmupCommand().schedule();
+        }
+        
         // pick one of the next two lines
         BindingsCompetition.ConfigureCompetition(dc);
         // BindingsOther.ConfigureOther(dc);
-
     }
-
+    
+    // setup reg commands and relate autoChooser
+    SendableChooser<Command> autoChooser;
+    @Override
+    public void setupRegisteredCommands() {
+        autoChooser = RegisteredCommands.RegisterCommands();
+    }
 
     @Override
-    public SendableChooser<Command> getRegisteredCommands() {
-        // configure pathplanner and the Registered commands
-        // ConfigureAutobuilder uses default pids and looks up SwereveDrivetrain from RobotContainer
-        AutoPPConfig.ConfigureAutoBuilder();
-        return RegisteredCommands.RegisterCommands();
+    public SendableChooser<Command> getChooser() { 
+        return autoChooser;
     }
+
 
     @Override
     public void setDefaultCommands() {
