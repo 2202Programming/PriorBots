@@ -1,4 +1,4 @@
-package frc.robot2024;
+package frc.timbot;
 
 import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.FeetPerSecond;
@@ -20,9 +20,11 @@ import frc.lib2202.subsystem.swerve.config.ChassisConfig;
 import frc.lib2202.subsystem.swerve.config.ModuleConfig;
 import frc.lib2202.subsystem.swerve.config.ModuleConfig.CornerID;
 import frc.robot2024.subsystems.sensors.Sensors_Subsystem;
+import frc.timbot.commands.Shoot;
+import frc.timbot.subsystem.FlywheelSubsystem;
 
 //Swerve bot aka Tim specs
-public class RobotSpec_SwerveBot implements IRobotSpec {
+public class RobotSpec_TimBot implements IRobotSpec {
     // set this true at least once after robot hw stabilizes
     boolean burnFlash = false;
 
@@ -52,9 +54,10 @@ public class RobotSpec_SwerveBot implements IRobotSpec {
             //.add(VisionPoseEstimator.class)  //TODO - restore when VPE added to 2202 lib, part of 2025 robot now.
             .add(HID_Xbox_Subsystem.class, "DC", () -> {
                 return new HID_Xbox_Subsystem(0.3, 0.9, 0.05);
-            });
+            })
+            .add(FlywheelSubsystem.class);
 
-    public RobotSpec_SwerveBot() {
+    public RobotSpec_TimBot() {
         ssConfig.setRobotSpec(this);
     }
 
@@ -99,9 +102,11 @@ public class RobotSpec_SwerveBot implements IRobotSpec {
 
     @Override
     public void setBindings() {
-        @SuppressWarnings("unused")
         HID_Xbox_Subsystem dc = RobotContainer.getSubsystem("DC");
-        //if code is ever added for tim's other mechanisms besides chassis, bindings go here --er
+        
+        var driver = dc.Driver();
+
+        driver.a().onTrue(new Shoot(1000.0));
     }
 
     
@@ -121,6 +126,4 @@ public class RobotSpec_SwerveBot implements IRobotSpec {
             drivetrain.setDefaultCommand(cmd);
           }
     }
-
-
 }

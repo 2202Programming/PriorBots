@@ -11,6 +11,7 @@ import frc.lib2202.builder.RobotSpecDefault;
 import frc.robot2024.RobotSpec_AlphaBot2024;
 import frc.robot2024.RobotSpec_CompBot2024;
 import frc.robot2024.RobotSpec_DoofBot;
+import frc.timbot.RobotSpec_TimBot;
 import frc.robot2024.RobotSpec_SwerveBot;
 import frc.robot2025.RobotSpec_AlphaBot2025;
 import frc.robot2025.RobotSpec_BetaBot2025;
@@ -25,7 +26,7 @@ public final class Main {
     new RobotSpec_AlphaBot2024();
     new RobotSpec_CompBot2024();
     new RobotSpec_ChadBot();
-    new RobotSpec_SwerveBot();
+    new RobotSpec_TimBot();
     new RobotSpec_DoofBot();
     // 2025
     new RobotSpec_BetaBot2025();
@@ -39,4 +40,4 @@ public final class Main {
     new Main();
     RobotBase.startRobot(Robot::new);
   }
-}
+}   
