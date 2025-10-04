@@ -12,7 +12,6 @@ import frc.robot2024.RobotSpec_AlphaBot2024;
 import frc.robot2024.RobotSpec_CompBot2024;
 import frc.robot2024.RobotSpec_DoofBot;
 import frc.timbot.RobotSpec_TimBot;
-import frc.robot2024.RobotSpec_SwerveBot;
 import frc.robot2025.RobotSpec_AlphaBot2025;
 import frc.robot2025.RobotSpec_BetaBot2025;
 import frc.robot2025.RobotSpec_BotOnBoard;
