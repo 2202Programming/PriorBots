@@ -12,6 +12,11 @@ import frc.robot2024.RobotSpec_AlphaBot2024;
 import frc.robot2024.RobotSpec_CompBot2024;
 import frc.robot2024.RobotSpec_DoofBot;
 import frc.robot2024.RobotSpec_SwerveBot;
+import frc.robot2025.RobotSpec_AlphaBot2025;
+import frc.robot2025.RobotSpec_BetaBot2025;
+import frc.robot2025.RobotSpec_BotOnBoard;
+import frc.robot2025.RobotSpec_BotOnBoard2;
+import frc.robot2025.RobotSpec_BotOnBoard3;
 
 public final class Main {
   private Main() {
@@ -22,6 +27,12 @@ public final class Main {
     new RobotSpec_ChadBot();
     new RobotSpec_SwerveBot();
     new RobotSpec_DoofBot();
+    // 2025
+    new RobotSpec_BetaBot2025();
+    new RobotSpec_AlphaBot2025(); 
+    new RobotSpec_BotOnBoard();
+    new RobotSpec_BotOnBoard2();
+    new RobotSpec_BotOnBoard3();
 
   }
   public static void main(String... args) {
