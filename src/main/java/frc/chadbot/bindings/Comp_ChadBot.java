@@ -11,6 +11,7 @@ import frc.chadbot.commands.MoveIntake.DeployMode;
 import frc.chadbot.commands.MovePositioner;
 import frc.chadbot.commands.MovePositioner.PositionerMode;
 import frc.chadbot.commands.Shoot.VelShootCommand;
+import frc.chadbot.subsystems.Magazine_Subsystem;
 import frc.lib2202.builder.RobotContainer;
 import frc.lib2202.command.swerve.AllianceAwareGyroReset;
 import frc.lib2202.command.swerve.RobotCentricDrive;
@@ -58,6 +59,10 @@ public final class Comp_ChadBot {
     static void OperatorBindings(HID_Subsystem dc) {
         MagazineGatedCommand mag_default_cmd;
         mag_default_cmd = new MagazineGatedCommand(1.0);
+        // set default command for mag, normally done in RobotSpec file
+        Magazine_Subsystem mag = RobotContainer.getSubsystem(Magazine_Subsystem.class);
+        mag.setDefaultCommand(mag_default_cmd);
+        
         @SuppressWarnings("unused")
         var sideboard = dc.SwitchBoard();
 

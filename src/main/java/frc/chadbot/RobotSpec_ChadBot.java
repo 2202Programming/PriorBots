@@ -33,16 +33,16 @@ public class RobotSpec_ChadBot implements IRobotSpec {
   // In debugger window set env with:  $env:serialnum='03238151'
   // Chad's subsystems and objects
   final SubsystemConfig ssConfig = new SubsystemConfig("ChadBot", "03238151")
-      .add(Sensors_Subsystem.class)
-      .add(Limelight.class)
-      .add(SwerveDrivetrain.class) // must be after LL and Sensors
+      .addAlias(Sensors_Subsystem.class, "sensors")
+      .addAlias(Limelight.class,"limelight")
+      .addAlias(SwerveDrivetrain.class,"drivetrain") // must be after Sensors
       .add(HID_Subsystem.class, "DC", () -> {
         return new HID_Subsystem(0.3, 0.9, 0.05);
       })
       //TODO update to VPE when in lib2202
       .add(OdometryInterface.class, "odometry", () -> {
           var obj = new Odometry();
-          obj.new OdometryWatcher();
+          //obj.new OdometryWatcher();
           return obj;
       })
       //rest of Chad's subsystems
