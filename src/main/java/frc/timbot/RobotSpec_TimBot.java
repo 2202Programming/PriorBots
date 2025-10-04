@@ -4,7 +4,9 @@ import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.FeetPerSecond;
 import static frc.lib2202.Constants.MperFT;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.lib2202.builder.IRobotSpec;
 import frc.lib2202.builder.RobotContainer;
 import frc.lib2202.builder.RobotLimits;
@@ -13,15 +15,17 @@ import frc.lib2202.command.swerve.FieldCentricDrive;
 import frc.lib2202.command.swerve.RobotCentricDrive;
 import frc.lib2202.command.swerve.calibrate.TestRotateVelocity;
 import frc.lib2202.subsystem.Limelight;
-import frc.lib2202.subsystem.hid.HID_Xbox_Subsystem;
+import frc.lib2202.subsystem.hid.HID_Subsystem;
 import frc.lib2202.subsystem.swerve.IHeadingProvider;
 import frc.lib2202.subsystem.swerve.SwerveDrivetrain;
 import frc.lib2202.subsystem.swerve.config.ChassisConfig;
 import frc.lib2202.subsystem.swerve.config.ModuleConfig;
 import frc.lib2202.subsystem.swerve.config.ModuleConfig.CornerID;
-import frc.robot2024.subsystems.sensors.Sensors_Subsystem;
+
 import frc.timbot.commands.Shoot;
+import frc.timbot.subsystem.ShooterLifter;
 import frc.timbot.subsystem.FlywheelSubsystem;
+import frc.timbot.subsystem.Sensors_Subsystem;
 
 //Swerve bot aka Tim specs
 public class RobotSpec_TimBot implements IRobotSpec {
@@ -48,13 +52,14 @@ public class RobotSpec_TimBot implements IRobotSpec {
 
     // Subsystems and hardware on Tim 2.0
     SubsystemConfig ssConfig = new SubsystemConfig("SwerveBot - aka Tim", "031b7511")
-            .add(Sensors_Subsystem.class)
+            .addAlias(Sensors_Subsystem.class, "sensors")
             .add(Limelight.class)
-            .add(SwerveDrivetrain.class)
+            .addAlias(SwerveDrivetrain.class,"drivetrain")
             //.add(VisionPoseEstimator.class)  //TODO - restore when VPE added to 2202 lib, part of 2025 robot now.
-            .add(HID_Xbox_Subsystem.class, "DC", () -> {
-                return new HID_Xbox_Subsystem(0.3, 0.9, 0.05);
+            .add(HID_Subsystem.class, "DC", () -> {
+                return new HID_Subsystem(0.3, 0.9, 0.05);
             })
+            .add(ShooterLifter.class)
             .add(FlywheelSubsystem.class);
 
     public RobotSpec_TimBot() {
@@ -102,11 +107,16 @@ public class RobotSpec_TimBot implements IRobotSpec {
 
     @Override
     public void setBindings() {
-        HID_Xbox_Subsystem dc = RobotContainer.getSubsystem("DC");
+        HID_Subsystem dc = RobotContainer.getSubsystem("DC");
         
         var driver = dc.Driver();
-
-        driver.a().onTrue(new Shoot(1000.0));
+        if (driver instanceof  CommandXboxController) {
+            CommandXboxController xbox_driver = (CommandXboxController)driver;
+            xbox_driver.a().onTrue(new Shoot(1000.0));
+        }
+        else {
+            DriverStation.reportError("Timbot expects xbox controller, no driver bindings set, check controllers.", false);
+        }
     }
 
     

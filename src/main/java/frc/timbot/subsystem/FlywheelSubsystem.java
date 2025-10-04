@@ -5,12 +5,16 @@ import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.timbot.Constants;
 
 public class FlywheelSubsystem extends SubsystemBase {
-
+    
+    // was in constants
+    final double MIN_SHOOTER_SPEED = 200; // One unit represents one position unit per 100ms
+    
     final TalonFX motor1;
     final TalonFX motor2;
 
@@ -28,10 +32,8 @@ public class FlywheelSubsystem extends SubsystemBase {
     double vel_m1;
     double vel_m2;
 
-    final StatusSignal<Double> ss_velocity_m1;
-    final StatusSignal<Double> ss_velocity_m2;
-
-
+    final StatusSignal<AngularVelocity> ss_velocity_m1;
+    final StatusSignal<AngularVelocity> ss_velocity_m2;
     
     public FlywheelSubsystem() {
         motor1 = new TalonFX(Constants.CAN.FLYWHEEL_TALON1);
