@@ -90,6 +90,12 @@ public class ShooterLifter extends SubsystemBase {
     double angle = Math.asin(h/K_h)*DEGperRAD;
     return angle;
   }
+
+  // are we there yet?
+  public boolean isAtPosition() {
+    return controller.atSetpoint();
+  }
+
   
   //Trigger API
   public void trigger_fire(){
