@@ -28,6 +28,7 @@ import frc.lib2202.command.swerve.FieldCentricDrive;
 import frc.lib2202.subsystem.BlinkyLights;
 import frc.lib2202.subsystem.Odometry;
 import frc.lib2202.subsystem.OdometryInterface;
+import frc.lib2202.subsystem.UX.TrimTables;
 import frc.lib2202.subsystem.hid.HID_Subsystem;
 import frc.lib2202.subsystem.swerve.AutoPPConfigure;
 import frc.lib2202.subsystem.swerve.DriveTrainInterface;
@@ -49,7 +50,6 @@ import frc.robot2025.subsystems.SignalLight;
 import frc.robot2025.subsystems.VisionPoseEstimator;
 import frc.robot2025.subsystems.WristFLA;
 import frc.robot2025.subsystems.Elevator_Subsystem.Levels;
-import frc.robot2025.utils.UXTrim;
 
 public class RobotSpec_BetaBot2025 implements IRobotSpec {
 
@@ -63,6 +63,7 @@ public class RobotSpec_BetaBot2025 implements IRobotSpec {
         return pdp;
       })
       // .add(PneumaticsControl.class)
+      .add(TrimTables.class)
       .add(BlinkyLights.class, "LIGHTS", () -> {
         return new BlinkyLights(CAN.CANDLE1, CAN.CANDLE2, CAN.CANDLE3, CAN.CANDLE4);
       })
@@ -331,7 +332,7 @@ public class RobotSpec_BetaBot2025 implements IRobotSpec {
    */
   @Override
   public void periodic() {
-    UXTrim.periodic();
+    // UXTrim.periodic();  //converted to TrimTable subsystem
   }
 
 

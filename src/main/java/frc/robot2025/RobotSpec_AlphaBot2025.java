@@ -24,6 +24,7 @@ import frc.lib2202.builder.SubsystemConfig;
 import frc.lib2202.command.swerve.FieldCentricDrive;
 import frc.lib2202.subsystem.Odometry;
 import frc.lib2202.subsystem.OdometryInterface;
+import frc.lib2202.subsystem.UX.TrimTables;
 import frc.lib2202.subsystem.hid.HID_Subsystem;
 import frc.lib2202.subsystem.swerve.AutoPPConfigure;
 import frc.lib2202.subsystem.swerve.DriveTrainInterface;
@@ -38,7 +39,6 @@ import frc.robot2025.subsystems.Limelight;
 import frc.robot2025.subsystems.Sensors_Subsystem;
 import frc.robot2025.subsystems.VisionPoseEstimator;
 import frc.robot2025.testBindings.DPLPathTest;
-import frc.robot2025.utils.UXTrim;
 
 public class RobotSpec_AlphaBot2025 implements IRobotSpec {
 
@@ -70,6 +70,7 @@ public class RobotSpec_AlphaBot2025 implements IRobotSpec {
       // Sensors, limelight and drivetrain all use interfaces, so make sure their alias names
       // match what is given here.
       .add(Sensors_Subsystem.class, "sensors")
+      .add(TrimTables.class)
       .add(Limelight.class, "limelight", ()-> {
         // Limelight position in robot coords - this has LL in the front of bot
         Pose3d LimelightPosition = new Pose3d(0.7112 / 2.0, -0.21, .23,
@@ -248,7 +249,6 @@ public class RobotSpec_AlphaBot2025 implements IRobotSpec {
    */
   @Override
   public void periodic() {
-    UXTrim.periodic();
   }
 
 
