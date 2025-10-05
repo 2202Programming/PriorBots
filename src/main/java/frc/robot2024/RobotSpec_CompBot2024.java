@@ -101,8 +101,10 @@ public class RobotSpec_CompBot2024 implements IRobotSpec {
     double kWheelDiameter = MperFT * 4.0 / 12.0; // [m]
 
     final ChassisConfig comp2024BotBetaChassisConfig = new ChassisConfig(
-            MperFT * (24.875 / 12.0) / 2.0, // x
-            MperFT * (20.5 / 12.0) / 2.0, // y
+            //MperFT * (24.875 / 12.0) / 2.0, // x
+            //MperFT * (20.5 / 12.0) / 2.0, // y
+            (.655 / 2.0), // x [m]    updated from 2025 measurments
+            (.755 / 2.0), // y [m]
             kWheelCorrectionFactor, // scale [] <= 1.0
             kWheelDiameter,
             kSteeringGR,
