@@ -14,10 +14,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.chadbot.Constants.NTStrings;
 import frc.chadbot.commands.Shoot.SolutionProvider;
-import frc.chadbot.subsystems.Sensors_Subsystem;
-import frc.chadbot.subsystems.shooter.Shooter_Subsystem;
 import frc.lib2202.builder.RobotContainer;
 import frc.lib2202.subsystem.Limelight;
+import frc.lib2202.subsystem.Sensors;
 import frc.lib2202.subsystem.hid.HID_Subsystem;
 import frc.lib2202.subsystem.swerve.SwerveDrivetrain;
 
@@ -38,11 +37,11 @@ public class DriveControllerDrivetrain extends Command implements SolutionProvid
   }
 
   //subsystems
-  SwerveDrivetrain drivetrain;
-  HID_Subsystem dc;
-  Shooter_Subsystem shooter;
-  Limelight limelight;
-  Sensors_Subsystem sensors;
+  final SwerveDrivetrain drivetrain;
+  final HID_Subsystem dc;
+  //final Shooter_Subsystem shooter;
+  final Limelight limelight;
+  final Sensors sensors;
 
   //commands
   RobotCentricDrive m_robotCentricDrive;
@@ -99,7 +98,7 @@ public class DriveControllerDrivetrain extends Command implements SolutionProvid
     this.drivetrain = RobotContainer.getSubsystem(SwerveDrivetrain.class);
     this.dc = RobotContainer.getSubsystem(HID_Subsystem.class);
     this.limelight = RobotContainer.getSubsystem(Limelight.class);
-    this.sensors = RobotContainer.getSubsystem(Sensors_Subsystem.class);
+    this.sensors = RobotContainer.getSubsystem(Sensors.class);
 
     m_robotCentricDrive = new RobotCentricDrive();
     m_fieldCentricDrive = new FieldCentricDrive();

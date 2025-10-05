@@ -15,6 +15,7 @@ import frc.lib2202.command.swerve.AllianceAwareGyroReset;
 import frc.lib2202.command.swerve.FieldCentricDrive;
 import frc.lib2202.command.swerve.RobotCentricDrive;
 import frc.lib2202.subsystem.Limelight;
+import frc.lib2202.subsystem.Sensors;
 import frc.lib2202.subsystem.hid.HID_Xbox_Subsystem;
 import frc.lib2202.subsystem.hid.TMJoystickController;
 import frc.lib2202.subsystem.hid.TMJoystickController.ButtonType;
@@ -25,7 +26,6 @@ import frc.lib2202.subsystem.swerve.config.ModuleConfig;
 import frc.lib2202.subsystem.swerve.config.ModuleConfig.CornerID;
 import frc.lib2202.util.PIDFController;
 import frc.robot2024.Constants.CAN;
-import frc.robot2024.subsystems.sensors.Sensors_Subsystem;
 
 public class RobotSpec_AlphaBot2024 implements IRobotSpec {
   // Subsystems and other hardware on 2024 Robot rev Alpha
@@ -41,7 +41,7 @@ public class RobotSpec_AlphaBot2024 implements IRobotSpec {
       .add(HID_Xbox_Subsystem.class, "DC", () -> {
         return new HID_Xbox_Subsystem(0.3, 0.9, 0.05);
       })
-      .add(Sensors_Subsystem.class)
+      .addAlias(Sensors.class,"sensors")
       .add(Limelight.class)
       .add(SwerveDrivetrain.class) // must be after LL and Sensors
       //.add(VisionPoseEstimator.class)  //restore when vpe moved into 2022 lib
@@ -85,7 +85,7 @@ public class RobotSpec_AlphaBot2024 implements IRobotSpec {
 
   @Override
   public IHeadingProvider getHeadingProvider() {
-    return RobotContainer.getSubsystem(Sensors_Subsystem.class);
+    return RobotContainer.getSubsystem(Sensors.class);
   }
 
   @Override

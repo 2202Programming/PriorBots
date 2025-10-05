@@ -9,8 +9,6 @@ import frc.chadbot.bindings.Comp_ChadBot;
 import frc.chadbot.subsystems.Intake_Subsystem;
 import frc.chadbot.subsystems.Magazine_Subsystem;
 import frc.chadbot.subsystems.Positioner_Subsystem;
-//Note there is a sensors in lib2202, but we want the robot specific one
-import frc.chadbot.subsystems.Sensors_Subsystem;
 import frc.chadbot.subsystems.shooter.Shooter_Subsystem;
 import frc.lib2202.builder.IRobotSpec;
 import frc.lib2202.builder.RobotContainer;
@@ -20,6 +18,7 @@ import frc.lib2202.command.swerve.FieldCentricDrive;
 import frc.lib2202.subsystem.Limelight;
 import frc.lib2202.subsystem.Odometry;
 import frc.lib2202.subsystem.OdometryInterface;
+import frc.lib2202.subsystem.Sensors;
 import frc.lib2202.subsystem.hid.HID_Subsystem;
 import frc.lib2202.subsystem.swerve.IHeadingProvider;
 import frc.lib2202.subsystem.swerve.SwerveDrivetrain;
@@ -33,7 +32,7 @@ public class RobotSpec_ChadBot implements IRobotSpec {
   // In debugger window set env with:  $env:serialnum='03238151'
   // Chad's subsystems and objects
   final SubsystemConfig ssConfig = new SubsystemConfig("ChadBot", "03238151")
-      .addAlias(Sensors_Subsystem.class, "sensors")
+      .addAlias(Sensors.class, "sensors")
       .addAlias(Limelight.class,"limelight")
       .addAlias(SwerveDrivetrain.class,"drivetrain") // must be after Sensors
       .add(HID_Subsystem.class, "DC", () -> {
@@ -86,7 +85,7 @@ public class RobotSpec_ChadBot implements IRobotSpec {
 
   @Override
   public IHeadingProvider getHeadingProvider() {
-    return RobotContainer.getSubsystem(Sensors_Subsystem.class);
+    return RobotContainer.getSubsystem(Sensors.class);
   }
 
   @Override

@@ -9,9 +9,9 @@ import java.util.List;
 import java.util.Set;
 
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
-import frc.robot2024.subsystems.sensors.Sensors_Subsystem;
 import frc.lib2202.builder.RobotContainer;
 import frc.lib2202.subsystem.OdometryInterface;
+import frc.lib2202.subsystem.swerve.IHeadingProvider;
 import frc.lib2202.subsystem.swerve.SwerveDrivetrain;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -25,7 +25,7 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 
 public class getTrajectoryFollowTest extends Command {
-  final Sensors_Subsystem sensors;
+  final IHeadingProvider sensors;
   final SwerveDrivetrain drivetrain;
   final OdometryInterface odo;
   Set<Subsystem> requirements;
@@ -33,8 +33,8 @@ public class getTrajectoryFollowTest extends Command {
 
   /** Creates a new getTrajectoryFollowTest. 
    * @return */
-  public  getTrajectoryFollowTest(Sensors_Subsystem ns, SwerveDrivetrain drivetrain) {
-    sensors = ns;
+  public  getTrajectoryFollowTest(SwerveDrivetrain drivetrain) {
+    sensors = RobotContainer.getRobotSpecs().getHeadingProvider();   //shorthand for sensors
     this.drivetrain = drivetrain;
     this.odo = RobotContainer.getSubsystem("odometry");
     requirements = new  HashSet<Subsystem>();
@@ -44,8 +44,8 @@ public class getTrajectoryFollowTest extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-  // An example trajectory to follow. All units in feet.
-    Rotation2d current_angle = new Rotation2d(sensors.getYaw());
+  // An example trajectory to follow. All units in meters.
+    Rotation2d current_angle = sensors.getHeading();  //new Rotation2d(sensors.getYaw());
     Trajectory exampleTrajectory = TrajectoryGenerator.generateTrajectory(
         new Pose2d(0.0, 0.0, current_angle),
         List.of(

@@ -6,6 +6,7 @@ import frc.lib2202.builder.RobotLimits;
 import frc.lib2202.builder.SubsystemConfig;
 import frc.lib2202.command.swerve.FieldCentricDrive;
 import frc.lib2202.subsystem.Limelight;
+import frc.lib2202.subsystem.Sensors;
 import frc.lib2202.subsystem.hid.HID_Subsystem;
 import frc.lib2202.subsystem.swerve.IHeadingProvider;
 import frc.lib2202.subsystem.swerve.SwerveDrivetrain;
@@ -13,7 +14,6 @@ import frc.lib2202.subsystem.swerve.config.ChassisConfig;
 import frc.lib2202.subsystem.swerve.config.ModuleConfig;
 import frc.lib2202.subsystem.swerve.config.ModuleConfig.CornerID;
 import frc.lib2202.util.PIDFController;
-import frc.robot2024.subsystems.sensors.Sensors_Subsystem;
 
 import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.FeetPerSecond;
@@ -22,7 +22,7 @@ import static frc.lib2202.Constants.MperFT;
 public class RobotSpec_DoofBot implements IRobotSpec {
 
     final SubsystemConfig ssConfig = new SubsystemConfig("2023-DoofBot", "TBD-123456-TBD")
-            .add(Sensors_Subsystem.class)
+            .addAlias(Sensors.class,"sensors")
             .add(Limelight.class)
             .add(HID_Subsystem.class, "DC", () -> {
                 return new HID_Subsystem(0.3, 0.9, 0.05);
@@ -64,7 +64,7 @@ public class RobotSpec_DoofBot implements IRobotSpec {
 
     @Override
     public IHeadingProvider getHeadingProvider() {
-        return RobotContainer.getSubsystem(Sensors_Subsystem.class);
+        return RobotContainer.getSubsystem(Sensors.class);
     }
 
     @Override

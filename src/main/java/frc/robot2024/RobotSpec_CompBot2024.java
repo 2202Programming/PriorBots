@@ -19,6 +19,7 @@ import frc.lib2202.subsystem.BlinkyLights;
 import frc.lib2202.subsystem.Limelight;
 import frc.lib2202.subsystem.Odometry;
 import frc.lib2202.subsystem.OdometryInterface;
+import frc.lib2202.subsystem.Sensors;
 import frc.lib2202.subsystem.hid.HID_Subsystem;
 import frc.lib2202.subsystem.swerve.AutoPPConfigure;
 import frc.lib2202.subsystem.swerve.DriveTrainInterface;
@@ -36,7 +37,7 @@ import frc.robot2024.subsystems.Climber;
 import frc.robot2024.subsystems.Intake;
 import frc.robot2024.subsystems.ShooterServo;
 import frc.robot2024.subsystems.Transfer;
-import frc.robot2024.subsystems.sensors.Sensors_Subsystem;
+
 
 public class RobotSpec_CompBot2024 implements IRobotSpec {
 
@@ -56,7 +57,7 @@ public class RobotSpec_CompBot2024 implements IRobotSpec {
             .add(HID_Subsystem.class, "DC", () -> {
                 return new HID_Subsystem(0.3, 0.9, 0.05);
             })
-            .add(Sensors_Subsystem.class)
+            .addAlias(Sensors.class,"sensors")
             .add(Limelight.class)
             .addAlias(SwerveDrivetrain.class, "drivetrain") // must be after LL and Sensors
             .add(OdometryInterface.class, "odometry", () -> {
@@ -127,7 +128,7 @@ public class RobotSpec_CompBot2024 implements IRobotSpec {
 
     @Override
     public IHeadingProvider getHeadingProvider() {
-        return RobotContainer.getSubsystem(Sensors_Subsystem.class);
+        return RobotContainer.getSubsystem(Sensors.class);
     }
 
     @Override

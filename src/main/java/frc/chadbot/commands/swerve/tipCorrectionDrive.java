@@ -8,8 +8,8 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.chadbot.Constants;
-import frc.chadbot.subsystems.Sensors_Subsystem;
 import frc.lib2202.builder.RobotContainer;
+import frc.lib2202.subsystem.Sensors;
 
 /* Current driving behavior:
   Starts in field centric
@@ -21,7 +21,7 @@ import frc.lib2202.builder.RobotContainer;
 
 
 public class tipCorrectionDrive extends FieldCentricDrive {
-  final Sensors_Subsystem sensors;
+  final Sensors sensors;   //needs full sensors for pitch roll
   double log_counter = 0;
 
   PIDController tipRollPid;
@@ -51,7 +51,7 @@ public class tipCorrectionDrive extends FieldCentricDrive {
 
   public tipCorrectionDrive() {
     super();
-    sensors = RobotContainer.getSubsystem(Sensors_Subsystem.class);
+    sensors = RobotContainer.getSubsystem(Sensors.class);
   
     //addRequirements(drivetrain);
     tipRollPid = new PIDController(roll_kP, roll_kI, roll_kD);

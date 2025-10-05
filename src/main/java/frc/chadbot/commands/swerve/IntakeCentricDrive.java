@@ -13,7 +13,6 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import frc.chadbot.Constants;
 import frc.chadbot.Constants.DriveTrain;
-import frc.chadbot.subsystems.Sensors_Subsystem;
 import frc.lib2202.builder.RobotContainer;
 import frc.lib2202.subsystem.hid.HID_Subsystem;
 import frc.lib2202.subsystem.swerve.IHeadingProvider;
@@ -75,7 +74,7 @@ public class IntakeCentricDrive extends DriveCmdClass {
     addRequirements(drivetrain);
     this.dc = dc;
     this.kinematics = drivetrain.getKinematics();
-    this.gyro = RobotContainer.getSubsystem(Sensors_Subsystem.class);
+    this.gyro = RobotContainer.getRobotSpecs().getHeadingProvider();
 
     intakeAnglePid = new PIDController(angle_kp, angle_ki, angle_kd);
     intakeAnglePid.enableContinuousInput(-180, 180);

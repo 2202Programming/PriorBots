@@ -8,7 +8,6 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import frc.chadbot.Constants;
 import frc.chadbot.Constants.DriveTrain;
-import frc.chadbot.subsystems.Sensors_Subsystem;
 import frc.lib2202.builder.RobotContainer;
 import frc.lib2202.subsystem.hid.HID_Subsystem;
 import frc.lib2202.subsystem.swerve.IHeadingProvider;
@@ -45,8 +44,7 @@ public class FieldCentricDrive extends DriveCmdClass {
   public FieldCentricDrive() {
     this.dc = RobotContainer.getSubsystem("DC");       //driverControls aka HID_Xbox_Subsystem
     this.drivetrain = RobotContainer.getSubsystem(SwerveDrivetrain.class); 
-    this.gyro = RobotContainer.getSubsystem(Sensors_Subsystem.class);
-
+    this.gyro = RobotContainer.getRobotSpecs().getHeadingProvider();
     addRequirements(drivetrain);
     this.kinematics = drivetrain.getKinematics();
   }
