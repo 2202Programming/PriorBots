@@ -58,7 +58,7 @@ public class RobotSpec_CompBot2024 implements IRobotSpec {
                 return new HID_Subsystem(0.3, 0.9, 0.05);
             })
             .addAlias(Sensors.class,"sensors")
-            .add(Limelight.class)
+            .addAlias(Limelight.class, "limelight")
             .addAlias(SwerveDrivetrain.class, "drivetrain") // must be after LL and Sensors
             .add(OdometryInterface.class, "odometry", () -> {
                 var obj = new Odometry();
