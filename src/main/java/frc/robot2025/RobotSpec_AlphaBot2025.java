@@ -36,7 +36,7 @@ import frc.lib2202.subsystem.swerve.config.ModuleConfig.CornerID;
 import frc.lib2202.util.PIDFController;
 import frc.robot2025.Constants.CAN;
 import frc.robot2025.subsystems.Limelight;
-import frc.robot2025.subsystems.Sensors_Subsystem;
+import frc.lib2202.subsystem.Sensors;
 import frc.robot2025.subsystems.VisionPoseEstimator;
 import frc.robot2025.testBindings.DPLPathTest;
 
@@ -69,7 +69,7 @@ public class RobotSpec_AlphaBot2025 implements IRobotSpec {
 */
       // Sensors, limelight and drivetrain all use interfaces, so make sure their alias names
       // match what is given here.
-      .add(Sensors_Subsystem.class, "sensors")
+      .add(Sensors.class, "sensors")
       .add(TrimTables.class)
       .add(Limelight.class, "limelight", ()-> {
         // Limelight position in robot coords - this has LL in the front of bot
@@ -215,11 +215,6 @@ public class RobotSpec_AlphaBot2025 implements IRobotSpec {
     SmartDashboard.putData(CommandScheduler.getInstance());
   }
 
-  @Override
-  public boolean burnFlash() {
-    return true;
-  }
-
   SendableChooser<Command> autoChooser;
 
   @Override
@@ -244,12 +239,6 @@ public class RobotSpec_AlphaBot2025 implements IRobotSpec {
     }
   }
 
-  /*
-   * Add additional calls to the robotPeriodic loop
-   */
-  @Override
-  public void periodic() {
-  }
-
+  
 
 }

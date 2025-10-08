@@ -26,6 +26,7 @@ import frc.lib2202.command.swerve.RobotCentricDrive;
 import frc.lib2202.subsystem.BlinkyLights;
 import frc.lib2202.subsystem.Odometry;
 import frc.lib2202.subsystem.OdometryInterface;
+import frc.lib2202.subsystem.Sensors;
 import frc.lib2202.subsystem.hid.HID_Subsystem;
 import frc.lib2202.subsystem.swerve.AutoPPConfigure;
 import frc.lib2202.subsystem.swerve.DriveTrainInterface;
@@ -39,9 +40,7 @@ import frc.robot2025.Constants.TheField;
 import frc.robot2025.commands.DriveToReefTag;
 import frc.robot2025.commands.ScaleDriver;
 import frc.robot2025.commands.distanceWatcher;
-// 2024 robot has a pigeon, so use its sensors, add LL4
 import frc.robot2025.subsystems.Limelight;
-import frc.robot2025.subsystems.Sensors_Subsystem;
 import frc.robot2025.subsystems.VisionPoseEstimator;
 import frc.robot2025.testBindings.DPLPathTest;
 
@@ -88,7 +87,7 @@ public class RobotSpec_test2024 implements IRobotSpec {
             })
 
             // using same setup as 2025 comp, not same as orginal 2024
-            .add(Sensors_Subsystem.class, "sensors") // 2025
+            .add(Sensors.class, "sensors") // 2025
             .add(Limelight.class, "limelight", () -> {
                 // Limelight position in robot coords - this has LL in the front of bot
                 Pose3d LimelightPosition = new Pose3d(0.7112 / 2.0, -0.21, .23,

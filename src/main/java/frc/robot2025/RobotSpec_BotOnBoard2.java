@@ -12,9 +12,7 @@ import frc.lib2202.builder.RobotContainer;
 import frc.lib2202.builder.RobotLimits;
 import frc.lib2202.builder.SubsystemConfig;
 import frc.lib2202.subsystem.hid.HID_Subsystem;
-import frc.lib2202.subsystem.swerve.IHeadingProvider;
 import frc.lib2202.subsystem.swerve.config.ChassisConfig;
-import frc.lib2202.subsystem.swerve.config.ModuleConfig;
 import frc.robot2025.Constants.CAN;
 import frc.robot2025.commands.GroundIntake.BtmArmGoToPos;
 import frc.robot2025.commands.GroundIntake.BtmArmVel;
@@ -59,24 +57,10 @@ public class RobotSpec_BotOnBoard2 implements IRobotSpec {
                 pdp.clearStickyFaults();
                 return pdp;
             })
-            // .add(PneumaticsControl.class)
-            // .add(BlinkyLights.class, "LIGHTS", () -> {
-            // return new BlinkyLights(CAN.CANDLE1, CAN.CANDLE2, CAN.CANDLE2, CAN.CANDLE4);
-            // })
             .add(HID_Subsystem.class, "DC", () -> {
                 return new HID_Subsystem(0.3, 0.9, 0.05);
-            })
-            // .add(Sensors_Subsystem.class)
-            // .add(Limelight.class)
+            })            
             .add(GroundIntake.class)
-    // .add(SwerveDrivetrain.class, () -> {
-    // return new SwerveDrivetrain(SparkFlex.class);
-    // }) // must be after LL and Sensors
-    // .add(VisionPoseEstimator.class)
-    // // below are optional watchers for shuffeleboard data - disable if need too.
-    // .add(Command.class, "DT_Monitor", () -> {
-    // return new DTMonitorCmd();
-    // });
     ;
 
     public RobotSpec_BotOnBoard2() {
@@ -85,28 +69,7 @@ public class RobotSpec_BotOnBoard2 implements IRobotSpec {
         // add the specs to the ssconfig
         subsystemConfig.setRobotSpec(this);
     }
-
-    @Override
-    public RobotLimits getRobotLimits() {
-        return robotLimits;
-    }
-
-    @Override
-    public IHeadingProvider getHeadingProvider() {
-        return null; // no sensors in default, example for your bot's Spec:
-        // return RobotContainer.getSubsystem(Sensors_Subsystem.class);
-    }
-
-    @Override
-    public ChassisConfig getChassisConfig() {
-        return chassisConfig;
-    }
-
-    @Override
-    public ModuleConfig[] getModuleConfigs() {
-        return null;
-    }
-
+   
     @Override
     public void setBindings() {
         HID_Subsystem dc = RobotContainer.getSubsystem("DC");
@@ -124,16 +87,6 @@ public class RobotSpec_BotOnBoard2 implements IRobotSpec {
         // testing real commands -er
         operator.x().whileTrue(new PickupSequence("c"));
         operator.y().whileTrue(new PickupSequence("a"));
-
-    }
-
-    @Override
-    public boolean burnFlash() {
-        return false;
-    }
-
-    @Override
-    public void setDefaultCommands() {
 
     }
 

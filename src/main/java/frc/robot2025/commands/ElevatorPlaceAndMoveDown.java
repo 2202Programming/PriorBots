@@ -10,7 +10,6 @@ import frc.lib2202.builder.RobotContainer;
 import frc.robot2025.subsystems.Elevator_Subsystem;
 import frc.robot2025.subsystems.Elevator_Subsystem.Levels;
 import frc.robot2025.subsystems.EndEffector_Subsystem;
-import frc.robot2025.subsystems.Sensors_Subsystem;
 import frc.robot2025.subsystems.WristFLA;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
@@ -18,17 +17,15 @@ import frc.robot2025.subsystems.WristFLA;
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class ElevatorPlaceAndMoveDown extends SequentialCommandGroup {
 
-  Elevator_Subsystem elevator;
-  EndEffector_Subsystem endEffector;
-  Sensors_Subsystem sensors;
-  WristFLA wrist;
+  final Elevator_Subsystem elevator;
+  final EndEffector_Subsystem endEffector;
+  final WristFLA wrist;
   Levels setPoint;
 
   /** Creates a new ElevatorPlaceAndMoveDown2. */
   public ElevatorPlaceAndMoveDown(Levels setPoint) {
     elevator = RobotContainer.getSubsystem(Elevator_Subsystem.class);
-    endEffector = RobotContainer.getSubsystem("endEffectorSubsystem");
-    sensors = RobotContainer.getSubsystem("sensors");
+    endEffector = RobotContainer.getSubsystem("endEffectorSubsystem");    
     wrist = RobotContainer.getSubsystem(WristFLA.class);
 
     this.setPoint = setPoint;

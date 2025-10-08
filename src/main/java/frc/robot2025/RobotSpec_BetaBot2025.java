@@ -2,7 +2,6 @@ package frc.robot2025;
 
 import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.FeetPerSecond;
-import static frc.lib2202.Constants.DEGperRAD;
 import static frc.lib2202.Constants.MperFT;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -28,6 +27,7 @@ import frc.lib2202.command.swerve.FieldCentricDrive;
 import frc.lib2202.subsystem.BlinkyLights;
 import frc.lib2202.subsystem.Odometry;
 import frc.lib2202.subsystem.OdometryInterface;
+import frc.lib2202.subsystem.Sensors;
 import frc.lib2202.subsystem.UX.TrimTables;
 import frc.lib2202.subsystem.hid.HID_Subsystem;
 import frc.lib2202.subsystem.swerve.AutoPPConfigure;
@@ -37,19 +37,19 @@ import frc.lib2202.subsystem.swerve.SwerveDrivetrain;
 import frc.lib2202.subsystem.swerve.config.ChassisConfig;
 import frc.lib2202.subsystem.swerve.config.ModuleConfig;
 import frc.lib2202.subsystem.swerve.config.ModuleConfig.CornerID;
+import static frc.lib2202.Constants.DEGperRAD;
 import frc.lib2202.util.PIDFController;
 import frc.robot2025.Constants.CAN;
 import frc.robot2025.commands.autos.DeliveryCmdFactory;
 import frc.robot2025.subsystems.Climber;
 import frc.robot2025.subsystems.Elevator_Subsystem;
+import frc.robot2025.subsystems.Elevator_Subsystem.Levels;
 import frc.robot2025.subsystems.EndEffector_Subsystem;
 import frc.robot2025.subsystems.GroundIntake;
 import frc.robot2025.subsystems.Limelight;
-import frc.robot2025.subsystems.Sensors_Subsystem;
 import frc.robot2025.subsystems.SignalLight;
 import frc.robot2025.subsystems.VisionPoseEstimator;
 import frc.robot2025.subsystems.WristFLA;
-import frc.robot2025.subsystems.Elevator_Subsystem.Levels;
 
 public class RobotSpec_BetaBot2025 implements IRobotSpec {
 
@@ -79,7 +79,7 @@ public class RobotSpec_BetaBot2025 implements IRobotSpec {
 
       // Sensors, limelight and drivetrain all use interfaces, so make sure their alias names
       // match what is given here.
-      .add(Sensors_Subsystem.class, "sensors")
+      .add(Sensors.class, "sensors")
       .add(Limelight.class, "limelight", ()-> {
         // Limelight position in robot coords - this has LL in the front of bot
         Pose3d LimelightPosition = new Pose3d((0.7112 / 2.0) - .07, -0.28, .225,
@@ -222,10 +222,6 @@ public class RobotSpec_BetaBot2025 implements IRobotSpec {
     SmartDashboard.putData(CommandScheduler.getInstance());
   }
 
-  @Override
-  public boolean burnFlash() {
-    return true;
-  }
 
   SendableChooser<Command> autoChooser;
 
