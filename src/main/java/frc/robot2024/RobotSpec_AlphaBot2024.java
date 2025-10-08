@@ -16,7 +16,7 @@ import frc.lib2202.command.swerve.FieldCentricDrive;
 import frc.lib2202.command.swerve.RobotCentricDrive;
 import frc.lib2202.subsystem.Limelight;
 import frc.lib2202.subsystem.Sensors;
-import frc.lib2202.subsystem.hid.HID_Xbox_Subsystem;
+import frc.lib2202.subsystem.hid.HID_Subsystem;
 import frc.lib2202.subsystem.hid.TMJoystickController;
 import frc.lib2202.subsystem.hid.TMJoystickController.ButtonType;
 import frc.lib2202.subsystem.swerve.IHeadingProvider;
@@ -38,8 +38,8 @@ public class RobotSpec_AlphaBot2024 implements IRobotSpec {
       })
       //.add(PneumaticsControl.class)
       // .add(BlinkyLights.class, "LIGHTS")
-      .add(HID_Xbox_Subsystem.class, "DC", () -> {
-        return new HID_Xbox_Subsystem(0.3, 0.9, 0.05);
+      .add(HID_Subsystem.class, "DC", () -> {
+        return new HID_Subsystem(0.3, 0.9, 0.05);
       })
       .addAlias(Sensors.class,"sensors")
       .add(Limelight.class)
@@ -121,7 +121,7 @@ public class RobotSpec_AlphaBot2024 implements IRobotSpec {
 
   @Override
   public void setBindings() {
-    HID_Xbox_Subsystem dc = RobotContainer.getSubsystem("DC");
+    HID_Subsystem dc = RobotContainer.getSubsystem("DC");
     var driver = dc.Driver();
     
     // handle controller options xbox or joystick, need to convert from CommandGenericHID

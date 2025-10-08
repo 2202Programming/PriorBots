@@ -8,7 +8,8 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import frc.chadbot.Constants;
 import frc.chadbot.Constants.DriveTrain;
 import frc.lib2202.builder.RobotContainer;
-import frc.lib2202.subsystem.hid.HID_Xbox_Subsystem;
+import frc.lib2202.subsystem.hid.HID_Subsystem;
+
 import frc.lib2202.subsystem.swerve.SwerveDrivetrain;
 
 /* Current driving behavior:
@@ -23,7 +24,7 @@ import frc.lib2202.subsystem.swerve.SwerveDrivetrain;
 public class RobotCentricDrive extends DriveCmdClass {
 
   final SwerveDrivetrain drivetrain;
-  final HID_Xbox_Subsystem dc;
+  final HID_Subsystem dc;
   final SwerveDriveKinematics kinematics;
 
   // output to Swerve Drivetrain
@@ -39,7 +40,7 @@ public class RobotCentricDrive extends DriveCmdClass {
 
   public RobotCentricDrive() {
     this.drivetrain = RobotContainer.getSubsystem(SwerveDrivetrain.class);
-    this.dc = RobotContainer.getSubsystem(HID_Xbox_Subsystem.class);
+    this.dc = RobotContainer.getSubsystem(HID_Subsystem.class);
     addRequirements(drivetrain);
     
     this.kinematics = drivetrain.getKinematics();
