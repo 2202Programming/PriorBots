@@ -10,12 +10,12 @@ import frc.lib2202.command.pathing.MoveToPose;
 import frc.lib2202.command.swerve.AllianceAwareGyroReset;
 import frc.lib2202.command.swerve.RobotCentricDrive;
 import frc.lib2202.subsystem.OdometryInterface;
+import frc.lib2202.subsystem.SignalLight;
 import frc.lib2202.subsystem.hid.HID_Subsystem;
 import frc.lib2202.subsystem.swerve.DriveTrainInterface;
 import frc.robot2025.commands.DriveToPickupTag;
 import frc.robot2025.commands.DriveToReefTag;
 import frc.robot2025.commands.ScaleDriver;
-import frc.robot2025.subsystems.SignalLight;
 
 public final class DPLPathTest {
 

@@ -28,6 +28,7 @@ import frc.lib2202.subsystem.BlinkyLights;
 import frc.lib2202.subsystem.Odometry;
 import frc.lib2202.subsystem.OdometryInterface;
 import frc.lib2202.subsystem.Sensors;
+import frc.lib2202.subsystem.SignalLight;
 import frc.lib2202.subsystem.UX.TrimTables;
 import frc.lib2202.subsystem.hid.HID_Subsystem;
 import frc.lib2202.subsystem.swerve.AutoPPConfigure;
@@ -40,6 +41,7 @@ import frc.lib2202.subsystem.swerve.config.ModuleConfig.CornerID;
 import static frc.lib2202.Constants.DEGperRAD;
 import frc.lib2202.util.PIDFController;
 import frc.robot2025.Constants.CAN;
+import frc.robot2025.Constants.DigitalIO;
 import frc.robot2025.commands.autos.DeliveryCmdFactory;
 import frc.robot2025.subsystems.Climber;
 import frc.robot2025.subsystems.Elevator_Subsystem;
@@ -47,7 +49,6 @@ import frc.robot2025.subsystems.Elevator_Subsystem.Levels;
 import frc.robot2025.subsystems.EndEffector_Subsystem;
 import frc.robot2025.subsystems.GroundIntake;
 import frc.robot2025.subsystems.Limelight;
-import frc.robot2025.subsystems.SignalLight;
 import frc.robot2025.subsystems.VisionPoseEstimator;
 import frc.robot2025.subsystems.WristFLA;
 
@@ -98,7 +99,8 @@ public class RobotSpec_BetaBot2025 implements IRobotSpec {
       .addAlias(VisionPoseEstimator.class, "vision_odo")
       // below are optional watchers for shuffeleboard data - disable if need too.
       .add(WristFLA.class)
-      .add(SignalLight.class, "light", ()-> { return new SignalLight(); })
+      .add(SignalLight.class, "light", ()-> { 
+        return new SignalLight(DigitalIO.SignalLight1, DigitalIO.SignalLight2, DigitalIO.SignalLight3); })
       .add(EndEffector_Subsystem.class)
       .add(Command.class, "endEffectorWatcher", () -> {
         return RobotContainer.getSubsystem(EndEffector_Subsystem.class).getWatcher();
