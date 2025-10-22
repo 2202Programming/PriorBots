@@ -19,10 +19,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib2202.builder.RobotContainer;
 import frc.lib2202.command.pathing.MoveToPose;
 import frc.lib2202.subsystem.LimelightHelpers;
+import frc.lib2202.subsystem.LimelightV1;
 import frc.lib2202.subsystem.OdometryInterface;
 import frc.lib2202.util.ModMath;
 import frc.robot2025.Constants.TheField;
-import frc.robot2025.subsystems.Limelight;
 
 
 public class DriveToReefTag extends Command { 
@@ -89,7 +89,7 @@ public class DriveToReefTag extends Command {
     final boolean leftSide;  //side of reef to deliver to
     final Map<Integer, Pose2d> redPoses;
     final Map<Integer, Pose2d> bluePoses;
-    final Limelight LL;
+    final LimelightV1 LL;
     final String LLName;
     final OdometryInterface odo;
     final String odoName = "vision_odo";   //todo make an arg

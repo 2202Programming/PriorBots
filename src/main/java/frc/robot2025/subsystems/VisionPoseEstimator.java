@@ -25,6 +25,7 @@ import frc.lib2202.command.WatcherCmd;
 import frc.lib2202.command.swerve.AllianceAwareGyroReset;
 import frc.lib2202.subsystem.BaseLimelight;
 import frc.lib2202.subsystem.LimelightHelpers;
+import frc.lib2202.subsystem.LimelightV1;
 import frc.lib2202.subsystem.OdometryInterface;
 import frc.lib2202.subsystem.SignalLight;
 import frc.lib2202.subsystem.SignalLight.Color;
@@ -51,7 +52,7 @@ public class VisionPoseEstimator extends SubsystemBase implements OdometryInterf
 
     final VisionWatchdog watchdog;
     final BaseLimelight limelight;
-    final Limelight  ll2025;    //temp way to acces new funcs this year
+    final LimelightV1  ll2025;    //temp way to acces new funcs this year
     final SignalLight signal;
     
     // stddev based on distance/quality of tag
@@ -102,8 +103,8 @@ public class VisionPoseEstimator extends SubsystemBase implements OdometryInterf
         limelight = RobotContainer.getSubsystemOrNull(limelightName);
         signal = RobotContainer.getObjectOrNull("light");
 
-        if (limelight instanceof Limelight) {
-            ll2025 = (Limelight)limelight; //horrible hack
+        if (limelight instanceof LimelightV1) {
+            ll2025 = (LimelightV1)limelight; //horrible hack
         }
         else ll2025 = null;
 

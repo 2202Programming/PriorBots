@@ -9,10 +9,10 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib2202.builder.RobotContainer;
 import frc.lib2202.command.pathing.MoveToPose;
+import frc.lib2202.subsystem.LimelightV1;
 import frc.lib2202.subsystem.OdometryInterface;
 import frc.lib2202.subsystem.UX.TrimTables.Trim;
 import frc.robot2025.Constants.TheField;
-import frc.robot2025.subsystems.Limelight;
 
 public class DriveToPickupTag extends Command{
     static String TrimTableName = "DriveToPickup";
@@ -23,7 +23,7 @@ public class DriveToPickupTag extends Command{
 
     static PathConstraints constraints = new PathConstraints(2.8, 1.8, Math.PI, Math.PI / 2.0);
 
-    final Limelight LL;
+    final LimelightV1 LL;
     final String LLName;
     final OdometryInterface odo;
     final String odoName = "vision_odo";   //todo make an arg

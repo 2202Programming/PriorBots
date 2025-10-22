@@ -22,6 +22,7 @@ import frc.lib2202.builder.RobotContainer;
 import frc.lib2202.builder.RobotLimits;
 import frc.lib2202.builder.SubsystemConfig;
 import frc.lib2202.command.swerve.FieldCentricDrive;
+import frc.lib2202.subsystem.LimelightV1;
 import frc.lib2202.subsystem.Odometry;
 import frc.lib2202.subsystem.OdometryInterface;
 import frc.lib2202.subsystem.UX.TrimTables;
@@ -35,7 +36,6 @@ import frc.lib2202.subsystem.swerve.config.ModuleConfig;
 import frc.lib2202.subsystem.swerve.config.ModuleConfig.CornerID;
 import frc.lib2202.util.PIDFController;
 import frc.robot2025.Constants.CAN;
-import frc.robot2025.subsystems.Limelight;
 import frc.lib2202.subsystem.Sensors;
 import frc.robot2025.subsystems.VisionPoseEstimator;
 import frc.robot2025.testBindings.DPLPathTest;
@@ -71,11 +71,11 @@ public class RobotSpec_AlphaBot2025 implements IRobotSpec {
       // match what is given here.
       .add(Sensors.class, "sensors")
       .add(TrimTables.class)
-      .add(Limelight.class, "limelight", ()-> {
+      .add(LimelightV1.class, "limelight", ()-> {
         // Limelight position in robot coords - this has LL in the front of bot
         Pose3d LimelightPosition = new Pose3d(0.7112 / 2.0, -0.21, .23,
           new Rotation3d(0.0, 12.0/DEGperRAD, 0.0));
-        return new Limelight("limelight", LimelightPosition );
+        return new LimelightV1("limelight", LimelightPosition );
       })
       .add(SwerveDrivetrain.class, "drivetrain", () ->{
           return new SwerveDrivetrain(SparkFlex.class);
