@@ -16,6 +16,7 @@ import frc.lib2202.subsystem.LimelightHelpers;
 import frc.lib2202.subsystem.LimelightHelpers.IMUData;
 import frc.lib2202.subsystem.swerve.IHeadingProvider;
 import frc.lib2202.command.WatcherCmd;
+import frc.lib2202.command.pathing.AllianceAwareGyroReset;
 
 public class LimelightV2 extends SubsystemBase implements ILimelight {
 
@@ -85,7 +86,10 @@ public class LimelightV2 extends SubsystemBase implements ILimelight {
          */
         setIMUMode(m_imu_mode);
         disableLED();
-        setUse_MT2(true);        
+        setUse_MT2(true); 
+
+        // callback when we reset the gyro
+        AllianceAwareGyroReset.AddRotationCallback(this::setRobotOrientation);
         // always start the LL watcher
         this.new LimelgihtWatcher();
     }
