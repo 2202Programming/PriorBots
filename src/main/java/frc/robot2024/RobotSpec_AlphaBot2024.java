@@ -11,7 +11,7 @@ import frc.lib2202.builder.IRobotSpec;
 import frc.lib2202.builder.RobotContainer;
 import frc.lib2202.builder.RobotLimits;
 import frc.lib2202.builder.SubsystemConfig;
-import frc.lib2202.command.swerve.AllianceAwareGyroReset;
+import frc.lib2202.command.pathing.AllianceAwareGyroReset;
 import frc.lib2202.command.swerve.FieldCentricDrive;
 import frc.lib2202.command.swerve.RobotCentricDrive;
 import frc.lib2202.subsystem.Limelight;
@@ -129,14 +129,14 @@ public class RobotSpec_AlphaBot2024 implements IRobotSpec {
       // Driver buttons
       var xbox = (CommandXboxController)driver;
       xbox.leftTrigger().whileTrue(new FieldCentricDrive());
-      xbox.y().onTrue(new AllianceAwareGyroReset(true));
+      xbox.y().onTrue(new AllianceAwareGyroReset());
       //driver.rightTrigger().whileTrue(new TargetCentricDrive(Tag_Pose.ID4, Tag_Pose.ID7));
     }
     else {
       // driver joystick
       var joy =(TMJoystickController)driver;
       joy.trigger(ButtonType.TriggerButton).whileTrue(new FieldCentricDrive());
-      joy.trigger(ButtonType.LeftOne).onTrue(new AllianceAwareGyroReset(true));
+      joy.trigger(ButtonType.LeftOne).onTrue(new AllianceAwareGyroReset());
     }
   }
 

@@ -20,7 +20,7 @@ import frc.lib2202.builder.IRobotSpec;
 import frc.lib2202.builder.RobotContainer;
 import frc.lib2202.builder.RobotLimits;
 import frc.lib2202.builder.SubsystemConfig;
-import frc.lib2202.command.swerve.AllianceAwareGyroReset;
+import frc.lib2202.command.pathing.AllianceAwareGyroReset;
 import frc.lib2202.command.swerve.FieldCentricDrive;
 import frc.lib2202.command.swerve.RobotCentricDrive;
 import frc.lib2202.subsystem.BlinkyLights;
@@ -206,7 +206,7 @@ public class RobotSpec_test2024 implements IRobotSpec {
             CommandXboxController driver = (CommandXboxController) generic_driver;
             // copy basic drive cmd from compBindings
             driver.rightBumper().whileTrue(new RobotCentricDrive(sdt, dc));
-            driver.y().onTrue(new AllianceAwareGyroReset(true));
+            driver.y().onTrue(new AllianceAwareGyroReset());
             // Driver will wants precision robot-centric throttle drive on left trigger
             driver.leftBumper().whileTrue(new ParallelCommandGroup(
                     new ScaleDriver(0.25),

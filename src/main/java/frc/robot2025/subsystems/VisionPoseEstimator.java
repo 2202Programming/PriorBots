@@ -22,7 +22,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib2202.builder.RobotContainer;
 import frc.lib2202.command.WatcherCmd;
-import frc.lib2202.command.swerve.AllianceAwareGyroReset;
+import frc.lib2202.command.pathing.AllianceAwareGyroReset;
 import frc.lib2202.subsystem.BaseLimelight;
 import frc.lib2202.subsystem.LimelightHelpers;
 import frc.lib2202.subsystem.LimelightV1;
@@ -234,6 +234,7 @@ public class VisionPoseEstimator extends SubsystemBase implements OdometryInterf
         return m_estimator.update(gyro.getRotation2d(), meas_pos);       
     }
 
+    /******************************************
     //set drivetrain's pose if it's enabled
     // This couples odometry by forcing it to take the LL pose.
     // really we are incorporating the odometry measurements into the LLPoseEstimator.
@@ -255,9 +256,10 @@ public class VisionPoseEstimator extends SubsystemBase implements OdometryInterf
             }         
         }
     }
+    **************************************************/
 
     public void configureGyroCallback(){
-        AllianceAwareGyroReset.AddCallback(this::setAnglePose);
+        AllianceAwareGyroReset.AddRotationCallback(this::setAnglePose);
     }
     
     

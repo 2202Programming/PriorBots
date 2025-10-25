@@ -16,7 +16,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.lib2202.builder.RobotContainer;
 import frc.lib2202.command.PDPMonitorCmd;
-import frc.lib2202.command.swerve.AllianceAwareGyroReset;
+import frc.lib2202.command.pathing.AllianceAwareGyroReset;
 import frc.lib2202.command.swerve.RobotCentricDrive;
 import frc.lib2202.command.swerve.TargetCentricDrive;
 import frc.lib2202.command.swerve.calibrate.TestConstantVelocity;
@@ -103,7 +103,7 @@ public class BindingsOther {
 
             case DriveTest:
                 driver.leftBumper().whileTrue(new RobotCentricDrive(drivetrain, dc));
-                driver.b().onTrue(new AllianceAwareGyroReset(false));
+                driver.b().onTrue(new AllianceAwareGyroReset());
 
                 // This appears to break if initial pose is too close to path start pose
                 // (zero-length path?)
@@ -186,7 +186,7 @@ public class BindingsOther {
                 break;
 
             case auto_shooter_test:
-                driver.y().onTrue(new AllianceAwareGyroReset(true));
+                driver.y().onTrue(new AllianceAwareGyroReset());
                 driver.leftBumper().whileTrue(new RobotCentricDrive(drivetrain, dc));
                 driver.rightTrigger().whileTrue(new TargetCentricDrive(Tag_Pose.ID4, Tag_Pose.ID7));
                 driver.povUp().onTrue(new CalibrateWithLS());
@@ -201,7 +201,7 @@ public class BindingsOther {
             case Etude:
                 driver.a().onTrue(new TestConstantVelocity(3.0, 6.0));
                 driver.b().onTrue(new TestRotateVelocity(15.0, 6.0));
-                driver.y().onTrue(new AllianceAwareGyroReset(true));
+                driver.y().onTrue(new AllianceAwareGyroReset());
                 driver.leftTrigger().whileTrue(new TargetCentricDrive(Tag_Pose.ID4, Tag_Pose.ID7));
                 driver.leftBumper().whileTrue(new RobotCentricDrive(drivetrain, dc));
 
@@ -211,7 +211,7 @@ public class BindingsOther {
             case new_bot_test:
                 driver.a().onTrue(new TestConstantVelocity(1.0, 4.0));
                 driver.b().onTrue(new TestRotateVelocity(15.0, 6.0));
-                driver.y().onTrue(new AllianceAwareGyroReset(true));
+                driver.y().onTrue(new AllianceAwareGyroReset());
                 driver.leftTrigger().whileTrue(new TargetCentricDrive(Tag_Pose.ID4, Tag_Pose.ID7));
                 driver.leftBumper().whileTrue(new RobotCentricDrive(drivetrain, dc));
 
@@ -220,7 +220,7 @@ public class BindingsOther {
 
                 // Driver buttons
                 driver.leftBumper().whileTrue(new RobotCentricDrive(drivetrain, dc));
-                driver.y().onTrue(new AllianceAwareGyroReset(true));
+                driver.y().onTrue(new AllianceAwareGyroReset());
                 driver.rightTrigger().whileTrue(new TargetCentricDrive(Tag_Pose.ID4, Tag_Pose.ID7));
                 break;
 

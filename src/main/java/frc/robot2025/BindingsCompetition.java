@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 //add when needed - import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib2202.builder.RobotContainer;
-import frc.lib2202.command.swerve.AllianceAwareGyroReset;
+import frc.lib2202.command.pathing.AllianceAwareGyroReset;
 import frc.lib2202.command.swerve.RobotCentricDrive;
 import frc.lib2202.subsystem.OdometryInterface;
 import frc.lib2202.subsystem.hid.HID_Subsystem;
@@ -89,7 +89,7 @@ public final class BindingsCompetition {
 
             CommandXboxController driver = (CommandXboxController) generic_driver;
             driver.rightBumper().whileTrue(new RobotCentricDrive(drivetrain, dc));
-            driver.y().onTrue(new AllianceAwareGyroReset(true));
+            driver.y().onTrue(new AllianceAwareGyroReset());
 
             //this is temporary and not real; --dpl + bg
             driver.a().onTrue(new InstantCommand( () ->{

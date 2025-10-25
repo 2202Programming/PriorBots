@@ -7,11 +7,13 @@ import static frc.lib2202.Constants.DEGperRAD;
 import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib2202.builder.RobotContainer;
 import frc.lib2202.subsystem.LimelightHelpers;
+import frc.lib2202.subsystem.LimelightHelpers.IMUData;
 import frc.lib2202.subsystem.swerve.IHeadingProvider;
 import frc.lib2202.command.WatcherCmd;
 
@@ -22,6 +24,10 @@ public class LimelightV2 extends SubsystemBase implements ILimelight {
     int[] m_all_tag_ids = null; // all tags on the field. set on loading field.
     int[] m_target_ids = null; // tag ids to filter on (other tag ignored)
 
+    // IMU
+    boolean m_use_imu = false;
+    IMUData m_imu = null;
+
     // LL settings
     int m_imu_mode = 1;
     boolean m_use_mt1 = false; // there are times mt1 may be better, when gyro can't be used.
@@ -30,16 +36,20 @@ public class LimelightV2 extends SubsystemBase implements ILimelight {
     int m_pipe = 0;
 
     // LL outputs retro-reflective
+    int m_retro_pipe_default = -1;
     int m_retro_pipe = -1;
     boolean m_ledstatus = false;
     Retro retro;
 
     // LL outputs MT
+    int m_apriltag_pipe_default = -1;
     int m_apriltag_pipe = -1;
     boolean m_target_vaild = false;
     int m_tag_count = 0;
 
     // April Tag PoseEstimates
+    Boolean m_mt1_valid = false;
+    Boolean m_mt2_valid = false;
     LimelightHelpers.PoseEstimate m_mt1;
     LimelightHelpers.PoseEstimate m_mt2;
 
@@ -81,7 +91,7 @@ public class LimelightV2 extends SubsystemBase implements ILimelight {
     }
 
     void check_pipelines() {
-        // dump existing config
+        // dump existing config, get default pipes for retro and mt1/2
         for (int idx = 0; idx < 9; idx++) {
             setPipeline(idx);
             LimelightHelpers.Flush();
@@ -92,10 +102,10 @@ public class LimelightV2 extends SubsystemBase implements ILimelight {
 
             // pick configured pipelines - configured via webpage
             if (cfg.equals("retro") && m_retro_pipe < 0) {
-                m_retro_pipe = idx;
+                m_retro_pipe_default = m_retro_pipe = idx;
             }
             if (cfg.equals("apriltag") && m_apriltag_pipe < 0) {
-                m_apriltag_pipe = idx;
+                m_apriltag_pipe_default = m_apriltag_pipe = idx;
             }
         }
        
@@ -120,7 +130,15 @@ public class LimelightV2 extends SubsystemBase implements ILimelight {
         m_mt1 = null;
         m_mt2 = null;
         retro = null;
-        
+        m_imu = null;
+        m_mt1_valid = false;
+        m_mt1_valid = false;
+
+        // mode 1 - needs a regular gyro update
+        if (m_imu_mode == 1 && m_gyro != null) {
+            setRobotOrientation(m_gyro.getHeading());
+        }
+
         // Retro seem exclusive of apriltags because of pipeline switch needed
         // Reflective Interface
         if (m_use_retro) {
@@ -128,20 +146,22 @@ public class LimelightV2 extends SubsystemBase implements ILimelight {
         } else {
             // MT1
             if (m_use_mt1) {
-                m_mt1 = LimelightHelpers.getBotPoseEstimate_wpiBlue(m_name);
-                @SuppressWarnings("unused")
-                var valid = LimelightHelpers.validPoseEstimate(m_mt1); //todo
+                m_mt1 = LimelightHelpers.getBotPoseEstimate_wpiBlue(m_name);                
+                m_mt1_valid = LimelightHelpers.validPoseEstimate(m_mt1);
             }
-
+            // MT2 can be used with MT1
             if (m_use_mt2) {
                 m_mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(m_name);
-                @SuppressWarnings("unused")
-                var valid = LimelightHelpers.validPoseEstimate(m_mt2); //todo
+                m_mt2_valid = LimelightHelpers.validPoseEstimate(m_mt2); 
             }
+        }
+        // read IMU 
+        if (m_use_imu) {
+            m_imu = LimelightHelpers.getIMUData(m_name);
         }
     }
 
-    // reflective
+    // pipelines
     public void setPipeline(int pipe) {
         if (pipe == m_pipe)
             return;
@@ -151,6 +171,29 @@ public class LimelightV2 extends SubsystemBase implements ILimelight {
 
     public int getPipeline() {
         return m_pipe;
+    }
+
+    //Override the MT pipeline, set it if mt is active. Caller should save returned pipe id.
+    public int setMTPipeline(int new_mt_pipe) {
+        int old = m_apriltag_pipe;
+        m_apriltag_pipe = new_mt_pipe;
+        if (m_use_mt1 || m_use_mt2)
+            setPipeline(new_mt_pipe);
+        return old;
+    } 
+
+    //Override the retro pipeline, set it if mt is active. Caller should save returned pipe id.
+    public int setRetroPipeline(int new_retro_pipe) {
+        int old = m_retro_pipe;
+        m_retro_pipe = new_retro_pipe;
+        if (m_use_retro)
+            setPipeline(new_retro_pipe);
+        return old;
+    } 
+
+    public void resetDefaultPipelines() {
+        setRetroPipeline(m_retro_pipe_default);
+        setMTPipeline(m_apriltag_pipe_default);
     }
 
     // support older LL with leds
@@ -169,7 +212,7 @@ public class LimelightV2 extends SubsystemBase implements ILimelight {
     }
 
     // Retro or Apriltag modes
-    public void setUseRetro(boolean use_retro){
+    public void setUseRetro(boolean use_retro) {
         m_use_retro = use_retro;
         if (m_use_retro) {
             m_use_mt1 = false;
@@ -181,23 +224,35 @@ public class LimelightV2 extends SubsystemBase implements ILimelight {
             // return to apriltag pipe
             setUse_MT2(true);
         }
-
     }
+
     public boolean getUseRetro(){
         return m_use_retro;
+    }
+
+    // Access Retro data
+    public boolean getRetroValid(){
+        return (retro != null) ? retro.tv : false;        
     }
 
     public Retro getRetro(){
         return retro;
     }
 
-
     // MT1
+    public boolean getMT1Valid() {
+        return m_mt1_valid;
+    }
+
     public LimelightHelpers.PoseEstimate getMt1() {
         return m_mt1;
     }
 
     // MT2
+    public boolean getMT2Valid() {
+        return m_mt2_valid;
+    }
+
     public LimelightHelpers.PoseEstimate getMt2() {
         return m_mt2;
     }
@@ -223,7 +278,7 @@ public class LimelightV2 extends SubsystemBase implements ILimelight {
             setPipeline(m_apriltag_pipe);
     }
 
-    // Field and Tag stuff
+    // Field and Tags 
     public void setField(AprilTagFieldLayout field) {
         m_field = field;
         var tags = m_field.getTags();
@@ -269,6 +324,22 @@ public class LimelightV2 extends SubsystemBase implements ILimelight {
     public void setIMUMode(int mode) {
         m_imu_mode = mode;
         LimelightHelpers.SetIMUMode(m_name, m_imu_mode);
+    }
+
+    public void setUseIMU(boolean use_imu){
+        m_use_imu = use_imu;
+    }
+
+    public boolean getUseIMU(){
+        return m_use_imu;
+    }
+
+    public IMUData getIMU(){
+        return m_imu;
+    }
+
+    public void setRobotOrientation(Rotation2d heading) {
+        LimelightHelpers.SetRobotOrientation(m_name, heading.getDegrees(), 0, 0, 0, 0, 0);
     }
 
     // Watcher Cmd
