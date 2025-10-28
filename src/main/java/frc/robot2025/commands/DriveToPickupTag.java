@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib2202.builder.RobotContainer;
 import frc.lib2202.command.pathing.MoveToPose;
-import frc.lib2202.subsystem.LimelightV1;
+import frc.lib2202.subsystem.ILimelight;
 import frc.lib2202.subsystem.OdometryInterface;
 import frc.lib2202.subsystem.UX.TrimTables.Trim;
 import frc.robot2025.Constants.TheField;
@@ -23,7 +23,7 @@ public class DriveToPickupTag extends Command{
 
     static PathConstraints constraints = new PathConstraints(2.8, 1.8, Math.PI, Math.PI / 2.0);
 
-    final LimelightV1 LL;
+    final ILimelight LL;
     final String LLName;
     final OdometryInterface odo;
     final String odoName = "vision_odo";   //todo make an arg
@@ -42,7 +42,7 @@ public class DriveToPickupTag extends Command{
     public DriveToPickupTag(String side){
         odo = RobotContainer.getSubsystemOrNull(odoName);
         LL = RobotContainer.getObjectOrNull("limelight");
-        LLName = (LL != null) ? LL.getName() : "no-ll-found";  //name if we need to use LLHelpers directly
+        LLName = (LL != null) ? LL.getLLName() : "no-ll-found"; 
         this.side = side.toLowerCase();
 
         // pick a direction to go, left , right in TheField

@@ -7,8 +7,8 @@ package frc.robot2024.commands.Intake;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import frc.lib2202.builder.RobotContainer;
 import frc.lib2202.subsystem.BlinkyLights;
-import frc.robot2024.subsystems.Intake;
 import frc.lib2202.subsystem.BlinkyLights.BlinkyLightUser;
+import frc.robot2024.subsystems.Intake;
 
 public class MoveToAnglePos extends BlinkyLightUser {
   /** Creates a new AnglePos. */
@@ -32,10 +32,6 @@ public class MoveToAnglePos extends BlinkyLightUser {
         return (intake.getAngleSpeed() >0.0) ? BlinkyLights.GREEN : BlinkyLights.RED;
     };
 
-    @Override
-    public boolean requestBlink() {
-        return false; // we want solid lights
-    }
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
@@ -43,10 +39,6 @@ public class MoveToAnglePos extends BlinkyLightUser {
     intake.setMaxVelocity(velLimit);
     intake.setAngleSetpoint(posCmd);
   }
-
-  // Called every time the scheduler runs while the command is scheduled.
-  @Override
-  public void execute() {}
 
   // Returns true when the command should end.
   @Override

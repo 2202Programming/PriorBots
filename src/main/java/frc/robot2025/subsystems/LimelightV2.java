@@ -12,6 +12,7 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib2202.builder.RobotContainer;
+import frc.lib2202.subsystem.ILimelight;
 import frc.lib2202.subsystem.LimelightHelpers;
 import frc.lib2202.subsystem.LimelightHelpers.IMUData;
 import frc.lib2202.subsystem.swerve.IHeadingProvider;
@@ -45,12 +46,12 @@ public class LimelightV2 extends SubsystemBase implements ILimelight {
     // LL outputs MT
     int m_apriltag_pipe_default = -1;
     int m_apriltag_pipe = -1;
-    boolean m_target_vaild = false;
     int m_tag_count = 0;
 
     // April Tag PoseEstimates
     Boolean m_mt1_valid = false;
     Boolean m_mt2_valid = false;
+    boolean m_reject_update = false;
     LimelightHelpers.PoseEstimate m_mt1;
     LimelightHelpers.PoseEstimate m_mt2;
 
@@ -137,6 +138,9 @@ public class LimelightV2 extends SubsystemBase implements ILimelight {
         m_imu = null;
         m_mt1_valid = false;
         m_mt1_valid = false;
+        m_reject_update = true;
+        boolean mt1_reject_update = false;
+        boolean mt2_reject_update = false;
 
         // mode 1 - needs a regular gyro update
         if (m_imu_mode == 1 && m_gyro != null) {
@@ -146,23 +150,48 @@ public class LimelightV2 extends SubsystemBase implements ILimelight {
         // Retro seem exclusive of apriltags because of pipeline switch needed
         // Reflective Interface
         if (m_use_retro) {
-           retro = this.new Retro();
+           retro = new Retro(m_name);
         } else {
             // MT1
             if (m_use_mt1) {
                 m_mt1 = LimelightHelpers.getBotPoseEstimate_wpiBlue(m_name);                
                 m_mt1_valid = LimelightHelpers.validPoseEstimate(m_mt1);
+                mt1_reject_update = !m_mt1_valid ||
+                                    (m_mt1.rawFiducials[0].ambiguity > 0.7) ||    //mt1 only
+                                    (m_mt1.rawFiducials[0].distToCamera > 3.0);   //mt1 only                                      
             }
             // MT2 can be used with MT1
             if (m_use_mt2) {
                 m_mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(m_name);
                 m_mt2_valid = LimelightHelpers.validPoseEstimate(m_mt2); 
+                mt2_reject_update = !m_mt2_valid;
             }
+            // warning if using both mt1&2, a bad mt2 could block a good mt1 or vice-versa
+            // if this is a problem, parse the specific mt<n> object in your use.
+            m_reject_update = (mt1_reject_update) || 
+                              (mt2_reject_update) ||
+                              (Math.abs(m_gyro.getYawRate()) > 720.0);
         }
+        
         // read IMU 
         if (m_use_imu) {
             m_imu = LimelightHelpers.getIMUData(m_name);
         }
+    }
+
+    //name of the LL device
+    public String getLLName() {
+        return m_name;
+    }
+
+    @Override
+    public boolean getRejectUpdate() {
+        return m_reject_update;
+    }
+
+    @Override
+    public boolean getTargetValid(){
+        return m_mt1_valid || m_mt2_valid;
     }
 
     // pipelines
@@ -362,25 +391,6 @@ public class LimelightV2 extends SubsystemBase implements ILimelight {
 
         }
 
-    }
-
-
-    public class Retro {
-        public boolean tv;
-        public double tx;
-        public double ty;
-        public double ta;
-        public double txnc;
-        public double tync;
-
-        public Retro(){
-            tv = LimelightHelpers.getTV(m_name);
-            tx = LimelightHelpers.getTX(m_name);
-            ty = LimelightHelpers.getTY(m_name);
-            ta = LimelightHelpers.getTA(m_name);
-            txnc = LimelightHelpers.getTXNC(m_name);
-            tync = LimelightHelpers.getTYNC(m_name);    
-        }
     }
 
 

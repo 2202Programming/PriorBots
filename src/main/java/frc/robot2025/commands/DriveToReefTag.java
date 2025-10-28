@@ -18,8 +18,8 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib2202.builder.RobotContainer;
 import frc.lib2202.command.pathing.MoveToPose;
+import frc.lib2202.subsystem.ILimelight;
 import frc.lib2202.subsystem.LimelightHelpers;
-import frc.lib2202.subsystem.LimelightV1;
 import frc.lib2202.subsystem.OdometryInterface;
 import frc.lib2202.util.ModMath;
 import frc.robot2025.Constants.TheField;
@@ -89,7 +89,7 @@ public class DriveToReefTag extends Command {
     final boolean leftSide;  //side of reef to deliver to
     final Map<Integer, Pose2d> redPoses;
     final Map<Integer, Pose2d> bluePoses;
-    final LimelightV1 LL;
+    final ILimelight LL;
     final String LLName;
     final OdometryInterface odo;
     final String odoName = "vision_odo";   //todo make an arg
@@ -122,7 +122,7 @@ public class DriveToReefTag extends Command {
         no_vision_idx = (indexTag > 0 && indexTag <= 6) ? indexTag - 1 : -1;
         odo = RobotContainer.getSubsystemOrNull(odoName);
         LL = RobotContainer.getObjectOrNull("limelight");
-        LLName = (LL != null) ? LL.getName() : "no-ll-found";  //name if we need to use LLHelpers directly
+        LLName = (LL != null) ? LL.getLLName() : "no-ll-found";  //name if we need to use LLHelpers directly
 
         // pick a direction to go
         leftSide = reefSide.toLowerCase().startsWith("l");
@@ -232,7 +232,7 @@ public class DriveToReefTag extends Command {
         last_usedTag = foundTag;
         last_targetPose = targetPose;
         //restore or normal tag list.
-        LL.setTargetTagsAll();
+        LL.resetTargetTags();
     }
 
     @Override

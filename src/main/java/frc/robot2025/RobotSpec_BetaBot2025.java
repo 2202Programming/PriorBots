@@ -25,7 +25,6 @@ import frc.lib2202.builder.SubsystemConfig;
 import frc.lib2202.command.PDPMonitorCmd;
 import frc.lib2202.command.swerve.FieldCentricDrive;
 import frc.lib2202.subsystem.BlinkyLights;
-import frc.lib2202.subsystem.LimelightV1;
 import frc.lib2202.subsystem.Odometry;
 import frc.lib2202.subsystem.OdometryInterface;
 import frc.lib2202.subsystem.Sensors;
@@ -49,6 +48,8 @@ import frc.robot2025.subsystems.Elevator_Subsystem;
 import frc.robot2025.subsystems.Elevator_Subsystem.Levels;
 import frc.robot2025.subsystems.EndEffector_Subsystem;
 import frc.robot2025.subsystems.GroundIntake;
+//import frc.robot2025.subsystems.LimelightV1;
+import frc.robot2025.subsystems.LimelightV2;
 import frc.robot2025.subsystems.VisionPoseEstimator;
 import frc.robot2025.subsystems.WristFLA;
 
@@ -69,7 +70,9 @@ public class RobotSpec_BetaBot2025 implements IRobotSpec {
         return new BlinkyLights(CAN.CANDLE1, CAN.CANDLE2, CAN.CANDLE3, CAN.CANDLE4);
       })
       .add(HID_Subsystem.class, "DC", () -> {
-        return new HID_Subsystem(0.3, 0.9, 0.05);
+        var hid = new HID_Subsystem(0.3, 0.9, 0.05);
+        hid.startWatcher();
+        return hid;
       })
       .add(GroundIntake.class)
       .add(Elevator_Subsystem.class)
@@ -81,11 +84,11 @@ public class RobotSpec_BetaBot2025 implements IRobotSpec {
       // Sensors, limelight and drivetrain all use interfaces, so make sure their alias names
       // match what is given here.
       .add(Sensors.class, "sensors")
-      .add(LimelightV1.class, "limelight", ()-> {
+      .add(LimelightV2.class, "limelight", ()-> {
         // Limelight position in robot coords - this has LL in the front of bot
         Pose3d LimelightPosition = new Pose3d((0.7112 / 2.0) - .07, -0.28, .225,
           new Rotation3d(0.0, 10.0/DEGperRAD, 0.0));
-        return new LimelightV1("limelight", LimelightPosition );
+        return new LimelightV2("limelight", LimelightPosition );
       })
       .add(SwerveDrivetrain.class, "drivetrain", () ->{
           return new SwerveDrivetrain(SparkFlex.class);

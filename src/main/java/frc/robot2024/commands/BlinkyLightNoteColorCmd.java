@@ -5,7 +5,6 @@
 package frc.robot2024.commands;
 
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import frc.lib2202.builder.RobotContainer;
 import frc.lib2202.subsystem.BlinkyLights;
@@ -24,19 +23,18 @@ import frc.lib2202.subsystem.BlinkyLights.BlinkyLightUser;
  * 
  * That's it!
  */
-public class BlinkyLightColorCmd extends BlinkyLightUser {
+public class BlinkyLightNoteColorCmd extends BlinkyLightUser {
   /** Creates a new Lights Command */
-  private Color8Bit myColor;
-  ShooterServo shooter = RobotContainer.getSubsystem(ShooterServo.class);
-  Transfer transfer = RobotContainer.getSubsystem(Transfer.class);
-  Intake intake = RobotContainer.getSubsystem(Intake.class);
+  private Color8Bit myColor = BlinkyLights.RED;
+  final ShooterServo shooter;
+  final Transfer transfer;
+  final Intake intake;
 
-  public BlinkyLightColorCmd(Color8Bit Color) {
-    myColor = Color;
-  }
 
-  public BlinkyLightColorCmd() {
-    this(BlinkyLights.RED);
+  public BlinkyLightNoteColorCmd() {
+    shooter = RobotContainer.getSubsystem(ShooterServo.class);
+    transfer = RobotContainer.getSubsystem(Transfer.class);
+    intake = RobotContainer.getSubsystem(Intake.class);
   }
 
   // Called when the command is initially scheduled.
@@ -48,17 +46,15 @@ public class BlinkyLightColorCmd extends BlinkyLightUser {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    myColor = BlinkyLights.BLACK;    
     if(DriverStation.getMatchTime() < 15.0){
-      myColor = new Color8Bit(Color.kOrange);
+      myColor = BlinkyLights.ORANGE;
     }
     else if(intake.senseNote()){
-      myColor = new Color8Bit(Color.kYellow);
+      myColor = BlinkyLights.YELLOW;
     }
    else if(transfer.hasNote()){
-    myColor = new Color8Bit(Color.kGreen);
-   }
-   else{
-    myColor = new Color8Bit(Color.kRed);
+    myColor = BlinkyLights.GREEN; 
    }
   }
 
