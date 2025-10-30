@@ -182,4 +182,7 @@ simgui-ds.json
 networktables.json
 networktables.json.bck
 
+# in this repo, pathplaner is a working dir, the robot's actual files are in a deploy sub-folder
+# and copied into deploy/pathplanner so they may be found at startup.
+src/main/deploy/pathplanner/
 
