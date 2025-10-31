@@ -25,6 +25,7 @@ import frc.lib2202.builder.SubsystemConfig;
 import frc.lib2202.command.PDPMonitorCmd;
 import frc.lib2202.command.swerve.FieldCentricDrive;
 import frc.lib2202.subsystem.BlinkyLights;
+import frc.lib2202.subsystem.ILimelight;
 import frc.lib2202.subsystem.Odometry;
 import frc.lib2202.subsystem.OdometryInterface;
 import frc.lib2202.subsystem.Sensors;
@@ -336,12 +337,33 @@ public class RobotSpec_BetaBot2025 implements IRobotSpec {
   }
 
   /*
-   * Add additional calls to the robotPeriodic loop
+   * Add additional calls to the robotPeriodic loop or 
+   * any other mode cutpoint.
    */
   @Override
   public void periodic() {
     // UXTrim.periodic();  //converted to TrimTable subsystem
   }
 
+  // Some cutpoint are used to keep LL from overheating
+  static ILimelight LL=null;
+  @Override
+  public void postRobotInit(){
+    LL = RobotContainer.getSubsystemOrNull("limelight");
+  }
+
+  @Override
+  public void disabledInit(){
+    // save power while disabled
+    if (LL != null) 
+      LL.lowPowerMode();
+  }
+
+  @Override
+  public void disabledExit(){
+    // get back to work
+    if (LL != null) 
+      LL.normalPowerMode();
+  }
 
 }
