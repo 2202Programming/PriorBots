@@ -338,18 +338,18 @@ public class RobotSpec_BetaBot2025 implements IRobotSpec {
 
   /*
    * Add additional calls to the robotPeriodic loop or 
-   * any other mode cutpoint.
+   * any other mode cutpoint needed.
+   * 
+   * These should be very rare.
    */
-  @Override
-  public void periodic() {
-    // UXTrim.periodic();  //converted to TrimTable subsystem
-  }
-
-  // Some cutpoint are used to keep LL from overheating
+  
+  // Some cutpoints are used to keep LL from overheating
   static ILimelight LL=null;
   @Override
   public void postRobotInit(){
-    LL = RobotContainer.getSubsystemOrNull("limelight");
+    // all ss or other objects are now available for lookup
+    // get our LL to save power on
+    LL = RobotContainer.getSubsystemOrNull("limelight");  //match name used in SSConfig .add()
   }
 
   @Override
