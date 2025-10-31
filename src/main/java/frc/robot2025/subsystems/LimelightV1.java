@@ -29,6 +29,7 @@ public class LimelightV1 extends BaseLimelight implements ILimelight{
   protected final IHeadingProvider gyro;
   protected final int[] allTags;
 
+  // this version was used for 2025 season.
   public LimelightV1() {
     this("limelight");
   }

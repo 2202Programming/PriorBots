@@ -40,7 +40,6 @@ public class LimelightV2 extends SubsystemBase implements ILimelight {
     // LL outputs retro-reflective
     int m_retro_pipe_default = -1;
     int m_retro_pipe = -1;
-    boolean m_ledstatus = false;
     Retro retro;
 
     // LL outputs MT
@@ -56,7 +55,7 @@ public class LimelightV2 extends SubsystemBase implements ILimelight {
     LimelightHelpers.PoseEstimate m_mt2;
 
     // Requried devices
-    final IHeadingProvider m_gyro; // pigeon or other gyro
+    final IHeadingProvider m_gyro; // pigeon or other gyro needed for MT2, not MT1
     final String m_name; // name of this LL, needed if multiple LL are used.
 
     public LimelightV2() {
@@ -195,14 +194,21 @@ public class LimelightV2 extends SubsystemBase implements ILimelight {
     }
 
     // pipelines
+    @Override
     public void setPipeline(int pipe) {
-        if (pipe == m_pipe)
-            return;
         m_pipe = pipe;
-        LimelightHelpers.setPipelineIndex(this.m_name, m_pipe);
+        ILimelight.super.setPipeline( m_pipe);
     }
 
+    @Override
     public int getPipeline() {
+        int c_pipe = ILimelight.super.getPipeline();
+        if (c_pipe != m_pipe) {
+            // helpers uses different tables for setting and geting, this tests the behavoir.
+            // if this never happens, we can remove the code and use iLimelight impl directly
+            System.out.format("LLV2 c_pipe= %d differs from interal m_pipe= %d",c_pipe, m_pipe);
+            m_pipe = c_pipe;
+        }
         return m_pipe;
     }
 
@@ -229,26 +235,11 @@ public class LimelightV2 extends SubsystemBase implements ILimelight {
         setMTPipeline(m_apriltag_pipe_default);
     }
 
-    // support older LL with leds
-    public void disableLED() {
-        m_ledstatus = false;
-        LimelightHelpers.setLEDMode_ForceOff(m_name);
-    }
-
-    public void enableLED() {
-        m_ledstatus = true;
-        LimelightHelpers.setLEDMode_ForceOn(m_name);
-    }
-
-    public boolean getLEDStatus() {
-        return m_ledstatus;
-    }
-
     // Retro or Apriltag modes
     public void setUseRetro(boolean use_retro) {
         m_use_retro = use_retro;
         if (m_use_retro) {
-            m_use_mt1 = false;
+            m_use_mt1 = false;  //disable MT usage
             m_use_mt2 = false;
             m_use_retro = use_retro;
             setPipeline(m_retro_pipe);
@@ -350,15 +341,7 @@ public class LimelightV2 extends SubsystemBase implements ILimelight {
     }
 
     // LL4 IMU setting
-    public int getIMUMode() {
-        return m_imu_mode;
-    }
-
-    public void setIMUMode(int mode) {
-        m_imu_mode = mode;
-        LimelightHelpers.SetIMUMode(m_name, m_imu_mode);
-    }
-
+    //enables reading IMU data in the periodic m
     public void setUseIMU(boolean use_imu){
         m_use_imu = use_imu;
     }
