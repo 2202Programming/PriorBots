@@ -14,9 +14,10 @@ public class testElevatorVelComd extends Command {
    //should be done as a while true command 
   private final Elevator_Subsystem elevator_Subsystem;
   double vel;
-  
+  String KEY = "ELEV_VEL_TEST_CMD";
+
   public testElevatorVelComd(double vel) {
-    SmartDashboard.putNumber("Current Vel", 30.0);
+    SmartDashboard.putNumber(KEY, vel);
     elevator_Subsystem = RobotContainer.getSubsystem(Elevator_Subsystem.class);
     this.vel = vel;
     // Use addRequirements() here to declare subsystem dependencies.
@@ -24,11 +25,8 @@ public class testElevatorVelComd extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    vel = SmartDashboard.getNumber("Current Vel", 30.0);
+    vel = SmartDashboard.getNumber(KEY, vel);
     elevator_Subsystem.setVelocity(vel);
-    System.out.println(vel + "CURRENT PRINT");
-    System.out.println(elevator_Subsystem.getDesiredVelocity() + "Desired vel");
-    System.out.println(elevator_Subsystem.getVelocity() + "Current");
   }
 
   @Override
@@ -39,6 +37,9 @@ public class testElevatorVelComd extends Command {
   public void end(boolean interrupted) {
     System.out.println(elevator_Subsystem.getVelocity() + "released");
     elevator_Subsystem.setVelocity(0);
+    // keep our height & return position tracking
+    var cur_pos = elevator_Subsystem.getPosition();
+    elevator_Subsystem.setHeight(cur_pos);
   }
 
   // Returns true when the command should end.

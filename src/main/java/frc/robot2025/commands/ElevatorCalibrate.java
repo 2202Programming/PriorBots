@@ -31,6 +31,7 @@ public class ElevatorCalibrate extends Command {
   @Override
   public void execute() {
     if(elevator.atZeroLimit()){
+      elevator.setVelocity(0.0);
       done = true;
     }
 
@@ -39,8 +40,8 @@ public class ElevatorCalibrate extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    elevator.setPosition(0.0);
-    elevator.setVelocity(0.0);
+    elevator.setPosition(0.0);  //calibrate
+    elevator.setHeight(0.0); //return to position mode
   }
 
   // Returns true when the command should end.
