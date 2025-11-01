@@ -54,9 +54,9 @@ public class VisionPoseEstimator extends SubsystemBase implements OdometryInterf
     final SignalLight signal;
     
     // stddev based on distance/quality of tag
-    final Matrix<N3, N1> closeStdDevs =VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(2.0));
-    final Matrix<N3, N1> medStdDevs =VecBuilder.fill(0.15, 0.15, Units.degreesToRadians(5.0));
-    final Matrix<N3, N1> farStdDevs =VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(15.0));
+    final Matrix<N3, N1> closeStdDevs =VecBuilder.fill(0.25, 0.25, Units.degreesToRadians(5.0));
+    //final Matrix<N3, N1> medStdDevs =VecBuilder.fill(0.25, 0.25, Units.degreesToRadians(5.0));
+    //final Matrix<N3, N1> farStdDevs =VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(15.0));
 
     final SwerveDrivePoseEstimator m_estimator;
     // monitor diffs in ll and odometry poses

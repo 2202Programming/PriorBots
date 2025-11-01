@@ -102,22 +102,22 @@ public class LimelightV2 extends SubsystemBase implements ILimelight {
             sleep(20); // not sure if we need time to change
             String cfg = LimelightHelpers.getCurrentPipelineType(m_name);
             String msg = String.format("LL %s pipeID = %d  cfg= %s", m_name, idx, cfg);
-            DriverStation.reportWarning(msg, false);
+            System.out.println(msg);
 
             // pick configured pipelines - configured via webpage
-            if (cfg.equals("retro") && m_retro_pipe < 0) {
+            if (cfg.equals("pipe_color") && m_retro_pipe < 0) {
                 m_retro_pipe_default = m_retro_pipe = idx;
             }
-            if (cfg.equals("apriltag") && m_apriltag_pipe < 0) {
+            if (cfg.equals("pipe_fiducial") && m_apriltag_pipe < 0) {
                 m_apriltag_pipe_default = m_apriltag_pipe = idx;
             }
         }
        
         // report default pipes
         String msg = String.format("LL '%s' apriltag pipeID = %d", m_name, m_apriltag_pipe);
-        DriverStation.reportWarning(msg, false);
+        System.out.println(msg);
         msg = String.format("LL '%s' retro pipeID = %d", m_name, m_retro_pipe);
-        DriverStation.reportWarning(msg, false);
+        System.out.println(msg);
 
         if (m_apriltag_pipe < 0) {
             msg = String.format("!!!!!! WARNING NO APRILTAG PIPE CONFIGURED for '%s'!!!!", m_name);

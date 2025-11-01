@@ -53,6 +53,7 @@ import frc.robot2025.subsystems.GroundIntake;
 import frc.robot2025.subsystems.LimelightV2;
 import frc.robot2025.subsystems.VisionPoseEstimator;
 import frc.robot2025.subsystems.WristFLA;
+import frc.robot2025.Constants.TheField;
 
 public class RobotSpec_BetaBot2025 implements IRobotSpec {
   // copy source under deploy for this robot.
@@ -350,6 +351,9 @@ public class RobotSpec_BetaBot2025 implements IRobotSpec {
     // all ss or other objects are now available for lookup
     // get our LL to save power on
     LL = RobotContainer.getSubsystemOrNull("limelight");  //match name used in SSConfig .add()
+    if (LL != null){
+      LL.setField(TheField.fieldLayout);
+    }
   }
 
   @Override
