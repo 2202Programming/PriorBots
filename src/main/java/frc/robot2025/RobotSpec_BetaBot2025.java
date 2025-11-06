@@ -57,7 +57,7 @@ import frc.robot2025.Constants.TheField;
 
 public class RobotSpec_BetaBot2025 implements IRobotSpec {
   // copy source under deploy for this robot.
-  final static String DEPLOY_DIR = "/2025";
+  final static String DEPLOY_DIR = "2025";
 
   // Subsystems and other hardware on 2025 Robot rev Beta
   // $env:serialnum = "03415A8E"

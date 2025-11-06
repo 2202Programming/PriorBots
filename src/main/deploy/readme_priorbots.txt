@@ -25,3 +25,11 @@ To edit the paths/autos in the priorbot repo, open pathplanner and select the ye
 Pathplanner will find deploy/pathplanner/ and edits may be made.
 
 
+For the copy to work, you must once telnet into the roborio and change the owner of /home/lvuser/deploy from admin
+to lvuser.  Only needed once or when a roborio is reimaged because deploy folder is owned by admin.
+
+Telnet/putty/mobaxterm into Roborio via USB  172.22.ll.2  on admin, pw is blank
+cd /home/lvuser
+chmod -R deploy lvuser
+
+Once done, deploy copies will work with the added robot specific layer.

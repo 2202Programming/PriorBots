@@ -40,6 +40,7 @@ import frc.robot2024.subsystems.Transfer;
 
 
 public class RobotSpec_CompBot2024 implements IRobotSpec {
+    final static String DEPLOY_DIR = "2024";
 
     boolean teleOpRunOnce = true;
 
@@ -181,6 +182,13 @@ public class RobotSpec_CompBot2024 implements IRobotSpec {
         // BindingsOther.ConfigureOther(dc);
     }
     
+    // allow our bot's 2024 deploy folder to get copied to correct spot
+    // this a multi-robot, multi-deploy folder thing.  Don't use on competition bots.
+    @Override
+    public String getDeployDirectory() {
+        return DEPLOY_DIR;
+    }
+
     // setup reg commands and relate autoChooser
     SendableChooser<Command> autoChooser;
     @Override
