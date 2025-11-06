@@ -14,6 +14,7 @@ import frc.lib2202.builder.SubsystemConfig;
 import frc.lib2202.subsystem.hid.HID_Subsystem;
 import frc.lib2202.subsystem.swerve.config.ChassisConfig;
 import frc.robot2025.Constants.CAN;
+import frc.robot2025.subsystems.CycloidalDrive;
 import frc.robot2025.subsystems.demo.SimpleServo;
 
 //copy or extend this code for your robot - remember to override:
@@ -64,7 +65,7 @@ public class RobotSpec_BotOnBoard2 implements IRobotSpec {
                 Servo0.getWatcherCmd();
                 return Servo0;
             })
-            //.add(GroundIntake.class) // no longer on board, replace with your SS
+            .add(CycloidalDrive.class) 
     ;
 
     public RobotSpec_BotOnBoard2() {
