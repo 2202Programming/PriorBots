@@ -20,6 +20,7 @@ import frc.robot2025.commands.GroundIntake.PickupSequence;
 import frc.robot2025.commands.GroundIntake.SetZero;
 import frc.robot2025.commands.GroundIntake.TopArmVel;
 import frc.robot2025.commands.GroundIntake.TopHold;
+import frc.robot2025.subsystems.CycloidalDrive;
 import frc.robot2025.subsystems.GroundIntake;
 
 //copy or extend this code for your robot - remember to override:
@@ -60,7 +61,7 @@ public class RobotSpec_BotOnBoard2 implements IRobotSpec {
             .add(HID_Subsystem.class, "DC", () -> {
                 return new HID_Subsystem(0.3, 0.9, 0.05);
             })            
-            .add(GroundIntake.class)
+            .add(CycloidalDrive.class)
     ;
 
     public RobotSpec_BotOnBoard2() {
