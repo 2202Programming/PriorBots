@@ -14,6 +14,7 @@ import frc.lib2202.builder.SubsystemConfig;
 import frc.lib2202.subsystem.hid.HID_Subsystem;
 import frc.lib2202.subsystem.swerve.config.ChassisConfig;
 import frc.robot2025.Constants.CAN;
+import frc.robot2025.subsystems.demo.SimpleServo;
 
 //copy or extend this code for your robot - remember to override:
 // TBD
@@ -44,6 +45,9 @@ public class RobotSpec_BotOnBoard2 implements IRobotSpec {
     // SubsystemConfig gets registered in static array to match serial number at
     // Construct calls.  To debug in Sim remember to set the env-var in vscode debug window:
     //      $env:serialnum = "0312db1a"
+
+    static SimpleServo Servo0;
+
     SubsystemConfig subsystemConfig = new SubsystemConfig("bot-On-Board-2", "0312db1a")
             // deferred construction via Supplier<Object> lambda
             .add(PowerDistribution.class, "PDP", () -> {
@@ -53,7 +57,13 @@ public class RobotSpec_BotOnBoard2 implements IRobotSpec {
             })
             .add(HID_Subsystem.class, "DC", () -> {
                 return new HID_Subsystem(0.3, 0.9, 0.05);
-            })            
+            })   
+            .add(SimpleServo.class, "Servo0", () -> {
+                // save ref for binding cmds later
+                Servo0 = new SimpleServo(0);
+                Servo0.getWatcherCmd();
+                return Servo0;
+            })
             //.add(GroundIntake.class) // no longer on board, replace with your SS
     ;
 
@@ -68,10 +78,15 @@ public class RobotSpec_BotOnBoard2 implements IRobotSpec {
     public void setBindings() {
         HID_Subsystem dc = RobotContainer.getSubsystem("DC");
         
-        @SuppressWarnings("unused")
-        CommandXboxController operator = (CommandXboxController) dc.Operator();
+        //@SuppressWarnings("unused")
+        CommandXboxController driver = (CommandXboxController) dc.Driver();
        
         //Add your bindings here
+
+        // bindings for simple servo demo
+        driver.a().onTrue(Servo0.cmdPosition(0.0));
+        driver.x().onTrue(Servo0.cmdPosition(0.5));
+        driver.b().onTrue(Servo0.cmdPosition(1.0));
     }
     
     // uncomment for multi-bot repo, leave commented out for a competiton repo.
