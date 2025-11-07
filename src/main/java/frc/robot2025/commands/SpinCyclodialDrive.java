@@ -5,18 +5,22 @@
 package frc.robot2025.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot2025.subsystems.CycloidalDrive;
+import frc.lib2202.builder.RobotContainer;
+import frc.robot2025.subsystems.demo.CycloidalDrive;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class SpinCyclodialDrive extends Command {
-  CycloidalDrive drv;
-  double speed;
+  final CycloidalDrive drv;
+  final double speed;
 
   /** Creates a new SpinCyclodialDrive. */
   public SpinCyclodialDrive(double speed) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.speed = speed;
-    drv = new CycloidalDrive();
+    // @Tyler, we don't want to create a new drive, we want to get the one constructed
+    // during the robotContainer execution.
+    //drv = new CycloidalDrive();
+    drv = RobotContainer.getSubsystem(CycloidalDrive.class); //don't need name lookup if only one exists (common)
     addRequirements(drv);
   }
 
@@ -26,19 +30,18 @@ public class SpinCyclodialDrive extends Command {
     drv.setVelocity(speed);
   }
 
-  // Called every time the scheduler runs while the command is scheduled.
-  @Override
-  public void execute() {}
-
-  // Called once the command ends or is interrupted.
+  // Called once the command ends or is interrupted.  
+  // This override can be deleted. - Mr. L
   @Override
   public void end(boolean interrupted) {
-    drv.setVelocity(0);
+    // @Tyler - don't need this, it will stop right away.    //drv.setVelocity(0);
   }
 
   // Returns true when the command should end.
+  // @Tyler - this command never ends, not what we really want.
+  //          once the vel is set, this command is sort of done... and device will keep moving.
   @Override
   public boolean isFinished() {
-    return false;
+    return true;   // @Tyler - changed from false set the speed in init and be done.
   }
 }

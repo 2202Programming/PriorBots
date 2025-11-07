@@ -14,7 +14,8 @@ import frc.lib2202.builder.SubsystemConfig;
 import frc.lib2202.subsystem.hid.HID_Subsystem;
 import frc.lib2202.subsystem.swerve.config.ChassisConfig;
 import frc.robot2025.Constants.CAN;
-import frc.robot2025.subsystems.CycloidalDrive;
+
+import frc.robot2025.subsystems.demo.CycloidalDrive;
 import frc.robot2025.subsystems.demo.SimpleServo;
 
 //copy or extend this code for your robot - remember to override:
@@ -48,6 +49,7 @@ public class RobotSpec_BotOnBoard2 implements IRobotSpec {
     //      $env:serialnum = "0312db1a"
 
     static SimpleServo Servo0;
+    static CycloidalDrive Cycloid0;
 
     SubsystemConfig subsystemConfig = new SubsystemConfig("bot-On-Board-2", "0312db1a")
             // deferred construction via Supplier<Object> lambda
@@ -65,7 +67,11 @@ public class RobotSpec_BotOnBoard2 implements IRobotSpec {
                 Servo0.getWatcherCmd();
                 return Servo0;
             })
-            .add(CycloidalDrive.class) 
+            .add(CycloidalDrive.class, "Cycloidal0", () -> {       
+                Cycloid0 = new CycloidalDrive(55);  //TODO make sure the CANID is correct
+                Cycloid0.getWatcherCmd();
+                return Cycloid0;
+            }) 
     ;
 
     public RobotSpec_BotOnBoard2() {
@@ -83,11 +89,13 @@ public class RobotSpec_BotOnBoard2 implements IRobotSpec {
         CommandXboxController driver = (CommandXboxController) dc.Driver();
        
         //Add your bindings here
-
         // bindings for simple servo demo
         driver.a().onTrue(Servo0.cmdPosition(0.0));
         driver.x().onTrue(Servo0.cmdPosition(0.5));
         driver.b().onTrue(Servo0.cmdPosition(1.0));
+
+        //bindings for Cycloid demo - uses POV and rtTrigger, L/R Bumper
+        Cycloid0.setDemoBindings(driver);
     }
     
     // uncomment for multi-bot repo, leave commented out for a competiton repo.
