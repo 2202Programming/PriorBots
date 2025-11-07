@@ -182,7 +182,11 @@ simgui-ds.json
 networktables.json
 networktables.json.bck
 
-# in this repo, pathplaner is a working dir, the robot's actual files are in a deploy sub-folder
-# and copied into deploy/pathplanner so they may be found at startup.
-src/main/deploy/pathplanner/
+# in this repo, we don't want files copied during sim to polute repp
+#skip anything in the deploy
+src/main/deploy/*
+#now whitelist deploy's folders, we want to keep bot specific folders
+!src/main/deploy/**/
+
+
 

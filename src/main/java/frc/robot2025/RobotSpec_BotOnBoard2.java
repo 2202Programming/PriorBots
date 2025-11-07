@@ -67,7 +67,7 @@ public class RobotSpec_BotOnBoard2 implements IRobotSpec {
                 Servo0.getWatcherCmd();
                 return Servo0;
             })
-            .add(CycloidalDrive.class, "Cycloidal0", () -> {       
+            .add(CycloidalDrive.class, "CycloidalDrive", () -> {       
                 Cycloid0 = new CycloidalDrive(55);  //TODO make sure the CANID is correct
                 Cycloid0.getWatcherCmd();
                 return Cycloid0;
