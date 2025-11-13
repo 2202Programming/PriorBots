@@ -46,15 +46,10 @@ public class SimpleServo extends SubsystemBase {
         return this.new SimpleServoWatcher();        
     }
 
-    class SimpleServoWatcher extends WatcherCmd{
+    class SimpleServoWatcher extends WatcherCmd {
         NetworkTableEntry nt_setpoint;
         NetworkTableEntry nt_position;
-        
-        @Override
-        public String getTableName() {
-            return SimpleServo.this.getName();
-        };
-        
+                
         @Override
         public void ntcreate() {
             NetworkTable table = getTable();

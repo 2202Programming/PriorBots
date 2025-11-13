@@ -146,11 +146,6 @@ public class CycloidalDrive extends SubsystemBase {
         NetworkTableEntry nt_analog_vel;
 
         @Override
-        public String getTableName() {
-            return CycloidalDrive.this.getName();
-        };
-
-        @Override
         public void ntcreate() {
              NetworkTable table = getTable();
            nt_analog_pos = table.getEntry("analog_pos");
