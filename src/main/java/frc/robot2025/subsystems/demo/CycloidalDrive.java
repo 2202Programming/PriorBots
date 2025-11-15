@@ -3,8 +3,6 @@ package frc.robot2025.subsystems.demo;
 import com.revrobotics.spark.SparkAnalogSensor;
 import com.revrobotics.spark.SparkBase;
 
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -135,27 +133,14 @@ public class CycloidalDrive extends SubsystemBase {
 
     //TODO - Add simulation model
     
-
     // watcher will put values on the network tables for viewing elastic
     class CDWatcher extends WatcherCmd{
-        // start the servo's NeoWatcher which has most of our stuff
-        Command NeoWatcher = servo.getWatcher();
-        
-        //aditional entries 
-        NetworkTableEntry nt_analog_pos;
-        NetworkTableEntry nt_analog_vel;
-
-        @Override
-        public void ntcreate() {
-             NetworkTable table = getTable();
-           nt_analog_pos = table.getEntry("analog_pos");
-           nt_analog_vel = table.getEntry("analog_vel");
-        }
-
-        @Override
-        public void ntupdate() {     
-            nt_analog_pos.setDouble(fmt2(servo_analog.getPosition()));
-            nt_analog_vel.setDouble(fmt2(servo_analog.getVelocity()));
-        }        
-    }  //watcher
+        CDWatcher(){
+            //use newer form
+            addEntry("analog_pos", CycloidalDrive.this.servo::getPosition, 2);
+            addEntry("analog_vel", CycloidalDrive.this.servo::getVelocity, 2);
+            // start the servo's NeoWatcher which has most of our stuff
+            servo.getWatcher();
+        }       
+    }
 }

@@ -6,6 +6,8 @@ import static frc.lib2202.Constants.MperFT;
 
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.lib2202.builder.IRobotSpec;
 import frc.lib2202.builder.RobotContainer;
@@ -91,11 +93,14 @@ public class RobotSpec_BotOnBoard2 implements IRobotSpec {
         //Add your bindings here
         // bindings for simple servo demo
         driver.a().onTrue(Servo0.cmdPosition(0.0));
-        driver.x().onTrue(Servo0.cmdPosition(0.5));
-        driver.b().onTrue(Servo0.cmdPosition(1.0));
+        driver.x().onTrue(Servo0.cmdPositionWaitForModel(0.5));
+        driver.b().onTrue(Servo0.cmdPositionWaitForModel(1.0));
 
         //bindings for Cycloid demo - uses POV and rtTrigger, L/R Bumper
         Cycloid0.setDemoBindings(driver);
+    
+        //show what commands are running
+        SmartDashboard.putData(CommandScheduler.getInstance());
     }
     
     // uncomment for multi-bot repo, leave commented out for a competiton repo.
