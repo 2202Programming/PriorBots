@@ -49,11 +49,12 @@ public class RobotSpec_BotOnBoard2 implements IRobotSpec {
     // SubsystemConfig gets registered in static array to match serial number at
     // Construct calls.  To debug in Sim remember to set the env-var in vscode debug window:
     //      $env:serialnum = "0312db1a"
+    //      $env:serialnum = "03061025"  # for cycloidalDrive
 
     static SimpleServo Servo0;
     static CycloidalDrive Cycloid0;
 
-    SubsystemConfig subsystemConfig = new SubsystemConfig("bot-On-Board-2", "0312db1a")
+    SubsystemConfig subsystemConfig = new SubsystemConfig("bot-On-Board-2", "03061025")
             // deferred construction via Supplier<Object> lambda
             .add(PowerDistribution.class, "PDP", () -> {
                 var pdp = new PowerDistribution(CAN.PDP, ModuleType.kRev);
@@ -70,7 +71,7 @@ public class RobotSpec_BotOnBoard2 implements IRobotSpec {
                 return Servo0;
             })
             .add(CycloidalDrive.class, "CycloidalDrive", () -> {       
-                Cycloid0 = new CycloidalDrive(55);  //TODO make sure the CANID is correct
+                Cycloid0 = new CycloidalDrive(55);
                 Cycloid0.getWatcherCmd();
                 return Cycloid0;
             }) 

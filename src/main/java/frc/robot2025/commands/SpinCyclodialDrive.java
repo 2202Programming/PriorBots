@@ -11,15 +11,14 @@ import frc.robot2025.subsystems.demo.CycloidalDrive;
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class SpinCyclodialDrive extends Command {
   final CycloidalDrive drv;
-  final double speed;
+  final double value;
+  final boolean use_pos_mode; //True Position False Velocity
 
-  /** Creates a new SpinCyclodialDrive. */
-  public SpinCyclodialDrive(double speed) {
+  public SpinCyclodialDrive(double speed, boolean use_pos_mode) {
     // Use addRequirements() here to declare subsystem dependencies.
-    this.speed = speed;
-    // @Tyler, we don't want to create a new drive, we want to get the one constructed
-    // during the robotContainer execution.
-    //drv = new CycloidalDrive();
+    this.value = speed;
+    this.use_pos_mode = use_pos_mode;
+
     drv = RobotContainer.getSubsystem(CycloidalDrive.class); //don't need name lookup if only one exists (common)
     addRequirements(drv);
   }
@@ -27,21 +26,22 @@ public class SpinCyclodialDrive extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    drv.setVelocity(speed);
+    if(use_pos_mode)
+    {
+      drv.setSetpoint(value);
+    }else{
+      drv.setVelocity(value);
+    }
   }
 
-  // Called once the command ends or is interrupted.  
-  // This override can be deleted. - Mr. L
-  @Override
-  public void end(boolean interrupted) {
-    // @Tyler - don't need this, it will stop right away.    //drv.setVelocity(0);
-  }
-
-  // Returns true when the command should end.
-  // @Tyler - this command never ends, not what we really want.
-  //          once the vel is set, this command is sort of done... and device will keep moving.
   @Override
   public boolean isFinished() {
-    return true;   // @Tyler - changed from false set the speed in init and be done.
+    // deal with each mode
+    if (use_pos_mode == false) {
+      return true;   // we are done after the vel is set, device will start spinning
+    }
+    
+    //using position mode, not done until we get to setpoint
+    return drv.atSetpoint();
   }
 }

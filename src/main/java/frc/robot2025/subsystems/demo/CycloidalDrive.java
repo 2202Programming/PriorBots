@@ -4,12 +4,13 @@ import com.revrobotics.spark.SparkAnalogSensor;
 import com.revrobotics.spark.SparkBase;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.lib2202.command.WatcherCmd;
 import frc.lib2202.util.NeoServo;
 import frc.lib2202.util.PIDFController;
-import frc.robot2025.commands.SpinCyclodialDrive;
+
 /*
  * Demo Subsystem for the Cycloidal Drive that Mr. Dean Spears built
  * 
@@ -26,16 +27,15 @@ public class CycloidalDrive extends SubsystemBase {
     final double maxVel = 100.0;  // [deg/s]
     final double maxAccel = 75.0; // [deg/s^2]
 
-    //NeoServo uses Softward PID for outer position loop and hw pid on controller for Velocity
-    final PIDFController posPid;    // outer positon pid - runs on Rio
-    final PIDFController velHWPid;  // holds pids values, pid is run in vel-mode on hw controller 
-
-    double SERVO_GR = 1.0; // TODO set gearing for converions factor [face-turns/mtr-turns] = [] non-dim
-
     // TODO set KFF to get vel close at mid speed, then other two as needed.
-    double HW_kFF = 1.0/550.0;   // guess based on KV TUNE ME. It should spin, but vel will be off until tuned
+    double HW_kFF = 1.0/250.0;   // guess based on KV TUNE ME. It should spin, but vel will be off until tuned
     double HW_kP = 0.0;
     double HW_kI = 0.0;
+
+    PIDFController posPid = new PIDFController(0.0, 0.0, 0.0, 0.0);   //TODO tune, this pid is run on rio
+    PIDFController velHWPid = new PIDFController(HW_kP, 0.0, 0.0, HW_kFF);   //TODO tune these too, this just hold values for hw
+
+    double SERVO_GR = 1.0; // TODO set gearing for converions factor [face-turns/mtr-turns] = [] non-dim
 
     // This can work in either Position or Velocity mode
     double cmdPos; //local copy of last commanded pos
@@ -44,15 +44,13 @@ public class CycloidalDrive extends SubsystemBase {
     public CycloidalDrive(final int CANID) {
         setName("CycloidalDrive_"+CANID);
         // set our control constants for pos and vel pids
-        posPid = new PIDFController(1.0, 0.0, 0.0, 0.0);   //TODO tune, this pid is run on rio
-        velHWPid = new PIDFController(HW_kP, 0.0, 0.0, HW_kFF);  //TODO tune these too, this just hold values for hw
         servo = new NeoServo(CANID, posPid, velHWPid, false);
 
         // setup servo
         servo  // units should be [deg] and [deg/s]
             .setConversionFactor(SERVO_GR)
             .setTolerance(1.0, .01)  // [deg], [deg/s]
-            .setSmartCurrentLimit(10, 1)  // [amp], [amp]
+            .setSmartCurrentLimit(30, 5)  // [amp], [amp]
             .setVelocityHW_PID(maxVel, maxAccel)
             .setMaxVelocity(maxVel);
         
@@ -62,6 +60,7 @@ public class CycloidalDrive extends SubsystemBase {
         init();
     }
 
+    
     protected void init(){
         // read hardware's starting position
         double cur_pos = servo_analog.getPosition();  // TODO - this may need debugging HW is new...
@@ -80,6 +79,13 @@ public class CycloidalDrive extends SubsystemBase {
     public void setSetpoint(double pos) {
         cmdPos = pos;  //local copy
         servo.setSetpoint(cmdPos);
+    }
+
+    /*
+     * For position mode, expose the atSetpoint()
+     */
+    public boolean atSetpoint() {
+        return servo.atSetpoint();
     }
 
     /*
@@ -110,6 +116,14 @@ public class CycloidalDrive extends SubsystemBase {
     }
 
 
+    public Command cmdPositionWait(double cmd_pos) {
+        return Commands.sequence(
+            cmdPosition(cmd_pos), 
+            Commands.waitUntil(this::atSetpoint),
+            Commands.print(getName() + " is atSetpoint " + cmd_pos) )
+            .withName(getName()+":cmdPositionWait=" + cmd_pos);  
+    }
+
     // Add a DEMO bindings - we don't normally do this but for a demo 
     // it is handy because bot-on-board spec files change frequently
     // as they are used during the season.
@@ -120,10 +134,6 @@ public class CycloidalDrive extends SubsystemBase {
         xbox.povUp().onTrue(this.cmdPosition(0.0));
         xbox.povDown().onTrue(this.cmdPosition(180.0));
         
-        // test @Tylers spin command
-        xbox.rightBumper().onTrue(new SpinCyclodialDrive(20.0));
-        xbox.leftBumper().onTrue(new SpinCyclodialDrive(-20.0));
-        xbox.rightTrigger(0.5).onTrue(this.cmdVelocity(0.0)); //stop in vel-mode
     }
 
     // Add a watcher so we can see stuff on network tables
@@ -133,6 +143,7 @@ public class CycloidalDrive extends SubsystemBase {
 
     //TODO - Add simulation model
     
+
     // watcher will put values on the network tables for viewing elastic
     class CDWatcher extends WatcherCmd{
         CDWatcher(){
@@ -141,6 +152,6 @@ public class CycloidalDrive extends SubsystemBase {
             addEntry("analog_vel", CycloidalDrive.this.servo::getVelocity, 2);
             // start the servo's NeoWatcher which has most of our stuff
             servo.getWatcher();
-        }       
+        }
     }
 }

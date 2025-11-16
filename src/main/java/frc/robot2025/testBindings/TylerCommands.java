@@ -14,7 +14,17 @@ public class TylerCommands {
                 ? (CommandXboxController) dc.Operator()
                 : null;
 
-        //PRESS X ON CONTROLLER
-        opr.x().whileTrue(new SpinCyclodialDrive(30.0));
+        // bail if there was no opr controller of type Xbox
+        if (opr == null) return;
+
+        // Press X On Controller to Spin
+        opr.x().onTrue(new SpinCyclodialDrive(30.0,false));
+        // Press B On Controller to Spin opposite way
+        opr.b().onTrue(new SpinCyclodialDrive(-30.0,false));
+        // Press Y On Controller to Stop Spinning
+        opr.y().onTrue(new SpinCyclodialDrive(0.0,false));
+
+        // Press Down Arrow on Controller to go to 0
+        opr.povDown().onTrue(new SpinCyclodialDrive(0,true));
     }
 }
