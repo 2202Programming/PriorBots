@@ -1,6 +1,5 @@
 {
-  "version": 1.0,
-  "startingPose": null,
+  "version": "2025.0",
   "command": {
     "type": "sequential",
     "data": {
@@ -107,6 +106,7 @@
       ]
     }
   },
+  "resetOdom": true,
   "folder": "Pos1",
   "choreoAuto": false
 }
