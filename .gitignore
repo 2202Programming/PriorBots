@@ -186,7 +186,7 @@ networktables.json.bck
 #skip anything in the deploy
 src/main/deploy/*
 #now whitelist deploy's folders, we want to keep bot specific folders
-!src/main/deploy/**/
-
-
-
+!src/main/deploy/readme/
+!src/main/deploy/2024/
+!src/main/deploy/2025/
+!src/main/deploy/BotOnBoard02/
