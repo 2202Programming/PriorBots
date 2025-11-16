@@ -42,6 +42,9 @@ import frc.robot2025.testBindings.DPLPathTest;
 
 public class RobotSpec_AlphaBot2025 implements IRobotSpec {
 
+  // This is a chassis bot with LL, Pigeon(sensors), and PDP.
+  // Chassis frame rotate 90 deg to match 2025 comp bot setup of LL.
+  
   // Subsystems and other hardware on 2025 Robot rev Alpha
   // $env:serialnum = "03282B65"
   final SubsystemConfig ssconfig = new SubsystemConfig("AlphaBot2025", "03282B65")
@@ -51,22 +54,9 @@ public class RobotSpec_AlphaBot2025 implements IRobotSpec {
         pdp.clearStickyFaults();
         return pdp;
       })
-      /*
-      // .add(PneumaticsControl.class)
-      .add(BlinkyLights.class, "LIGHTS", () -> {
-        return new BlinkyLights(CAN.CANDLE1, CAN.CANDLE2, CAN.CANDLE3, CAN.CANDLE4);
-      })
-        */
       .add(HID_Subsystem.class, "DC", () -> {
         return new HID_Subsystem(0.3, 0.9, 0.05);
       })
-      /*/
-      .add(GroundIntake.class)
-      .add(Elevator_Subsystem.class)
-      .add(Command.class, "ElevatorWatcher", () -> {
-       return RobotContainer.getSubsystem(Elevator_Subsystem.class).getWatcher();
-      })
-*/
       // Sensors, limelight and drivetrain all use interfaces, so make sure their alias names
       // match what is given here.
       .add(Sensors.class, "sensors")
@@ -86,17 +76,7 @@ public class RobotSpec_AlphaBot2025 implements IRobotSpec {
         return obj;
       })
       // VisonPoseEstimator needs LL and Odometry, adds simplename and alias to lookup
-      .addAlias(VisionPoseEstimator.class, "vision_odo")
-      // below are optional watchers for shuffeleboard data - disable if need too.
-      /*
-      .add(WristFLA.class)
-      .add(SignalLight.class, "signal")
-      .add(EndEffector_Subsystem.class)
-      .add(Command.class, "endEffectorWatcher", () -> {
-        return RobotContainer.getSubsystem(EndEffector_Subsystem.class).getWatcher();
-      })
-      .add(PDPMonitorCmd.class, ()->{ return new PDPMonitorCmd(); })
-      */
+      .addAlias(VisionPoseEstimator.class, "vision_odo")    
       ;
 
   // Robot Speed Limits

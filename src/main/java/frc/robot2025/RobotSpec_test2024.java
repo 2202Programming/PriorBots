@@ -71,8 +71,11 @@ public class RobotSpec_test2024 implements IRobotSpec {
 
     final SubsystemConfig config = new SubsystemConfig(
             // Subsystems and other hardware for testing with 2024 comp-bot
-            // $env:serialnum = "032D2062"
-            "CompetitionBot2024 as testing platform.", "032D2062")
+            // $env:serialnum = "xx032D2062xx"
+            // DON'T USE this code for 2024 bot, 2024 is in PriorBots use it
+            // This version rotates swerve 90 deg which was for testing LL in 2025 season.
+            // This spec is DISABLED. SN xx'd out so not found. 
+            "CompetitionBot2024 as testing platform.", "xx032D2062xx")
             // deferred construction via Supplier<Object> lambda
             .add(PowerDistribution.class, "PDP", () -> {
                 var pdp = new PowerDistribution(CAN.PDP, ModuleType.kRev);
