@@ -14,7 +14,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.chadbot.Constants;
 import frc.chadbot.Constants.DriveTrain;
 import frc.chadbot.Constants.Shooter;
-import frc.chadbot.subsystems.Sensors_Subsystem;
 import frc.lib2202.builder.RobotContainer;
 import frc.lib2202.subsystem.Limelight;
 import frc.lib2202.subsystem.swerve.IHeadingProvider;
@@ -85,7 +84,7 @@ public class HubCentricDrive extends DriveCmdClass {
     this.dc = dc;
     this.kinematics = drivetrain.getKinematics();
     this.limelight = limelight;
-    this.gyro = RobotContainer.getSubsystem(Sensors_Subsystem.class);
+    this.gyro = RobotContainer.getRobotSpecs().getHeadingProvider();
 
     // anglePid = new PIDController(angle_kp, angle_ki, angle_kd);
     limelightPid = new PIDController(limelight_kP, limelight_kI, limelight_kD);

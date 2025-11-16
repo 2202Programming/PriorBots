@@ -13,7 +13,7 @@ import frc.chadbot.commands.MovePositioner.PositionerMode;
 import frc.chadbot.commands.Shoot.VelShootCommand;
 import frc.chadbot.subsystems.Magazine_Subsystem;
 import frc.lib2202.builder.RobotContainer;
-import frc.lib2202.command.swerve.AllianceAwareGyroReset;
+import frc.lib2202.command.pathing.AllianceAwareGyroReset;
 import frc.lib2202.command.swerve.RobotCentricDrive;
 import frc.lib2202.command.swerve.TargetCentricDrive;
 import frc.lib2202.subsystem.hid.HID_Subsystem;
@@ -49,7 +49,7 @@ public final class Comp_ChadBot {
 
         // Driver buttons
         driver.leftTrigger().whileTrue(new RobotCentricDrive(drivetrain, dc));
-        driver.y().onTrue(new AllianceAwareGyroReset(true));
+        driver.y().onTrue(new AllianceAwareGyroReset());
         driver.rightTrigger().whileTrue(new TargetCentricDrive(Tag_Pose.ID4, Tag_Pose.ID7));
         
         /*driver.b().whileTrue(new IntakeCommand(IntakeMode.ExpellCargo));

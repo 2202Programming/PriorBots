@@ -6,30 +6,26 @@ import static frc.lib2202.Constants.MperFT;
 
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.lib2202.builder.IRobotSpec;
 import frc.lib2202.builder.RobotContainer;
 import frc.lib2202.builder.RobotLimits;
 import frc.lib2202.builder.SubsystemConfig;
 import frc.lib2202.subsystem.hid.HID_Subsystem;
-import frc.lib2202.subsystem.swerve.IHeadingProvider;
 import frc.lib2202.subsystem.swerve.config.ChassisConfig;
-import frc.lib2202.subsystem.swerve.config.ModuleConfig;
 import frc.robot2025.Constants.CAN;
-import frc.robot2025.commands.GroundIntake.BtmArmGoToPos;
-import frc.robot2025.commands.GroundIntake.BtmArmVel;
-import frc.robot2025.commands.GroundIntake.PickupSequence;
-import frc.robot2025.commands.GroundIntake.SetZero;
-import frc.robot2025.commands.GroundIntake.TopArmVel;
-import frc.robot2025.commands.GroundIntake.TopHold;
-import frc.robot2025.subsystems.GroundIntake;
+
+import frc.robot2025.subsystems.demo.CycloidalDrive;
+import frc.robot2025.subsystems.demo.SimpleServo;
 
 //copy or extend this code for your robot - remember to override:
 // TBD
 //
 public class RobotSpec_BotOnBoard2 implements IRobotSpec {
 
-    // Build
+    final static String DEPLOY_DIR = "BotOnBoard02";
 
     // Robot Speed Limits
     RobotLimits robotLimits = new RobotLimits(
@@ -51,32 +47,33 @@ public class RobotSpec_BotOnBoard2 implements IRobotSpec {
             kDriveGR); // []
 
     // SubsystemConfig gets registered in static array to match serial number at
-    // Construct call
-    SubsystemConfig subsystemConfig = new SubsystemConfig("bot-On-Board-2", "03061025")
+    // Construct calls.  To debug in Sim remember to set the env-var in vscode debug window:
+    //      $env:serialnum = "0312db1a"
+
+    static SimpleServo Servo0;
+    static CycloidalDrive Cycloid0;
+
+    SubsystemConfig subsystemConfig = new SubsystemConfig("bot-On-Board-2", "0312db1a")
             // deferred construction via Supplier<Object> lambda
             .add(PowerDistribution.class, "PDP", () -> {
                 var pdp = new PowerDistribution(CAN.PDP, ModuleType.kRev);
                 pdp.clearStickyFaults();
                 return pdp;
             })
-            // .add(PneumaticsControl.class)
-            // .add(BlinkyLights.class, "LIGHTS", () -> {
-            // return new BlinkyLights(CAN.CANDLE1, CAN.CANDLE2, CAN.CANDLE2, CAN.CANDLE4);
-            // })
             .add(HID_Subsystem.class, "DC", () -> {
                 return new HID_Subsystem(0.3, 0.9, 0.05);
+            })   
+            .add(SimpleServo.class, "Servo0", () -> {
+                // save ref for binding cmds later
+                Servo0 = new SimpleServo(0);
+                Servo0.getWatcherCmd();
+                return Servo0;
             })
-            // .add(Sensors_Subsystem.class)
-            // .add(Limelight.class)
-            .add(GroundIntake.class)
-    // .add(SwerveDrivetrain.class, () -> {
-    // return new SwerveDrivetrain(SparkFlex.class);
-    // }) // must be after LL and Sensors
-    // .add(VisionPoseEstimator.class)
-    // // below are optional watchers for shuffeleboard data - disable if need too.
-    // .add(Command.class, "DT_Monitor", () -> {
-    // return new DTMonitorCmd();
-    // });
+            .add(CycloidalDrive.class, "CycloidalDrive", () -> {       
+                Cycloid0 = new CycloidalDrive(55);  //TODO make sure the CANID is correct
+                Cycloid0.getWatcherCmd();
+                return Cycloid0;
+            }) 
     ;
 
     public RobotSpec_BotOnBoard2() {
@@ -85,56 +82,31 @@ public class RobotSpec_BotOnBoard2 implements IRobotSpec {
         // add the specs to the ssconfig
         subsystemConfig.setRobotSpec(this);
     }
-
-    @Override
-    public RobotLimits getRobotLimits() {
-        return robotLimits;
-    }
-
-    @Override
-    public IHeadingProvider getHeadingProvider() {
-        return null; // no sensors in default, example for your bot's Spec:
-        // return RobotContainer.getSubsystem(Sensors_Subsystem.class);
-    }
-
-    @Override
-    public ChassisConfig getChassisConfig() {
-        return chassisConfig;
-    }
-
-    @Override
-    public ModuleConfig[] getModuleConfigs() {
-        return null;
-    }
-
+   
     @Override
     public void setBindings() {
         HID_Subsystem dc = RobotContainer.getSubsystem("DC");
-        CommandXboxController operator = (CommandXboxController) dc.Operator();
-        // keep for testing purposes -er
-
-        operator.rightBumper().whileTrue(new BtmArmVel(30.0));
-        operator.leftBumper().whileTrue(new BtmArmVel(-30.0));
-        operator.povRight().whileTrue(new TopArmVel(30.0));
-        operator.povLeft().whileTrue(new TopArmVel(-30.0));
-        operator.a().onTrue(new BtmArmGoToPos(0.0));
         
-        operator.b().onTrue(new SetZero());
-        operator.rightTrigger().whileTrue(new TopHold(5.0));
-        // testing real commands -er
-        operator.x().whileTrue(new PickupSequence("c"));
-        operator.y().whileTrue(new PickupSequence("a"));
+        //@SuppressWarnings("unused")
+        CommandXboxController driver = (CommandXboxController) dc.Driver();
+       
+        //Add your bindings here
+        // bindings for simple servo demo
+        driver.a().onTrue(Servo0.cmdPosition(0.0));
+        driver.x().onTrue(Servo0.cmdPositionWaitForModel(0.5));
+        driver.b().onTrue(Servo0.cmdPositionWaitForModel(1.0));
 
+        //bindings for Cycloid demo - uses POV and rtTrigger, L/R Bumper
+        Cycloid0.setDemoBindings(driver);
+    
+        //show what commands are running
+        SmartDashboard.putData(CommandScheduler.getInstance());
     }
-
-    @Override
-    public boolean burnFlash() {
-        return false;
-    }
-
-    @Override
-    public void setDefaultCommands() {
-
+    
+    // uncomment for multi-bot repo, leave commented out for a competiton repo.
+     @Override
+    public String getDeployDirectory() {
+        return DEPLOY_DIR;
     }
 
 }

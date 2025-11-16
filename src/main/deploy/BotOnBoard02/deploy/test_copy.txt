@@ -1,0 +1,3 @@
+This file is here to test the required multi-bot image startup on the Rio.
+Files in the specified deploy/ folder need to be copied down to the active deploy
+directory prior to running.  This emulates the normal deploy process. 

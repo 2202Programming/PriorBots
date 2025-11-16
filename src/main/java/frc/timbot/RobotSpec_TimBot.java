@@ -15,6 +15,7 @@ import frc.lib2202.command.swerve.FieldCentricDrive;
 import frc.lib2202.command.swerve.RobotCentricDrive;
 import frc.lib2202.command.swerve.calibrate.TestRotateVelocity;
 import frc.lib2202.subsystem.Limelight;
+import frc.lib2202.subsystem.Sensors;
 import frc.lib2202.subsystem.hid.HID_Subsystem;
 import frc.lib2202.subsystem.swerve.IHeadingProvider;
 import frc.lib2202.subsystem.swerve.SwerveDrivetrain;
@@ -25,7 +26,7 @@ import frc.lib2202.subsystem.swerve.config.ModuleConfig.CornerID;
 import frc.timbot.commands.Shoot;
 import frc.timbot.subsystem.ShooterLifter;
 import frc.timbot.subsystem.FlywheelSubsystem;
-import frc.timbot.subsystem.Sensors_Subsystem;
+
 
 //Swerve bot aka Tim specs
 public class RobotSpec_TimBot implements IRobotSpec {
@@ -52,7 +53,7 @@ public class RobotSpec_TimBot implements IRobotSpec {
 
     // Subsystems and hardware on Tim 2.0
     SubsystemConfig ssConfig = new SubsystemConfig("SwerveBot - aka Tim", "031b7511")
-            .addAlias(Sensors_Subsystem.class, "sensors")
+            .addAlias(Sensors.class, "sensors")
             .add(Limelight.class)
             .addAlias(SwerveDrivetrain.class,"drivetrain")
             //.add(VisionPoseEstimator.class)  //TODO - restore when VPE added to 2202 lib, part of 2025 robot now.
@@ -75,7 +76,7 @@ public class RobotSpec_TimBot implements IRobotSpec {
 
     @Override
     public IHeadingProvider getHeadingProvider() {
-        return RobotContainer.getSubsystem(Sensors_Subsystem.class);
+        return RobotContainer.getSubsystem(Sensors.class);
     }
 
     @Override

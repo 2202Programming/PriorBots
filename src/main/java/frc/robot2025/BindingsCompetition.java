@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 //add when needed - import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib2202.builder.RobotContainer;
-import frc.lib2202.command.swerve.AllianceAwareGyroReset;
+import frc.lib2202.command.pathing.AllianceAwareGyroReset;
 import frc.lib2202.command.swerve.RobotCentricDrive;
 import frc.lib2202.subsystem.OdometryInterface;
 import frc.lib2202.subsystem.hid.HID_Subsystem;
@@ -89,7 +89,7 @@ public final class BindingsCompetition {
 
             CommandXboxController driver = (CommandXboxController) generic_driver;
             driver.rightBumper().whileTrue(new RobotCentricDrive(drivetrain, dc));
-            driver.y().onTrue(new AllianceAwareGyroReset(true));
+            driver.y().onTrue(new AllianceAwareGyroReset());
 
             //this is temporary and not real; --dpl + bg
             driver.a().onTrue(new InstantCommand( () ->{
@@ -153,17 +153,17 @@ public final class BindingsCompetition {
                  */
             NotCal.and(operator.povLeft()).onTrue(new SequentialCommandGroup (
             new ParallelCommandGroup(
-            new setElevatorSetpoint(Levels.LThree, "L3").withTimeout(2.0),
+            new setElevatorSetpoint(Levels.LThree, "L3"),//.withTimeout(2.0),
             new setWristPos(WristFLA.MID_POSITION, "L3"))
         ));
         NotCal.and(operator.povDown()).onTrue(new SequentialCommandGroup (
             new ParallelCommandGroup(
-                new setElevatorSetpoint(Levels.LTwo, "L2").withTimeout(2.0),
+                new setElevatorSetpoint(Levels.LTwo, "L2"),//.withTimeout(2.0),
                 new setWristPos(WristFLA.MID_POSITION, "L2"))
         ));
         NotCal.and(operator.povUp()).onTrue(new SequentialCommandGroup (
             new ParallelCommandGroup(
-                new setElevatorSetpoint(Levels.LFour, "L4").withTimeout(2.0),
+                new setElevatorSetpoint(Levels.LFour, "L4"),//.withTimeout(2.0),
                 new setWristPos(1.5, "L4")),
                 new setWristPos(WristFLA.Q3_POSITION, "L4")
         ));

@@ -11,11 +11,12 @@ import frc.lib2202.builder.IRobotSpec;
 import frc.lib2202.builder.RobotContainer;
 import frc.lib2202.builder.RobotLimits;
 import frc.lib2202.builder.SubsystemConfig;
-import frc.lib2202.command.swerve.AllianceAwareGyroReset;
+import frc.lib2202.command.pathing.AllianceAwareGyroReset;
 import frc.lib2202.command.swerve.FieldCentricDrive;
 import frc.lib2202.command.swerve.RobotCentricDrive;
 import frc.lib2202.subsystem.Limelight;
-import frc.lib2202.subsystem.hid.HID_Xbox_Subsystem;
+import frc.lib2202.subsystem.Sensors;
+import frc.lib2202.subsystem.hid.HID_Subsystem;
 import frc.lib2202.subsystem.hid.TMJoystickController;
 import frc.lib2202.subsystem.hid.TMJoystickController.ButtonType;
 import frc.lib2202.subsystem.swerve.IHeadingProvider;
@@ -25,7 +26,6 @@ import frc.lib2202.subsystem.swerve.config.ModuleConfig;
 import frc.lib2202.subsystem.swerve.config.ModuleConfig.CornerID;
 import frc.lib2202.util.PIDFController;
 import frc.robot2024.Constants.CAN;
-import frc.robot2024.subsystems.sensors.Sensors_Subsystem;
 
 public class RobotSpec_AlphaBot2024 implements IRobotSpec {
   // Subsystems and other hardware on 2024 Robot rev Alpha
@@ -38,10 +38,10 @@ public class RobotSpec_AlphaBot2024 implements IRobotSpec {
       })
       //.add(PneumaticsControl.class)
       // .add(BlinkyLights.class, "LIGHTS")
-      .add(HID_Xbox_Subsystem.class, "DC", () -> {
-        return new HID_Xbox_Subsystem(0.3, 0.9, 0.05);
+      .add(HID_Subsystem.class, "DC", () -> {
+        return new HID_Subsystem(0.3, 0.9, 0.05);
       })
-      .add(Sensors_Subsystem.class)
+      .addAlias(Sensors.class,"sensors")
       .add(Limelight.class)
       .add(SwerveDrivetrain.class) // must be after LL and Sensors
       //.add(VisionPoseEstimator.class)  //restore when vpe moved into 2022 lib
@@ -85,7 +85,7 @@ public class RobotSpec_AlphaBot2024 implements IRobotSpec {
 
   @Override
   public IHeadingProvider getHeadingProvider() {
-    return RobotContainer.getSubsystem(Sensors_Subsystem.class);
+    return RobotContainer.getSubsystem(Sensors.class);
   }
 
   @Override
@@ -121,7 +121,7 @@ public class RobotSpec_AlphaBot2024 implements IRobotSpec {
 
   @Override
   public void setBindings() {
-    HID_Xbox_Subsystem dc = RobotContainer.getSubsystem("DC");
+    HID_Subsystem dc = RobotContainer.getSubsystem("DC");
     var driver = dc.Driver();
     
     // handle controller options xbox or joystick, need to convert from CommandGenericHID
@@ -129,14 +129,14 @@ public class RobotSpec_AlphaBot2024 implements IRobotSpec {
       // Driver buttons
       var xbox = (CommandXboxController)driver;
       xbox.leftTrigger().whileTrue(new FieldCentricDrive());
-      xbox.y().onTrue(new AllianceAwareGyroReset(true));
+      xbox.y().onTrue(new AllianceAwareGyroReset());
       //driver.rightTrigger().whileTrue(new TargetCentricDrive(Tag_Pose.ID4, Tag_Pose.ID7));
     }
     else {
       // driver joystick
       var joy =(TMJoystickController)driver;
       joy.trigger(ButtonType.TriggerButton).whileTrue(new FieldCentricDrive());
-      joy.trigger(ButtonType.LeftOne).onTrue(new AllianceAwareGyroReset(true));
+      joy.trigger(ButtonType.LeftOne).onTrue(new AllianceAwareGyroReset());
     }
   }
 

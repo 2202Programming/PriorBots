@@ -19,6 +19,7 @@ import frc.lib2202.subsystem.BlinkyLights;
 import frc.lib2202.subsystem.Limelight;
 import frc.lib2202.subsystem.Odometry;
 import frc.lib2202.subsystem.OdometryInterface;
+import frc.lib2202.subsystem.Sensors;
 import frc.lib2202.subsystem.hid.HID_Subsystem;
 import frc.lib2202.subsystem.swerve.AutoPPConfigure;
 import frc.lib2202.subsystem.swerve.DriveTrainInterface;
@@ -36,9 +37,10 @@ import frc.robot2024.subsystems.Climber;
 import frc.robot2024.subsystems.Intake;
 import frc.robot2024.subsystems.ShooterServo;
 import frc.robot2024.subsystems.Transfer;
-import frc.robot2024.subsystems.sensors.Sensors_Subsystem;
+
 
 public class RobotSpec_CompBot2024 implements IRobotSpec {
+    final static String DEPLOY_DIR = "2024";
 
     boolean teleOpRunOnce = true;
 
@@ -56,8 +58,8 @@ public class RobotSpec_CompBot2024 implements IRobotSpec {
             .add(HID_Subsystem.class, "DC", () -> {
                 return new HID_Subsystem(0.3, 0.9, 0.05);
             })
-            .add(Sensors_Subsystem.class)
-            .add(Limelight.class)
+            .addAlias(Sensors.class,"sensors")
+            .addAlias(Limelight.class, "limelight")
             .addAlias(SwerveDrivetrain.class, "drivetrain") // must be after LL and Sensors
             .add(OdometryInterface.class, "odometry", () -> {
                 var obj = new Odometry();
@@ -100,8 +102,10 @@ public class RobotSpec_CompBot2024 implements IRobotSpec {
     double kWheelDiameter = MperFT * 4.0 / 12.0; // [m]
 
     final ChassisConfig comp2024BotBetaChassisConfig = new ChassisConfig(
-            MperFT * (24.875 / 12.0) / 2.0, // x
-            MperFT * (20.5 / 12.0) / 2.0, // y
+            //MperFT * (24.875 / 12.0) / 2.0, // x
+            //MperFT * (20.5 / 12.0) / 2.0, // y
+            (.655 / 2.0), // x [m]    updated from 2025 measurments
+            (.755 / 2.0), // y [m]
             kWheelCorrectionFactor, // scale [] <= 1.0
             kWheelDiameter,
             kSteeringGR,
@@ -127,7 +131,7 @@ public class RobotSpec_CompBot2024 implements IRobotSpec {
 
     @Override
     public IHeadingProvider getHeadingProvider() {
-        return RobotContainer.getSubsystem(Sensors_Subsystem.class);
+        return RobotContainer.getSubsystem(Sensors.class);
     }
 
     @Override
@@ -178,6 +182,13 @@ public class RobotSpec_CompBot2024 implements IRobotSpec {
         // BindingsOther.ConfigureOther(dc);
     }
     
+    // allow our bot's 2024 deploy folder to get copied to correct spot
+    // this a multi-robot, multi-deploy folder thing.  Don't use on competition bots.
+    @Override
+    public String getDeployDirectory() {
+        return DEPLOY_DIR;
+    }
+
     // setup reg commands and relate autoChooser
     SendableChooser<Command> autoChooser;
     @Override

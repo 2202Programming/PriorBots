@@ -24,14 +24,15 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib2202.Constants;
 import frc.lib2202.command.WatcherCmd;
+import frc.lib2202.subsystem.UX.TrimTables.Trim;
 import frc.lib2202.util.NeoServo;
 import frc.lib2202.util.PIDFController;
 import frc.robot2025.Constants.CAN;
 import frc.robot2025.Constants.DigitalIO;
-import frc.robot2025.utils.UXTrim;
 
 public class GroundIntake extends SubsystemBase {
- 
+  public static String TrimTableName = "GoundIntake";
+
   public enum Position {
     POWERUP(0.0, 0.0), // pwr up could be different from ZERO
     ZERO(0.0, 0.0),
@@ -100,13 +101,12 @@ public class GroundIntake extends SubsystemBase {
   // Where we are heading, use atSetpoint to see if we are there
   Position currentPos = Position.POWERUP;
   double top_cmd, btm_cmd;  //tracks last commanded positions
-  UXTrim topTrim;
+  Trim topTrim;
   double holdOffset;
   
 
   public GroundIntake() { 
-    topTrim = new UXTrim("giTop2");
-    topTrim.addChangeCallback(this::trimChange);
+    topTrim = new Trim(TrimTableName, "Top", this::trimChange, 0.0);
 
     topHwAngleVelPID.setIZone(25.0);
     topPositionPID.setIntegratorRange(-topIRange, topIRange);

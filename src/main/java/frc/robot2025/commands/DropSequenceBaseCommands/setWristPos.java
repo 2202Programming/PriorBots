@@ -6,20 +6,20 @@ package frc.robot2025.commands.DropSequenceBaseCommands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib2202.builder.RobotContainer;
+import frc.lib2202.subsystem.UX.TrimTables.Trim;
 import frc.robot2025.subsystems.WristFLA;
-import frc.robot2025.utils.UXTrim;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class setWristPos extends Command {
   final WristFLA wrist;
   final double setpoint;
   // boolean drop;
-  final UXTrim wristTrim;
+  final Trim trim;
   /** Creates a new setWristPos. */
   // public setWristPos(boolean drop) {
   //   wrist = RobotContainer.getSubsystem(WristFLA.class);
   //   this.drop = drop;
-  //   wristTrim = new UXTrim("wristTrim", 0.0);
+  //   trim = new UXTrim("trim", 0.0);
   //   if(drop){
   //     setpoint = WristFLA.MID_POSITION;
   //   } else {
@@ -28,7 +28,7 @@ public class setWristPos extends Command {
   //   // Use addRequirements() here to declare subsystem dependencies.
   // }
   public setWristPos(double setpoint, String name) {
-    wristTrim = new UXTrim("wristTrim" + name);
+    trim = new Trim("Wrist" , name);
     wrist = RobotContainer.getSubsystem(WristFLA.class);
     this.setpoint = setpoint;
     addRequirements(wrist);
@@ -38,7 +38,7 @@ public class setWristPos extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    wrist.setPosition(wristTrim.getValue(setpoint));
+    wrist.setPosition(trim.getValue(setpoint));
   }
 
   // @Override

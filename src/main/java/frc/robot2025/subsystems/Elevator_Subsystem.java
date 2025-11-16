@@ -17,6 +17,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib2202.command.WatcherCmd;
 import frc.lib2202.util.NeoServo;
@@ -54,14 +55,14 @@ public class Elevator_Subsystem extends SubsystemBase {
   private SparkClosedLoopController cl_ctrl; 
 
   final DigitalInput zeroLimitSwitch = new DigitalInput(DigitalIO.ElevatorZeroLS);
-  final int STALL_CURRENT = 60;
+  final int STALL_CURRENT = 45;//60;
   final int FREE_CURRENT = 5;
   final double elevatorMaxVel = 175.0; // [cm/s] rpm
   final double elevatorMaxAccel = 100.0; // [cm/s^2]  servo may not enforce yet
-  final double elevatorPosTol = 1.0;  // [cm]
+  final double elevatorPosTol = 2.5;  // [cm]  -dpl with current gearing this is about it.
   final double elevatorVelTol = 0.5;  // [cm]
   final double maxPos = 149.0; // [cm]
-  final double minPos = -1.0;  // [cm]
+  final double minPos = 0.0;  // [cm]
   final double initPos = 0.0;  // [cm]  initial power up position for relative encoders
   final boolean motors_inverted = false;
 
@@ -78,10 +79,10 @@ public class Elevator_Subsystem extends SubsystemBase {
   public Elevator_Subsystem() {
     //init pid constant holders
     //software position pid - run in servo's periodic to control elevator position
-    positionPid = new PIDController(7.0, 0.0005, 0.004);
+    positionPid = new PIDController(5.0, 0.0005, 0.00);  //(7.0, 0.0005, 0.004
     positionPid.setIZone(3.0);
     //hardware velocity pidf - holds values to send to hw, not actually run825
-    velocityPid = new PIDFController(0.0008, 0.000025, 0.0000, 1.0/565.0); //1.0/800 before, 565 is vortex Kv
+    velocityPid = new PIDFController(0.00185, 0.000015, 0.0000, 1.0/565.0); //1.0/800 before, 565 is vortex Kv
     velocityPid.setIZone(10.0);
     
     //devices 
@@ -93,13 +94,13 @@ public class Elevator_Subsystem extends SubsystemBase {
     cl_ctrl.setIAccum(0.0);
    
     // TODO - calibrate the cf so positions are accurate by using cf_spec 
-    System.out.println("\tINITIAL CF=]" + cf);
-    System.out.println("\tCF_spec=]" + cf_spec +" spec should come from gearRatio... fix it."); 
+    System.out.println("\tINITIAL CF=" + cf);
+    System.out.println("\tCF_spec=" + cf_spec +" spec should come from gearRatio... fix it."); 
     
     //finish off the server setup
     servo
       .setConversionFactor(cf) //update with new values after testing
-      .setTolerance(elevatorPosTol, elevatorPosTol)
+      .setTolerance(elevatorPosTol, elevatorVelTol)
       .setVelocityHW_PID(elevatorMaxVel, elevatorMaxAccel)
       .setSmartCurrentLimit(STALL_CURRENT, FREE_CURRENT)
       .setMaxVelocity(175.0)
@@ -119,15 +120,16 @@ public class Elevator_Subsystem extends SubsystemBase {
     
     // power up starting position of servo
     servo.setPosition(Levels.PowerUp.height);
+    SmartDashboard.putNumber(KEY, 0.065);
    // servo.getWatcher();
   }
+  String KEY = "ELEV_ARBFF";
 
   @Override
   public void periodic() {
     servo.periodic();
-    //positionPid.calculate(FREE_CURRENT);   //this amounts to a position change
-    //-- DPL what are you trying to do here? This class is used internal to servo
-    // either way, this is wrong - see me.
+    double arbFF = SmartDashboard.getNumber(KEY, 0.0);
+    servo.setArbFeedforward(arbFF);
   }
 
   
@@ -155,7 +157,7 @@ public class Elevator_Subsystem extends SubsystemBase {
   public void setHeight (double height) {
     if (height > getPosition()) {
       servo.setMaxVelocity(175.0);
-      servo.setArbFeedforward(0.02);
+     // servo.setArbFeedforward(0.02);
     }
     else {  
       servo.setMaxVelocity(100.0);
@@ -219,27 +221,27 @@ public class Elevator_Subsystem extends SubsystemBase {
 
     public void ntcreate() {
       NetworkTable table = getTable();
-      nt_cmdVel = table.getEntry("cmdVel");
-      nt_measVel = table.getEntry("measVel");
-      nt_desiredHeight = table.getEntry("desiredHeight");
-      nt_currentHeight = table.getEntry("currentHeight");
+      nt_cmdVel = table.getEntry("Vel_cmd");
+      nt_measVel = table.getEntry("Vel_meas");
+      nt_desiredHeight = table.getEntry("Height_cmd");
+      nt_currentHeight = table.getEntry("Height_meas");
       nt_atHeight = table.getEntry("atSetpoint");
-      nt_mainCurrent = table.getEntry("mainCurrent");
-      nt_followCurrent = table.getEntry("followCurrent");
+      nt_mainCurrent = table.getEntry("amps_main");
+      nt_followCurrent = table.getEntry("amps_follow");
       nt_zeroLimitSwitch = table.getEntry("zeroLimitSwitch");
-      nt_iAccum = table.getEntry("iAccum");
+      nt_iAccum = table.getEntry("iAccumX100");
     }
 
     public void ntupdate() {
-      nt_cmdVel.setDouble(getDesiredVelocity());
-      nt_measVel.setDouble(getVelocity());
-      nt_desiredHeight.setDouble(getSetpoint());
-      nt_currentHeight.setDouble(getPosition());
+      nt_cmdVel.setDouble(fmt2(getDesiredVelocity()));
+      nt_measVel.setDouble(fmt2(getVelocity()));
+      nt_desiredHeight.setDouble(fmt2(getSetpoint()));
+      nt_currentHeight.setDouble(fmt2(getPosition()));
       nt_atHeight.setBoolean(atSetpoint());
-      nt_mainCurrent.setDouble(getMainCurrent());
-      nt_followCurrent.setDouble(getFollowCurrent());
+      nt_mainCurrent.setDouble(fmt1(getMainCurrent()));
+      nt_followCurrent.setDouble(fmt1(getFollowCurrent()));
       nt_zeroLimitSwitch.setBoolean(atZeroLimit());
-      nt_iAccum.setDouble(getAccumI());
+      nt_iAccum.setDouble(fmt2(100.0*getAccumI()));
     }
   }
 

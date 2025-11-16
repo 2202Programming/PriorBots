@@ -20,6 +20,8 @@ import frc.lib2202.subsystem.OdometryInterface;
 
 public class DriveControllerWithShooter extends DriveControllerDrivetrain {
 
+  final Shooter_Subsystem shooter;
+  
   public MagazineController magazineController;
   VelShootGatedCommand shootCommand;
   OdometryInterface odo;

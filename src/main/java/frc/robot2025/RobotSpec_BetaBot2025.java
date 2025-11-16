@@ -2,7 +2,6 @@ package frc.robot2025;
 
 import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.FeetPerSecond;
-import static frc.lib2202.Constants.DEGperRAD;
 import static frc.lib2202.Constants.MperFT;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -26,8 +25,12 @@ import frc.lib2202.builder.SubsystemConfig;
 import frc.lib2202.command.PDPMonitorCmd;
 import frc.lib2202.command.swerve.FieldCentricDrive;
 import frc.lib2202.subsystem.BlinkyLights;
+import frc.lib2202.subsystem.ILimelight;
 import frc.lib2202.subsystem.Odometry;
 import frc.lib2202.subsystem.OdometryInterface;
+import frc.lib2202.subsystem.Sensors;
+import frc.lib2202.subsystem.SignalLight;
+import frc.lib2202.subsystem.UX.TrimTables;
 import frc.lib2202.subsystem.hid.HID_Subsystem;
 import frc.lib2202.subsystem.swerve.AutoPPConfigure;
 import frc.lib2202.subsystem.swerve.DriveTrainInterface;
@@ -36,22 +39,25 @@ import frc.lib2202.subsystem.swerve.SwerveDrivetrain;
 import frc.lib2202.subsystem.swerve.config.ChassisConfig;
 import frc.lib2202.subsystem.swerve.config.ModuleConfig;
 import frc.lib2202.subsystem.swerve.config.ModuleConfig.CornerID;
+import static frc.lib2202.Constants.DEGperRAD;
 import frc.lib2202.util.PIDFController;
 import frc.robot2025.Constants.CAN;
+import frc.robot2025.Constants.DigitalIO;
 import frc.robot2025.commands.autos.DeliveryCmdFactory;
 import frc.robot2025.subsystems.Climber;
 import frc.robot2025.subsystems.Elevator_Subsystem;
+import frc.robot2025.subsystems.Elevator_Subsystem.Levels;
 import frc.robot2025.subsystems.EndEffector_Subsystem;
 import frc.robot2025.subsystems.GroundIntake;
-import frc.robot2025.subsystems.Limelight;
-import frc.robot2025.subsystems.Sensors_Subsystem;
-import frc.robot2025.subsystems.SignalLight;
+//import frc.robot2025.subsystems.LimelightV1;
+import frc.robot2025.subsystems.LimelightV2;
 import frc.robot2025.subsystems.VisionPoseEstimator;
 import frc.robot2025.subsystems.WristFLA;
-import frc.robot2025.subsystems.Elevator_Subsystem.Levels;
-import frc.robot2025.utils.UXTrim;
+import frc.robot2025.Constants.TheField;
 
 public class RobotSpec_BetaBot2025 implements IRobotSpec {
+  // copy source under deploy for this robot.
+  final static String DEPLOY_DIR = "2025";
 
   // Subsystems and other hardware on 2025 Robot rev Beta
   // $env:serialnum = "03415A8E"
@@ -63,11 +69,14 @@ public class RobotSpec_BetaBot2025 implements IRobotSpec {
         return pdp;
       })
       // .add(PneumaticsControl.class)
+      .add(TrimTables.class)
       .add(BlinkyLights.class, "LIGHTS", () -> {
         return new BlinkyLights(CAN.CANDLE1, CAN.CANDLE2, CAN.CANDLE3, CAN.CANDLE4);
       })
       .add(HID_Subsystem.class, "DC", () -> {
-        return new HID_Subsystem(0.3, 0.9, 0.05);
+        var hid = new HID_Subsystem(0.3, 0.9, 0.05);
+        hid.startWatcher();
+        return hid;
       })
       .add(GroundIntake.class)
       .add(Elevator_Subsystem.class)
@@ -78,12 +87,12 @@ public class RobotSpec_BetaBot2025 implements IRobotSpec {
 
       // Sensors, limelight and drivetrain all use interfaces, so make sure their alias names
       // match what is given here.
-      .add(Sensors_Subsystem.class, "sensors")
-      .add(Limelight.class, "limelight", ()-> {
+      .add(Sensors.class, "sensors")
+      .add(LimelightV2.class, "limelight", ()-> {
         // Limelight position in robot coords - this has LL in the front of bot
         Pose3d LimelightPosition = new Pose3d((0.7112 / 2.0) - .07, -0.28, .225,
           new Rotation3d(0.0, 10.0/DEGperRAD, 0.0));
-        return new Limelight("limelight", LimelightPosition );
+        return new LimelightV2("limelight", LimelightPosition );
       })
       .add(SwerveDrivetrain.class, "drivetrain", () ->{
           return new SwerveDrivetrain(SparkFlex.class);
@@ -97,7 +106,8 @@ public class RobotSpec_BetaBot2025 implements IRobotSpec {
       .addAlias(VisionPoseEstimator.class, "vision_odo")
       // below are optional watchers for shuffeleboard data - disable if need too.
       .add(WristFLA.class)
-      .add(SignalLight.class, "light", ()-> { return new SignalLight(); })
+      .add(SignalLight.class, "light", ()-> { 
+        return new SignalLight(DigitalIO.SignalLight1, DigitalIO.SignalLight2, DigitalIO.SignalLight3); })
       .add(EndEffector_Subsystem.class)
       .add(Command.class, "endEffectorWatcher", () -> {
         return RobotContainer.getSubsystem(EndEffector_Subsystem.class).getWatcher();
@@ -221,9 +231,10 @@ public class RobotSpec_BetaBot2025 implements IRobotSpec {
     SmartDashboard.putData(CommandScheduler.getInstance());
   }
 
+  // uncomment for multi-bot repo, leave commented out for a competiton repo.
   @Override
-  public boolean burnFlash() {
-    return true;
+  public String getDeployDirectory() {
+    return DEPLOY_DIR;
   }
 
   SendableChooser<Command> autoChooser;
@@ -327,12 +338,36 @@ public class RobotSpec_BetaBot2025 implements IRobotSpec {
   }
 
   /*
-   * Add additional calls to the robotPeriodic loop
+   * Add additional calls to the robotPeriodic loop or 
+   * any other mode cutpoint needed.
+   * 
+   * These should be very rare.
    */
+  
+  // Some cutpoints are used to keep LL from overheating
+  static ILimelight LL=null;
   @Override
-  public void periodic() {
-    UXTrim.periodic();
+  public void postRobotInit(){
+    // all ss or other objects are now available for lookup
+    // get our LL to save power on
+    LL = RobotContainer.getSubsystemOrNull("limelight");  //match name used in SSConfig .add()
+    if (LL != null){
+      LL.setField(TheField.fieldLayout);
+    }
   }
 
+  @Override
+  public void disabledInit(){
+    // save power while disabled
+    if (LL != null) 
+      LL.lowPowerMode();
+  }
+
+  @Override
+  public void disabledExit(){
+    // get back to work
+    if (LL != null) 
+      LL.normalPowerMode();
+  }
 
 }

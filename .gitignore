@@ -180,4 +180,13 @@ ctre_sim/
 simgui.json
 simgui-ds.json
 networktables.json
+networktables.json.bck
+
+# in this repo, we don't want files copied during sim to polute repp
+#skip anything in the deploy
+src/main/deploy/*
+#now whitelist deploy's folders, we want to keep bot specific folders
+!src/main/deploy/**/
+
+
 

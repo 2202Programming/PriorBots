@@ -6,16 +6,16 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.lib2202.builder.RobotContainer;
+import frc.lib2202.command.pathing.AllianceAwareGyroReset;
 import frc.lib2202.command.pathing.MoveToPose;
-import frc.lib2202.command.swerve.AllianceAwareGyroReset;
 import frc.lib2202.command.swerve.RobotCentricDrive;
 import frc.lib2202.subsystem.OdometryInterface;
+import frc.lib2202.subsystem.SignalLight;
 import frc.lib2202.subsystem.hid.HID_Subsystem;
 import frc.lib2202.subsystem.swerve.DriveTrainInterface;
 import frc.robot2025.commands.DriveToPickupTag;
 import frc.robot2025.commands.DriveToReefTag;
 import frc.robot2025.commands.ScaleDriver;
-import frc.robot2025.subsystems.SignalLight;
 
 public final class DPLPathTest {
 
@@ -52,7 +52,7 @@ public final class DPLPathTest {
 
     static void xboxDriver(CommandXboxController driver) { 
         // minimal standard driver controls - gyro reset and robot centric
-        driver.y().onTrue(new AllianceAwareGyroReset(true));
+        driver.y().onTrue(new AllianceAwareGyroReset());
         driver.rightBumper().whileTrue(new RobotCentricDrive(sdt, dc));
 
         //other binding used by driver from comp bindings

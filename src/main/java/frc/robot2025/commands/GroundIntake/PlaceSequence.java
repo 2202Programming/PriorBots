@@ -8,9 +8,9 @@ import java.util.function.BooleanSupplier;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib2202.builder.RobotContainer;
+import frc.lib2202.subsystem.UX.TrimTables.Trim;
 import frc.robot2025.subsystems.GroundIntake;
 import frc.robot2025.subsystems.GroundIntake.Position;
-import frc.robot2025.utils.UXTrim;
 
 public class PlaceSequence extends Command {
   public enum State {
@@ -21,7 +21,7 @@ public class PlaceSequence extends Command {
   }
 
   final int ejectingFrameCount = 10; // 200 ms
-  UXTrim ejectDuration = new UXTrim("giEjectFrames");
+  Trim ejectDuration = new Trim(GroundIntake.TrimTableName,"giEjectFrames");
 
   State state;
   int count;

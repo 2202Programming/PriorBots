@@ -20,12 +20,13 @@ import frc.lib2202.builder.IRobotSpec;
 import frc.lib2202.builder.RobotContainer;
 import frc.lib2202.builder.RobotLimits;
 import frc.lib2202.builder.SubsystemConfig;
-import frc.lib2202.command.swerve.AllianceAwareGyroReset;
+import frc.lib2202.command.pathing.AllianceAwareGyroReset;
 import frc.lib2202.command.swerve.FieldCentricDrive;
 import frc.lib2202.command.swerve.RobotCentricDrive;
 import frc.lib2202.subsystem.BlinkyLights;
 import frc.lib2202.subsystem.Odometry;
 import frc.lib2202.subsystem.OdometryInterface;
+import frc.lib2202.subsystem.Sensors;
 import frc.lib2202.subsystem.hid.HID_Subsystem;
 import frc.lib2202.subsystem.swerve.AutoPPConfigure;
 import frc.lib2202.subsystem.swerve.DriveTrainInterface;
@@ -39,9 +40,7 @@ import frc.robot2025.Constants.TheField;
 import frc.robot2025.commands.DriveToReefTag;
 import frc.robot2025.commands.ScaleDriver;
 import frc.robot2025.commands.distanceWatcher;
-// 2024 robot has a pigeon, so use its sensors, add LL4
-import frc.robot2025.subsystems.Limelight;
-import frc.robot2025.subsystems.Sensors_Subsystem;
+import frc.robot2025.subsystems.LimelightV1;
 import frc.robot2025.subsystems.VisionPoseEstimator;
 import frc.robot2025.testBindings.DPLPathTest;
 
@@ -88,12 +87,12 @@ public class RobotSpec_test2024 implements IRobotSpec {
             })
 
             // using same setup as 2025 comp, not same as orginal 2024
-            .add(Sensors_Subsystem.class, "sensors") // 2025
-            .add(Limelight.class, "limelight", () -> {
+            .add(Sensors.class, "sensors") // 2025
+            .add(LimelightV1.class, "limelight", () -> {
                 // Limelight position in robot coords - this has LL in the front of bot
                 Pose3d LimelightPosition = new Pose3d(0.7112 / 2.0, -0.21, .23,
                         new Rotation3d(0.0, 15.0 / DEGperRAD, 0.0));
-                return new Limelight("limelight", LimelightPosition);
+                return new LimelightV1("limelight", LimelightPosition);
             }) // 2025 - added LL4 for testing
             .add(SwerveDrivetrain.class, "drivetrain", () -> {
                 return new SwerveDrivetrain(); // 2024 sdt, no sparkflex
@@ -207,7 +206,7 @@ public class RobotSpec_test2024 implements IRobotSpec {
             CommandXboxController driver = (CommandXboxController) generic_driver;
             // copy basic drive cmd from compBindings
             driver.rightBumper().whileTrue(new RobotCentricDrive(sdt, dc));
-            driver.y().onTrue(new AllianceAwareGyroReset(true));
+            driver.y().onTrue(new AllianceAwareGyroReset());
             // Driver will wants precision robot-centric throttle drive on left trigger
             driver.leftBumper().whileTrue(new ParallelCommandGroup(
                     new ScaleDriver(0.25),

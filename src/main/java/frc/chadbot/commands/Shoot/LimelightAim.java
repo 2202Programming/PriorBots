@@ -13,7 +13,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib2202.builder.RobotContainer;
 import frc.chadbot.Constants.Shooter;
-import frc.chadbot.subsystems.Sensors_Subsystem;
+
 import frc.lib2202.subsystem.swerve.IHeadingProvider;
 import frc.lib2202.subsystem.swerve.SwerveDrivetrain;
 import frc.lib2202.subsystem.Limelight;
@@ -78,7 +78,7 @@ public class LimelightAim extends Command {
 
   public LimelightAim() {
     this.drivetrain = RobotContainer.getSubsystem(SwerveDrivetrain.class);
-    this.gyro = RobotContainer.getSubsystem(Sensors_Subsystem.class);
+    this.gyro = RobotContainer.getRobotSpecs().getHeadingProvider();
     addRequirements(drivetrain);
     this.kinematics = drivetrain.getKinematics();
     this.limelight = RobotContainer.getSubsystem(Limelight.class);

@@ -24,7 +24,6 @@ import frc.robot2025.commands.ElevatorCalibrate;
 import frc.robot2025.commands.EndEffectorPercent;
 import frc.robot2025.commands.testElevatorVelComd;
 import frc.robot2025.subsystems.Elevator_Subsystem;
-import frc.robot2025.subsystems.Sensors_Subsystem;
 
 public class RobotSpec_BotOnBoard implements IRobotSpec {
   // Subsystems and other hardware on 2025 Robot rev Alpha
@@ -89,7 +88,7 @@ public class RobotSpec_BotOnBoard implements IRobotSpec {
 
   @Override
   public IHeadingProvider getHeadingProvider() {
-    return RobotContainer.getSubsystem(Sensors_Subsystem.class);
+    return null;
   }
 
   @Override
@@ -155,12 +154,7 @@ public class RobotSpec_BotOnBoard implements IRobotSpec {
     //BindingsOther.ConfigureOther(dc);
   }
 
-  @Override
-  public boolean burnFlash() {
-    return burnFlash;
-  }
-
-
+  
   @Override
   public void setDefaultCommands() {
   }

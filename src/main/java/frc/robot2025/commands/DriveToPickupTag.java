@@ -9,27 +9,29 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib2202.builder.RobotContainer;
 import frc.lib2202.command.pathing.MoveToPose;
+import frc.lib2202.subsystem.ILimelight;
 import frc.lib2202.subsystem.OdometryInterface;
+import frc.lib2202.subsystem.UX.TrimTables.Trim;
 import frc.robot2025.Constants.TheField;
-import frc.robot2025.subsystems.Limelight;
-import frc.robot2025.utils.UXTrim;
 
 public class DriveToPickupTag extends Command{
+    static String TrimTableName = "DriveToPickup";
+
     static double LeftOffset = 0.0;    //[m]
     static double RightOffset = 0.0;   //[m]
     static double BackupOffset = 0.48; //[m]
 
     static PathConstraints constraints = new PathConstraints(2.8, 1.8, Math.PI, Math.PI / 2.0);
 
-    final Limelight LL;
+    final ILimelight LL;
     final String LLName;
     final OdometryInterface odo;
     final String odoName = "vision_odo";   //todo make an arg
     final int tagIdx;
-    final UXTrim redBackoffTrim;
-    final UXTrim blueBackoffTrim;
-    final UXTrim redXyTrim;
-    final UXTrim blueXyTrim;
+    final Trim redBackoffTrim;
+    final Trim blueBackoffTrim;
+    final Trim redXyTrim;
+    final Trim blueXyTrim;
     final double xyOffset;
     final String side;
     
@@ -40,7 +42,7 @@ public class DriveToPickupTag extends Command{
     public DriveToPickupTag(String side){
         odo = RobotContainer.getSubsystemOrNull(odoName);
         LL = RobotContainer.getObjectOrNull("limelight");
-        LLName = (LL != null) ? LL.getName() : "no-ll-found";  //name if we need to use LLHelpers directly
+        LLName = (LL != null) ? LL.getLLName() : "no-ll-found"; 
         this.side = side.toLowerCase();
 
         // pick a direction to go, left , right in TheField
@@ -48,16 +50,16 @@ public class DriveToPickupTag extends Command{
         xyOffset = this.side.startsWith("l") ? LeftOffset : RightOffset;
 
         // setup trims for both red/blue
-        redBackoffTrim = new UXTrim("Pickup_backoff_Red_" + side, 0.0);
-        blueBackoffTrim = new UXTrim("Pickup_backoff_Blue_" + side, 0.0);
-        redXyTrim = new UXTrim("Pickup_shift_Red_" + side, 0.0);
-        blueXyTrim = new UXTrim("Pickup_shift_Blue_" + side, 0.0);
+        redBackoffTrim = new Trim(TrimTableName, "Pickup_backoff_Red_" + side, 0.0);
+        blueBackoffTrim = new Trim(TrimTableName, "Pickup_backoff_Blue_" + side, 0.0);
+        redXyTrim = new Trim(TrimTableName, "Pickup_shift_Red_" + side, 0.0);
+        blueXyTrim = new Trim(TrimTableName, "Pickup_shift_Blue_" + side, 0.0);
     }
 
     @Override
     public void initialize() {
-        UXTrim xyTrim;
-        UXTrim backoffTrim;
+        Trim xyTrim;
+        Trim backoffTrim;
         done = true;
         //protect from missng required ss
         if (LL == null) return;
