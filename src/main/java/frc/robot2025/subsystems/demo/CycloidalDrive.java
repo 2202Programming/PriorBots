@@ -28,14 +28,14 @@ public class CycloidalDrive extends SubsystemBase {
     final double maxAccel = 75.0; // [deg/s^2]
 
     // TODO set KFF to get vel close at mid speed, then other two as needed.
-    double HW_kFF = 1.0/250.0;   // guess based on KV TUNE ME. It should spin, but vel will be off until tuned
+    double HW_kFF = 1.0/350.0;   // 1/250 guess based on KV TUNE ME. It should spin, but vel will be off until tuned
     double HW_kP = 0.0;
     double HW_kI = 0.0;
 
     PIDFController posPid = new PIDFController(0.0, 0.0, 0.0, 0.0);   //TODO tune, this pid is run on rio
-    PIDFController velHWPid = new PIDFController(HW_kP, 0.0, 0.0, HW_kFF);   //TODO tune these too, this just hold values for hw
+    PIDFController velHWPid = new PIDFController(HW_kP, 0.0, 0.000, HW_kFF);   //TODO tune these too, this just hold values for hw
 
-    double SERVO_GR = 1.0; // TODO set gearing for converions factor [face-turns/mtr-turns] = [] non-dim
+    double SERVO_GR = 16; // TODO set gearing for converions factor [face-turns/mtr-turns] = [] non-dim
 
     // This can work in either Position or Velocity mode
     double cmdPos; //local copy of last commanded pos
