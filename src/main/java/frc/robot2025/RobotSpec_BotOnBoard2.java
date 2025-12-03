@@ -19,6 +19,7 @@ import frc.robot2025.Constants.CAN;
 
 import frc.robot2025.subsystems.demo.CycloidalDrive;
 import frc.robot2025.subsystems.demo.SimpleServo;
+import frc.robot2025.testBindings.TylerCommands;
 
 //copy or extend this code for your robot - remember to override:
 // TBD
@@ -98,8 +99,9 @@ public class RobotSpec_BotOnBoard2 implements IRobotSpec {
         driver.b().onTrue(Servo0.cmdPositionWaitForModel(1.0));
 
         //bindings for Cycloid demo - uses POV and rtTrigger, L/R Bumper
-        Cycloid0.setDemoBindings(driver);
-    
+        Cycloid0.setDemoBindings(driver);   // uses driver controller
+        TylerCommands.myBindings(dc);       // uses operator controller
+
         //show what commands are running
         SmartDashboard.putData(CommandScheduler.getInstance());
     }

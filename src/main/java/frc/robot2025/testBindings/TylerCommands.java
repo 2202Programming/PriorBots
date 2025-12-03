@@ -17,12 +17,17 @@ public class TylerCommands {
         // bail if there was no opr controller of type Xbox
         if (opr == null) return;
 
-        // Press X On Controller to Spin
-        opr.x().onTrue(new SpinCyclodialDrive(30.0,false));
+        // Press X On Controller to Spin while button is held
+        opr.x().whileTrue(new SpinCyclodialDrive(30.0,false))
+               .onFalse(new SpinCyclodialDrive(0.0,false));
+
         // Press B On Controller to Spin opposite way
-        opr.b().onTrue(new SpinCyclodialDrive(-30.0,false));
+        opr.b().whileTrue( new SpinCyclodialDrive(-30.0,false))
+               .onFalse(new SpinCyclodialDrive(0.0,false));
+               
         // Press Y On Controller to Stop Spinning
-        opr.y().onTrue(new SpinCyclodialDrive(0.0,false));
+        opr.y().onTrue(new SpinCyclodialDrive(0.0,false)
+            .withName("SpinCycZeroVel"));
 
         // Press Down Arrow on Controller to go to 0
         opr.povDown().onTrue(new SpinCyclodialDrive(0,true));
