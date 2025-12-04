@@ -29,8 +29,8 @@ public class CycloidalDrive extends SubsystemBase {
     final double maxAccel = 75.0; // [deg/s^2]
 
     // TODO set KFF to get vel close at mid speed, then other two as needed.
-    final double HW_kFF = 1.0/350.0;   // 1/250 guess based on KV TUNE ME. It should spin, but vel will be off until tuned
-    final double HW_kP = 0.0;
+    final double HW_kFF = 1.0/2000.0;   // 1/250 guess based on KV TUNE ME. It should spin, but vel will be off until tuned
+    final double HW_kP = 0.0005;
     final double HW_kI = 0.0;
 
     //Pos Pid
@@ -40,9 +40,9 @@ public class CycloidalDrive extends SubsystemBase {
     PIDFController posPid = new PIDFController(pos_kP, pos_pI, 0.0, 0.0);   //TODO tune, this pid is run on rio
     PIDFController velHWPid = new PIDFController(HW_kP, HW_kI, 0.0, HW_kFF);   //TODO tune these too, this just hold values for hw
 
-    final double SERVO_GR = 1.0 / 16.0; // [face-rotations/mtr-rotations] = []
-    final double CONV_FACTOR = Constants.DEGperRAD * SERVO_GR; // [deg]
-    
+    final double SERVO_GR = 1.0 / 15.0; // [face-rotations/mtr-rotations] = []
+    final double CONV_FACTOR =Math.PI * 2* Constants.DEGperRAD * SERVO_GR ; // [deg]
+    //final double CONV_FACTOR = SERVO_GR ; // [radians]
     // This actuator can work in either Position or Velocity mode
     double cmdPos; //local copy of last commanded pos
     double cmdVel; //local copy of last commanded vel
@@ -161,10 +161,10 @@ public class CycloidalDrive extends SubsystemBase {
     public void setDemoBindings(CommandXboxController xbox) {
         //bindings for Cycloid demo - use POV buttons with new ss cmd pattern        
         //velocity cmds while held it should spin
-        xbox.povLeft().whileTrue(this.cmdVelocity(10.0))
+        xbox.povLeft().whileTrue(this.cmdVelocity(120.0))
                       .onFalse(this.cmdVelocity(0.0));
 
-        xbox.povRight().whileTrue(this.cmdVelocity(-10.0))
+        xbox.povRight().whileTrue(this.cmdVelocity(-120.0))
                        .onFalse(this.cmdVelocity(0.0));
         
         // Cmd to known points
