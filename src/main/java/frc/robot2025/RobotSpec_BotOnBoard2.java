@@ -18,6 +18,7 @@ import frc.lib2202.subsystem.swerve.config.ChassisConfig;
 import frc.robot2025.Constants.CAN;
 
 import frc.robot2025.subsystems.demo.CycloidalDrive;
+import frc.robot2025.subsystems.demo.ServoAuto;
 import frc.robot2025.subsystems.demo.SimpleServo;
 import frc.robot2025.testBindings.TylerCommands;
 
@@ -50,7 +51,7 @@ public class RobotSpec_BotOnBoard2 implements IRobotSpec {
     // SubsystemConfig gets registered in static array to match serial number at
     // Construct calls.  To debug in Sim remember to set the env-var in vscode debug window:
     //      $env:serialnum = "0312db1a"
-    //      $env:serialnum = "03061025"  # for cycloidalDrive
+    //            # for cycloidalDrive
 
     static SimpleServo Servo0;
     static CycloidalDrive Cycloid0;
@@ -97,6 +98,7 @@ public class RobotSpec_BotOnBoard2 implements IRobotSpec {
         driver.a().onTrue(Servo0.cmdPosition(0.0));
         driver.x().onTrue(Servo0.cmdPositionWaitForModel(0.5));
         driver.b().onTrue(Servo0.cmdPositionWaitForModel(1.0));
+        driver.y().onTrue(new ServoAuto());
 
         //bindings for Cycloid demo - uses POV and rtTrigger, L/R Bumper
         Cycloid0.setDemoBindings(driver);   // uses driver controller
