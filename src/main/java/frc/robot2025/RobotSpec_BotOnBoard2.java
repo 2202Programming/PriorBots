@@ -94,7 +94,7 @@ public class RobotSpec_BotOnBoard2 implements IRobotSpec {
        
         //Add your bindings here
         // bindings for simple servo demo
-        driver.a().onTrue(Servo0.cmdPosition(0.0));
+        driver.a().onTrue(Servo0.cmdPosition(0));
         driver.x().onTrue(Servo0.cmdPositionWaitForModel(0.5));
         driver.b().onTrue(Servo0.cmdPositionWaitForModel(1.0));
 

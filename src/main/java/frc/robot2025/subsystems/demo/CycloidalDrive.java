@@ -3,6 +3,7 @@ package frc.robot2025.subsystems.demo;
 import com.revrobotics.spark.SparkAnalogSensor;
 import com.revrobotics.spark.SparkBase;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -25,21 +26,21 @@ public class CycloidalDrive extends SubsystemBase {
     final SparkBase servo_ctrlr;
     final SparkAnalogSensor servo_analog;   // positon sensor, analog I think - Mr.L
 
-    final double maxVel = 100.0;  // [deg/s]
+    final double maxVel = 500.0;  // [deg/s]
     final double maxAccel = 75.0; // [deg/s^2]
 
     // TODO set KFF to get vel close at mid speed, then other two as needed.
-    final double HW_kFF = 1.0/2000.0;   // 1/250 guess based on KV TUNE ME. It should spin, but vel will be off until tuned
-    final double HW_kP = 0.0005;
-    final double HW_kI = 0.0;
+    final double HW_kFF = 1.0/2100.0;   // 1/250 guess based on KV TUNE ME. It should spin, but vel will be off until tuned
+    final double HW_kP = 0.0005; //
+    final double HW_kI = 0.000; //0
 
     //Pos Pid
-    final double pos_kP = 0.0;
-    final double pos_pI = 0.0;
+    final double pos_kP = 7;
+    final double pos_pI = 0.0000;
     // PIDS  HW is on the sparkmax controls vel, posPid is on RIO controls position [deg]
     PIDFController posPid = new PIDFController(pos_kP, pos_pI, 0.0, 0.0);   //TODO tune, this pid is run on rio
     PIDFController velHWPid = new PIDFController(HW_kP, HW_kI, 0.0, HW_kFF);   //TODO tune these too, this just hold values for hw
-
+    
     final double SERVO_GR = 1.0 / 15.0; // [face-rotations/mtr-rotations] = []
     final double CONV_FACTOR =Math.PI * 2* Constants.DEGperRAD * SERVO_GR ; // [deg]
     //final double CONV_FACTOR = SERVO_GR ; // [radians]
@@ -51,7 +52,7 @@ public class CycloidalDrive extends SubsystemBase {
         setName("CycloidalDrive_" + CANID);
         // set our control constants for pos and vel pids
         servo = new NeoServo(CANID, posPid, velHWPid, false);
-
+        posPid.setIZone(15.0);// Work in Progress. Units degrees
         // setup servo
         servo  // units should be [deg] and [deg/s]
             .setConversionFactor(CONV_FACTOR )
@@ -64,6 +65,9 @@ public class CycloidalDrive extends SubsystemBase {
         servo_ctrlr = servo.getController();    
         servo_analog = servo_ctrlr.getAnalog();
         init();
+
+        SmartDashboard.putData(this.getName() + "posPIDcfg", posPid);
+
     }
 
     
@@ -168,7 +172,7 @@ public class CycloidalDrive extends SubsystemBase {
                        .onFalse(this.cmdVelocity(0.0));
         
         // Cmd to known points
-        xbox.povUp().onTrue(this.cmdPosition(0.0));
+        xbox.povUp().onTrue(this.cmdPosition(0.0));// was 0
         xbox.povDown().onTrue(this.cmdPosition(180.0));        
     }
 
