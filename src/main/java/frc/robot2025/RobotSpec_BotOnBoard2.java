@@ -75,7 +75,7 @@ public class RobotSpec_BotOnBoard2 implements IRobotSpec {
                 Cycloid0 = new CycloidalDrive(55);
                 Cycloid0.getWatcherCmd();
                 return Cycloid0;
-            }) 
+            })             
     ;
 
     public RobotSpec_BotOnBoard2() {

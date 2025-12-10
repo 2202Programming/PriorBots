@@ -3,6 +3,7 @@ package frc.robot2025.subsystems.demo;
 import com.revrobotics.spark.SparkAnalogSensor;
 import com.revrobotics.spark.SparkBase;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -36,8 +37,9 @@ public class CycloidalDrive extends SubsystemBase {
     //Pos Pid
     final double pos_kP = 0.0;
     final double pos_pI = 0.0;
+    final double pos_pD = 0.0;
     // PIDS  HW is on the sparkmax controls vel, posPid is on RIO controls position [deg]
-    PIDFController posPid = new PIDFController(pos_kP, pos_pI, 0.0, 0.0);   //TODO tune, this pid is run on rio
+    PIDController posPid = new PIDController(pos_kP, pos_pI, pos_pD);   //TODO tune, this pid is run on rio
     PIDFController velHWPid = new PIDFController(HW_kP, HW_kI, 0.0, HW_kFF);   //TODO tune these too, this just hold values for hw
 
     final double SERVO_GR = 1.0 / 15.0; // [face-rotations/mtr-rotations] = []
@@ -59,7 +61,9 @@ public class CycloidalDrive extends SubsystemBase {
             .setSmartCurrentLimit(30, 5)  // [amp], [amp]
             .setVelocityHW_PID(maxVel, maxAccel)
             .setMaxVelocity(maxVel);
-        
+
+        servo.setName(this.getName()+"/NeoServo-55");
+
         // get refs to servo Spark stuff.
         servo_ctrlr = servo.getController();    
         servo_analog = servo_ctrlr.getAnalog();
