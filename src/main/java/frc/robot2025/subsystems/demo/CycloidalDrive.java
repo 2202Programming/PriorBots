@@ -13,6 +13,7 @@ import frc.lib2202.command.WatcherCmd;
 import frc.lib2202.util.NeoServo;
 import frc.lib2202.util.PIDFController;
 
+
 /*
  * Demo Subsystem for the Cycloidal Drive that Mr. Dean Spears built
  * 
@@ -35,25 +36,25 @@ public class CycloidalDrive extends SubsystemBase {
     final double HW_kI = 0.0;
 
     //Pos Pid
-    final double pos_kP = 0.0;
+    final double pos_kP = 15;
     final double pos_pI = 0.0;
     final double pos_pD = 0.0;
+    final double pos_IZone = 15.0;
     // PIDS  HW is on the sparkmax controls vel, posPid is on RIO controls position [deg]
     PIDController posPid = new PIDController(pos_kP, pos_pI, pos_pD);   //TODO tune, this pid is run on rio
     PIDFController velHWPid = new PIDFController(HW_kP, HW_kI, 0.0, HW_kFF);   //TODO tune these too, this just hold values for hw
-
     final double SERVO_GR = 1.0 / 15.0; // [face-rotations/mtr-rotations] = []
     final double CONV_FACTOR =Math.PI * 2* Constants.DEGperRAD * SERVO_GR ; // [deg]
     //final double CONV_FACTOR = SERVO_GR ; // [radians]
     // This actuator can work in either Position or Velocity mode
     double cmdPos; //local copy of last commanded pos
     double cmdVel; //local copy of last commanded vel
-  
+    
     public CycloidalDrive(final int CANID) {
         setName("CycloidalDrive_" + CANID);
         // set our control constants for pos and vel pids
         servo = new NeoServo(CANID, posPid, velHWPid, false);
-
+        
         // setup servo
         servo  // units should be [deg] and [deg/s]
             .setConversionFactor(CONV_FACTOR )
@@ -67,6 +68,7 @@ public class CycloidalDrive extends SubsystemBase {
         // get refs to servo Spark stuff.
         servo_ctrlr = servo.getController();    
         servo_analog = servo_ctrlr.getAnalog();
+        posPid.setIZone(15.0);
         init();
     }
 
