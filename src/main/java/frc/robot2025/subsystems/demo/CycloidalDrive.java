@@ -1,14 +1,15 @@
 package frc.robot2025.subsystems.demo;
 
-import com.revrobotics.spark.SparkAnalogSensor;
 import com.revrobotics.spark.SparkBase;
+import com.revrobotics.spark.SparkFlex;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.lib2202.Constants;
+
 import frc.lib2202.command.WatcherCmd;
 import frc.lib2202.util.NeoServo;
 import frc.lib2202.util.PIDFController;
@@ -25,60 +26,75 @@ public class CycloidalDrive extends SubsystemBase {
     final NeoServo servo;
     // controller for the motor
     final SparkBase servo_ctrlr;
-    final SparkAnalogSensor servo_analog;   // positon sensor, analog I think - Mr.L
-
-    final double maxVel = 100.0;  // [deg/s]
     final double maxAccel = 75.0; // [deg/s^2]
 
     // TODO set KFF to get vel close at mid speed, then other two as needed.
-    final double HW_kFF = 1.0/2000.0;   // 1/250 guess based on KV TUNE ME. It should spin, but vel will be off until tuned
-    final double HW_kP = 0.0005;
-    final double HW_kI = 0.0;
+    final double HW_kFF = .000291;  // tuned at 120 & 300 deg/s witn aff set
+    final double HW_kP = 0.00006;
+    final double HW_kI = 0.0000052;
+    final double HW_kD = 0.0025;
+    final double HW_IZone = 50;
 
     //Pos Pid
-    final double pos_kP = 15;
+    final double pos_kP = 15.0;
     final double pos_pI = 0.0;
-    final double pos_pD = 0.0;
-    final double pos_IZone = 15.0;
+    final double pos_pD = 0.3;
+    final double pos_IZone = 5.0;
+
     // PIDS  HW is on the sparkmax controls vel, posPid is on RIO controls position [deg]
     PIDController posPid = new PIDController(pos_kP, pos_pI, pos_pD);   //TODO tune, this pid is run on rio
-    PIDFController velHWPid = new PIDFController(HW_kP, HW_kI, 0.0, HW_kFF);   //TODO tune these too, this just hold values for hw
+    PIDFController velHWPid = new PIDFController(HW_kP, HW_kI, HW_kD, HW_kFF);   //TODO tune these too, this just hold values for hw
     final double SERVO_GR = 1.0 / 15.0; // [face-rotations/mtr-rotations] = []
-    final double CONV_FACTOR =Math.PI * 2* Constants.DEGperRAD * SERVO_GR ; // [deg]
-    //final double CONV_FACTOR = SERVO_GR ; // [radians]
+    final double CONV_FACTOR = 360.0 * SERVO_GR ; // [deg]
+ 
     // This actuator can work in either Position or Velocity mode
     double cmdPos; //local copy of last commanded pos
     double cmdVel; //local copy of last commanded vel
-    
+
+    // parameters
+    double arb_ff = 0.012;  // [% power] point where mechanism just starts to move
+    double maxVel = 300.0;  // [deg/s]
+
     public CycloidalDrive(final int CANID) {
         setName("CycloidalDrive_" + CANID);
         // set our control constants for pos and vel pids
-        servo = new NeoServo(CANID, posPid, velHWPid, false);
+        velHWPid.setIZone(HW_IZone);
+        posPid.setIZone(pos_IZone);
+        posPid.setIntegratorRange(-15.0, 15.0);
+
+        servo = new NeoServo(CANID, posPid, velHWPid, false,SparkFlex.class);
         
         // setup servo
         servo  // units should be [deg] and [deg/s]
             .setConversionFactor(CONV_FACTOR )
-            .setTolerance(1.0, 0.05)  // [deg], [deg/s]
-            .setSmartCurrentLimit(30, 5)  // [amp], [amp]
+            .setTolerance(0.5, 3.0)  // [deg], [deg/s]
+            .setSmartCurrentLimit(35, 5)  // [amp], [amp]
             .setVelocityHW_PID(maxVel, maxAccel)
-            .setMaxVelocity(maxVel);
+            .setMaxVelocity(maxVel)
+            .setAFFVelocityComp(true);
 
         servo.setName(this.getName()+"/NeoServo-55");
 
         // get refs to servo Spark stuff.
         servo_ctrlr = servo.getController();    
-        servo_analog = servo_ctrlr.getAnalog();
-        posPid.setIZone(15.0);
-        init();
+        servo.setPosition(0.0);
+        setArbFF(arb_ff);
     }
 
-    
-    protected void init(){
-        // read hardware's starting position
-        double cur_pos = servo_analog.getPosition();  // TODO - this may need debugging HW is new...
-        // TODO - may need to convert to getVoltage() and apply conversion factor
-        // initialize position based on feedback 
-        servo.setPosition(cur_pos);  // doesn't move, just tells it where it is.
+    double getArbFF() {
+        return arb_ff;
+    }
+
+    void setArbFF(double aff){
+        this.arb_ff = aff;
+        servo.setArbFeedforward(this.arb_ff);
+    }
+
+    @Override
+    public void initSendable(SendableBuilder builder) {
+        super.initSendable(builder);
+        builder.addDoubleProperty("arb_ff",  this::getArbFF, this::setArbFF );
+        builder.addDoubleProperty("max_vel", servo::getMaxVel, servo::setMaxVelocity);
     }
 
     @Override
@@ -120,17 +136,6 @@ public class CycloidalDrive extends SubsystemBase {
         return servo.getVelocity();
     }
 
-    // analog values based on pot wired to controller - not sure if this device has it
-    public double getAnalogVelocity(){
-        return servo_analog.getVelocity();
-    }
-
-    public double getAnalogPosition(){
-        return servo_analog.getPosition();
-    }
-    public double getAnalogVoltage(){
-        return servo_analog.getVoltage();
-    }
 
     // Add simple commands here - alternative to puttiing Commands in their own file.
     // This pattern is new for us, but is simpler. 
@@ -167,7 +172,7 @@ public class CycloidalDrive extends SubsystemBase {
     public void setDemoBindings(CommandXboxController xbox) {
         //bindings for Cycloid demo - use POV buttons with new ss cmd pattern        
         //velocity cmds while held it should spin
-        xbox.povLeft().whileTrue(this.cmdVelocity(120.0))
+        xbox.povLeft().whileTrue(this.cmdVelocity(300.0))
                       .onFalse(this.cmdVelocity(0.0));
 
         xbox.povRight().whileTrue(this.cmdVelocity(-120.0))
@@ -175,7 +180,8 @@ public class CycloidalDrive extends SubsystemBase {
         
         // Cmd to known points
         xbox.povUp().onTrue(this.cmdPosition(0.0));
-        xbox.povDown().onTrue(this.cmdPosition(180.0));        
+        xbox.povDown().onTrue(this.cmdPosition(180.0));
+        xbox.y().onTrue(this.cmdCalibrateAtZero());
     }
 
     // Add a watcher so we can see stuff on network tables
@@ -192,11 +198,6 @@ public class CycloidalDrive extends SubsystemBase {
     class CDWatcher extends WatcherCmd{
         CDWatcher(){
             //use newer form
-            // analog sensor pos/vel
-            addEntry("analog_pos", CycloidalDrive.this::getAnalogPosition, 2);
-            addEntry("analog_vel", CycloidalDrive.this::getAnalogVelocity, 2);
-            addEntry("analog_volt", CycloidalDrive.this::getAnalogVoltage, 2);
-
             //motor count based pos/vel
             addEntry("internal_pos", CycloidalDrive.this.servo::getPosition, 2);
             addEntry("internal_vel", CycloidalDrive.this.servo::getVelocity, 2);
