@@ -16,10 +16,9 @@ import frc.lib2202.builder.SubsystemConfig;
 import frc.lib2202.subsystem.hid.HID_Subsystem;
 import frc.lib2202.subsystem.swerve.config.ChassisConfig;
 import frc.robot2025.Constants.CAN;
-
+import frc.robot2025.subsystems.demo.CapstanDrive;
 import frc.robot2025.subsystems.demo.CycloidalDrive;
 import frc.robot2025.subsystems.demo.SimpleServo;
-import frc.robot2025.testBindings.TylerCommands;
 
 //copy or extend this code for your robot - remember to override:
 // TBD
@@ -54,6 +53,7 @@ public class RobotSpec_BotOnBoard2 implements IRobotSpec {
 
     static SimpleServo Servo0;
     static CycloidalDrive Cycloid0;
+    static CapstanDrive Capstan0;
 
     SubsystemConfig subsystemConfig = new SubsystemConfig("bot-On-Board-2", "03061025")
             // deferred construction via Supplier<Object> lambda
@@ -75,7 +75,12 @@ public class RobotSpec_BotOnBoard2 implements IRobotSpec {
                 Cycloid0 = new CycloidalDrive(55);
                 Cycloid0.getWatcherCmd();
                 return Cycloid0;
-            })             
+            })        
+            .add(CapstanDrive.class, "CapstanDrive", () -> {
+                Capstan0 = new CapstanDrive(18);
+                Capstan0.getWatcherCmd();
+                return Capstan0;
+            })
     ;
 
     public RobotSpec_BotOnBoard2() {
@@ -91,6 +96,7 @@ public class RobotSpec_BotOnBoard2 implements IRobotSpec {
         
         //@SuppressWarnings("unused")
         CommandXboxController driver = (CommandXboxController) dc.Driver();
+        CommandXboxController operator = (CommandXboxController) dc.Operator();
        
         //Add your bindings here
         // bindings for simple servo demo
@@ -100,7 +106,9 @@ public class RobotSpec_BotOnBoard2 implements IRobotSpec {
 
         //bindings for Cycloid demo - uses POV and rtTrigger, L/R Bumper
         Cycloid0.setDemoBindings(driver);   // uses driver controller
-        TylerCommands.myBindings(dc);       // uses operator controller
+        //TylerCommands.myBindings(dc);       // uses operator controller
+
+        Capstan0.setDemoBindings(operator);
 
         //show what commands are running
         SmartDashboard.putData(CommandScheduler.getInstance());
