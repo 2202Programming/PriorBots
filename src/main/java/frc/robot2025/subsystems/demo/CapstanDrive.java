@@ -1,7 +1,7 @@
 package frc.robot2025.subsystems.demo;
 
+import com.revrobotics.spark.SparkAnalogSensor;
 import com.revrobotics.spark.SparkBase;
-import com.revrobotics.spark.SparkFlex;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.util.sendable.SendableBuilder;
@@ -14,70 +14,87 @@ import frc.lib2202.command.WatcherCmd;
 import frc.lib2202.util.NeoServo;
 import frc.lib2202.util.PIDFController;
 
-
 /*
- * Demo Subsystem for the Cycloidal Drive that Mr. Dean Spears built
+ * Demo Subsystem for the Capstan Drive that Mr. Dean Spears built
  * 
- * Cycloidal gear box around a dial face to show position.
+ * Features an analog position sensor and very little backlash for gears.
  * 
- *  Note: I think this has an analog feedback sensor on the hw to measure position. - Mr.L.
  */
-public class CycloidalDrive extends SubsystemBase {
+public class CapstanDrive extends SubsystemBase {
     final NeoServo servo;
     // controller for the motor
     final SparkBase servo_ctrlr;
-    final double maxAccel = 75.0; // [deg/s^2]
+    final SparkAnalogSensor servo_analog; 
 
-    // TODO set KFF to get vel close at mid speed, then other two as needed.
-    final double HW_kFF = .000291;  // tuned at 120 & 300 deg/s witn aff set
-    final double HW_kP = 0.00006;
-    final double HW_kI = 0.0000052;
-    final double HW_kD = 0.0025;
-    final double HW_IZone = 50;
+    // TODO set KFF to get vel close at mid speed
+    double arb_ff = 0.01;          // [% power] point where mechanism just starts to move
+    final double HW_kFF = .01;      //tuned at 10 [deg/s] 
+    final double HW_kP = 0.00025;
+    final double HW_kI =0.00001;
+    final double HW_kD = 0.0;
+    final double HW_IZone = 2.50;
 
     //Pos Pid
-    final double pos_kP = 15.0;
-    final double pos_pI = 0.0;
-    final double pos_pD = 0.3;
-    final double pos_IZone = 5.0;
+    final double pos_kP = 2.0;
+    final double pos_kI = 0.0;
+    final double pos_kD = 0.0;
+    final double pos_IZone = 10.0;  // allow some Ki when with in 10 degs
 
     // PIDS  HW is on the sparkmax controls vel, posPid is on RIO controls position [deg]
-    PIDController posPid = new PIDController(pos_kP, pos_pI, pos_pD);   //TODO tune, this pid is run on rio
+    PIDController posPid = new PIDController(pos_kP, pos_kI, pos_kD);   //TODO tune, this pid is run on rio
     PIDFController velHWPid = new PIDFController(HW_kP, HW_kI, HW_kD, HW_kFF);   //TODO tune these too, this just hold values for hw
-    final double SERVO_GR = 1.0 / 15.0; // [face-rotations/mtr-rotations] = []
-    final double CONV_FACTOR = 360.0 * SERVO_GR ; // [deg]
+
+    // Device physical values
+    final double SERVO_GR = 4.0*4.0*5.0*8.65;  //inline and capstan [out rot/mtr rot] = []
+    final double CONV_FACTOR = 360.0 / SERVO_GR ; // [deg]
+
+    final boolean mtr_invert = true;    // so pos %pwr moves arm up
+    final double MAX_POSITION =  45.0;  // [deg]
+    final double MIN_POSITION = -45.0;  // [deg] 
+
+    // Analog Sensor measured values for min/max position
+    final double V0 = 1.740;      // [Volts] measured at zero position 
+    final double Kv_p = 72.3327;  // [deg/volt]  120.0 / (Vmax - Vmin) measured
  
     // This actuator can work in either Position or Velocity mode
     double cmdPos; //local copy of last commanded pos
     double cmdVel; //local copy of last commanded vel
 
     // parameters
-    double arb_ff = 0.012;  // [% power] point where mechanism just starts to move
-    double maxVel = 300.0;  // [deg/s]
+    
+    double maxVel = 60.0;   // [deg/s]
+    double maxAccel = 60.0; // [deg/s^2]
 
-    public CycloidalDrive(final int CANID) {
-        setName("CycloidalDrive_" + CANID);
+    public CapstanDrive(final int CANID) {
+        setName("CapstanDrive_" + CANID);
         // set our control constants for pos and vel pids
         velHWPid.setIZone(HW_IZone);
         posPid.setIZone(pos_IZone);
         posPid.setIntegratorRange(-15.0, 15.0);
 
-        servo = new NeoServo(CANID, posPid, velHWPid, false,SparkFlex.class);
-        
+        servo = new NeoServo(CANID, posPid, velHWPid, mtr_invert);
+        servo.setName(this.getName()+"/NeoServo-" + CANID);
+
         // setup servo
         servo  // units should be [deg] and [deg/s]
-            .setConversionFactor(CONV_FACTOR )
+            .setConversionFactor(CONV_FACTOR)
             .setTolerance(0.5, 3.0)  // [deg], [deg/s]
             .setSmartCurrentLimit(35, 5)  // [amp], [amp]
             .setVelocityHW_PID(maxVel, maxAccel)
             .setMaxVelocity(maxVel)
-            .setAFFVelocityComp(true);
-
-        servo.setName(this.getName()+"/NeoServo-55");
+            .setAFFVelocityComp(true);  // avoids stiction same value applied both dir 
+        
+        servo.setClamp(MIN_POSITION, MAX_POSITION);
 
         // get refs to servo Spark stuff.
-        servo_ctrlr = servo.getController();    
-        servo.setPosition(0.0);
+        servo_ctrlr = servo.getController(); 
+        servo_analog = servo_ctrlr.getAnalog();
+
+        // initialize servo encoder with our powerup analog position
+        var init_pos = getPositionAnalog();
+        servo.setPosition(init_pos);
+        cmdPos = init_pos;
+        cmdVel = 0.0;
         setArbFF(arb_ff);
     }
 
@@ -136,6 +153,10 @@ public class CycloidalDrive extends SubsystemBase {
         return servo.getVelocity();
     }
 
+    public double getPositionAnalog() {
+        // calc the pos in deg from the measured voltage
+        return (servo_analog.getVoltage() - V0) * Kv_p;
+    }
 
     // Add simple commands here - alternative to puttiing Commands in their own file.
     // This pattern is new for us, but is simpler. 
@@ -160,28 +181,22 @@ public class CycloidalDrive extends SubsystemBase {
             .withName(getName()+":cmdPositionWait=" + cmd_pos);  
     }
 
-    public Command cmdCalibrateAtZero() {
-        return runOnce(() -> {           
-            this.servo.setPosition(0.0);  // sets new zero point
-        });
-    }
-
     // Add a DEMO bindings - we don't normally do this but for a demo 
     // it is handy because bot-on-board spec files change frequently
     // as they are used during the season.
     public void setDemoBindings(CommandXboxController xbox) {
         //bindings for Cycloid demo - use POV buttons with new ss cmd pattern        
         //velocity cmds while held it should spin
-        xbox.povLeft().whileTrue(this.cmdVelocity(300.0))
+        xbox.povLeft().whileTrue(this.cmdVelocity(10.0))
                       .onFalse(this.cmdVelocity(0.0));
 
-        xbox.povRight().whileTrue(this.cmdVelocity(-120.0))
+        xbox.povRight().whileTrue(this.cmdVelocity(-10.0))
                        .onFalse(this.cmdVelocity(0.0));
         
         // Cmd to known points
-        xbox.povUp().onTrue(this.cmdPosition(0.0));
-        xbox.povDown().onTrue(this.cmdPosition(180.0));
-        xbox.y().onTrue(this.cmdCalibrateAtZero());
+        xbox.povUp().onTrue(this.cmdPosition(30.0));
+        xbox.povDown().onTrue(this.cmdPosition(-30.0));
+        xbox.y().onTrue(this.cmdPosition(0.0));
     }
 
     // Add a watcher so we can see stuff on network tables
@@ -198,15 +213,17 @@ public class CycloidalDrive extends SubsystemBase {
     class CDWatcher extends WatcherCmd{
         CDWatcher(){
             //use newer form
+            addEntry("analog_pos", CapstanDrive.this::getPositionAnalog, 2);
+            addEntry("analog_volt", CapstanDrive.this.servo_analog::getVoltage, 3);
             //motor count based pos/vel
-            addEntry("internal_pos", CycloidalDrive.this.servo::getPosition, 2);
-            addEntry("internal_vel", CycloidalDrive.this.servo::getVelocity, 2);
-            addEntry("at_setpoint", CycloidalDrive.this::atSetpoint);
+            addEntry("internal_pos", CapstanDrive.this.servo::getPosition, 2);
+            addEntry("internal_vel", CapstanDrive.this.servo::getVelocity, 2);
+            addEntry("at_setpoint", CapstanDrive.this::atSetpoint);
 
             // other info about servo's motor
-            addEntry("mtr_appliedOutput", CycloidalDrive.this.servo_ctrlr::getAppliedOutput, 2);
-            addEntry("mtr_OutputAmps", CycloidalDrive.this.servo_ctrlr::getOutputCurrent, 2);
-            addEntry("mtr_Temperature", CycloidalDrive.this.servo_ctrlr::getMotorTemperature, 2);
+            addEntry("mtr_appliedOutput", CapstanDrive.this.servo_ctrlr::getAppliedOutput, 2);
+            addEntry("mtr_OutputAmps", CapstanDrive.this.servo_ctrlr::getOutputCurrent, 2);
+            addEntry("mtr_Temperature", CapstanDrive.this.servo_ctrlr::getMotorTemperature, 2);
 
             // start the servo's NeoWatcher which has most of our stuff
             servo.getWatcher();

@@ -53,6 +53,12 @@ public class SimpleServo extends SubsystemBase {
         return est_pos;       
     }
 
+    // this is here for testing float base entry in watcher
+    public float getPositionAsFloat(){ 
+        //servo.getPosition() just tracks the setpoint with 0 delay, this models the speed
+        return (float)est_pos;       
+    }
+
     public boolean atSetpoint() {
         return Math.abs(setpoint - getPosition()) < pos_tollerence;
     }
@@ -79,7 +85,8 @@ public class SimpleServo extends SubsystemBase {
 
     class SimpleServoWatcher extends WatcherCmd {                    
         SimpleServoWatcher() {            
-            addEntry("position", SimpleServo.this::getPosition, 2);
+            addEntry("position", SimpleServo.this::getPosition, 3);
+            addEntry("position_fl", SimpleServo.this::getPositionAsFloat, 2);
             addEntry("setpoint", ()-> {return setpoint;});
             addEntry("atSetpoint", SimpleServo.this::atSetpoint);            
         }       
