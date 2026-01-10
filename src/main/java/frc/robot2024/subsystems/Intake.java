@@ -167,7 +167,7 @@ public class Intake extends SubsystemBase {
    * @param speed [cm/s]
    */
   public void setIntakeSpeed(double speed) {      
-    intakeMtrPid.setReference(speed, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
+    intakeMtrPid.setSetpoint(speed, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
     // clear any windup on stop
     if (speed == 0.0)
       intakeMtrPid.setIAccum(0.0);

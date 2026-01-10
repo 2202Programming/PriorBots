@@ -12,7 +12,8 @@ import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
+//2025 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
+import com.revrobotics.spark.FeedbackSensor; //2026 libs
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
@@ -223,7 +224,7 @@ public class GroundIntake extends SubsystemBase {
 
   public void setWheelSpeed(double speed) {
     wheel_cmd = speed;
-    wheelMtr_ctrl.setReference(speed, ControlType.kVelocity);
+    wheelMtr_ctrl.setSetpoint(speed, ControlType.kVelocity);
   }
 
   public void setWheelHold(double voltage){

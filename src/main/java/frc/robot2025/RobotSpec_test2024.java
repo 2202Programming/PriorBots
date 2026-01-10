@@ -199,8 +199,9 @@ public class RobotSpec_test2024 implements IRobotSpec {
         HID_Subsystem dc = RobotContainer.getSubsystem("DC");
         
         if (odo != null && sdt != null) {
-            AutoPPConfigure.configureAutoBuilder(sdt, odo);
-            PathfindingCommand.warmupCommand().schedule();
+            AutoPPConfigure.configureAutoBuilder(sdt, odo);            
+            var cmd = PathfindingCommand.warmupCommand();
+            CommandScheduler.getInstance().schedule(cmd);
         }
 
         var generic_driver = dc.Driver();

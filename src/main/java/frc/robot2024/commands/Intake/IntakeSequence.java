@@ -5,6 +5,7 @@
 package frc.robot2024.commands.Intake;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.lib2202.builder.RobotContainer;
 import frc.robot2024.subsystems.Intake;
@@ -136,7 +137,7 @@ public class IntakeSequence extends Command {
       }
       cmd.addCommands(new MoveToAnglePos(Intake.UpPos, Intake.TravelUp));
       cmd.addRequirements(intake);
-      cmd.schedule();
+      CommandScheduler.getInstance().schedule(cmd);
       lastScheduled = cmd;
     }
     // turn off rollers, if not finished they get turned on again

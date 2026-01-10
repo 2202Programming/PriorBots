@@ -5,6 +5,7 @@
 package frc.robot2024.commands.auto;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.lib2202.builder.RobotContainer;
 import frc.lib2202.command.swerve.FaceToTag;
@@ -28,17 +29,17 @@ public class TurnFaceShootAuto extends Command {
   @Override
   public void initialize() {
       if(checkForTarget()) { //target tag is visible
-        new SequentialCommandGroup(
+        var cmd = new SequentialCommandGroup(
           new FaceToTag(tagID),
-          new ShooterSequence(3000)
-        ).schedule();
+          new ShooterSequence(3000) );
+        CommandScheduler.getInstance().schedule(cmd);
       } 
       else{ //target tag is not *yet* visible
-        new SequentialCommandGroup(
+        var cmd = new SequentialCommandGroup(
           new RotateUntilSeeTags(Tag_Pose.ID4, Tag_Pose.ID7),
           new FaceToTag(tagID),
-          new ShooterSequence(3000)
-        ).schedule();
+          new ShooterSequence(3000) );
+        CommandScheduler.getInstance().schedule(cmd);
       }
   }
 

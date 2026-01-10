@@ -2,6 +2,7 @@ package frc.robot2025.testBindings;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -98,8 +99,8 @@ public final class DPLPathTest {
             // turn signal off after our move, if we have a signal object
             if (signal != null)
                 cmd = cmd.andThen(signal.getColorCommand(SignalLight.Color.OFF));
-            cmd.setName("moveto-fwd/w signal"); 
-            cmd.schedule();
+            cmd.setName("moveto-fwd/w signal");
+            CommandScheduler.getInstance().schedule(cmd);
         }));
 
         // calc and execute a path - 1m forward in X field coords
@@ -110,8 +111,8 @@ public final class DPLPathTest {
                     currentPose.getY(), currentPose.getRotation());
             // calc path
             Command cmd = new MoveToPose(OdometryName, target);      
-            cmd.setName("moveto-backup");     
-            cmd.schedule();
+            cmd.setName("moveto-backup");
+            CommandScheduler.getInstance().schedule(cmd);
         }));
         
     }

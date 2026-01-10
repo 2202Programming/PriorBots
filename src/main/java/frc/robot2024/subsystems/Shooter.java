@@ -8,7 +8,7 @@ import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
-import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
+import com.revrobotics.spark.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.RelativeEncoder;
@@ -95,8 +95,8 @@ public class Shooter extends SubsystemBase {
       slot = ClosedLoopSlot.kSlot1;
     } 
     
-    hw_leftPid.setReference(leftRPM, ControlType.kVelocity, slot);
-    hw_rightPid.setReference(rightRPM, ControlType.kVelocity, slot);
+    hw_leftPid.setSetpoint(leftRPM, ControlType.kVelocity, slot);
+    hw_rightPid.setSetpoint(rightRPM, ControlType.kVelocity, slot);
     cmdLeftRPM = leftRPM;
     cmdRightRPM = rightRPM;
   }
@@ -138,8 +138,7 @@ public class Shooter extends SubsystemBase {
       .positionConversionFactor(FACTOR)
       .velocityConversionFactor(FACTOR /* / 60.0 */);
     
-    cfg.closedLoop
-      .feedbackSensor(FeedbackSensor.kPrimaryEncoder);
+    cfg.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
       // Izone set from hwPidConsts in copyTo()  //.iZone(kIzone, ClosedLoopSlot.kSlot0);
     hwPidConsts.copyTo(mtr, cfg, ClosedLoopSlot.kSlot0);
    
@@ -181,7 +180,7 @@ public class Shooter extends SubsystemBase {
       nt_cmdRightMotorRPM.setDouble(cmdRightRPM);
       nt_measRightMotorRPM.setDouble(measRightRPM);
       nt_kP.setDouble(leftMtr.configAccessor.closedLoop.getP(ClosedLoopSlot.kSlot0));  
-      nt_kF.setDouble(leftMtr.configAccessor.closedLoop.getFF(ClosedLoopSlot.kSlot0));
+      nt_kF.setDouble(leftMtr.configAccessor.closedLoop.feedForward.getkV(ClosedLoopSlot.kSlot0));   //was 2025  getFF(ClosedLoopSlot.kSlot0));
     }
   }
 }

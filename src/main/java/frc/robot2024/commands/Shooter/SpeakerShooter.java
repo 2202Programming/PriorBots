@@ -9,6 +9,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.lib2202.builder.RobotContainer;
 import frc.robot2024.Constants.Tag_Pose;
@@ -105,7 +106,7 @@ public class SpeakerShooter extends InstantCommand {
     }
 
     Command shooterCmd = new ShooterServoSequence(shooter_angle, rpm);
-    shooterCmd.schedule();
+    CommandScheduler.getInstance().schedule(shooterCmd);
 
     System.out.println("SpeakerShooter--- SSS scheduled @ Angle: " +
         shooter_angle + " [deg]" +

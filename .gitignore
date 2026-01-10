@@ -169,6 +169,8 @@ out/
 .fleet
 
 # Simulation GUI and other tools window save file
+networktables.json
+simgui.json
 *-window.json
 
 # Simulation data log directory
@@ -182,6 +184,14 @@ simgui-ds.json
 networktables.json
 networktables.json.bck
 
+# clangd
+/.cache
+compile_commands.json
+
+# Eclipse generated file for annotation processors
+.factorypath
+
+#### 2202 stuff ####
 # in this repo, we don't want files copied during sim to polute repp
 #skip anything in the deploy
 src/main/deploy/*

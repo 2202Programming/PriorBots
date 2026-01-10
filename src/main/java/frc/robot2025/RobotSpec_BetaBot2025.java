@@ -203,8 +203,9 @@ public class RobotSpec_BetaBot2025 implements IRobotSpec {
 
     // Initialize PathPlanner, if we have needed Subsystems
     if (odo != null && sdt != null) {
-      AutoPPConfigure.configureAutoBuilder(sdt, odo);
-      PathfindingCommand.warmupCommand().schedule();
+      AutoPPConfigure.configureAutoBuilder(sdt, odo);      
+      var cmd = PathfindingCommand.warmupCommand();
+      CommandScheduler.getInstance().schedule(cmd);
     }
     
     // Competition bindings -  NOTE: OPR portion of comp binding disabled 

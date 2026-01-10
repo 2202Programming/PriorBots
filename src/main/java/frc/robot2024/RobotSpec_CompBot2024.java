@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.lib2202.builder.IRobotSpec;
 import frc.lib2202.builder.RobotContainer;
 import frc.lib2202.builder.RobotLimits;
@@ -175,7 +176,8 @@ public class RobotSpec_CompBot2024 implements IRobotSpec {
         // Initialize PathPlanner, if we have needed Subsystems
         if (odo != null && sdt != null) {
             AutoPPConfigure.configureAutoBuilder(sdt, odo);
-            PathfindingCommand.warmupCommand().schedule();
+            var cmd = PathfindingCommand.warmupCommand();
+            CommandScheduler.getInstance().schedule(cmd);
         }
         
         // pick one of the next two lines
@@ -218,7 +220,7 @@ public class RobotSpec_CompBot2024 implements IRobotSpec {
             // ensure shooter is calibrated on power up - note for a competition this
             // should not be needed and the bot should be calibrated in the pit
             var cmd = new CalibrateWithLS();
-            cmd.schedule();
+            CommandScheduler.getInstance().schedule(cmd);
             teleOpRunOnce = false;
         }
     }

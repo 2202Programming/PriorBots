@@ -101,7 +101,7 @@ public class Transfer extends SubsystemBase {
    * speed [cm/s]
    */
   public void setSpeed(double speed) {
-    transferMtrPid.setReference(speed, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
+    transferMtrPid.setSetpoint(speed, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
     this.speed_cmd = speed;
     // transferMtr.set(Transfer_Constants.TRANSFER_MOTOR_ON);
   }
