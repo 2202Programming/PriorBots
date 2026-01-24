@@ -51,6 +51,8 @@ public final class Comp_ChadBot {
         driver.leftTrigger().whileTrue(new RobotCentricDrive(drivetrain, dc));
         driver.y().onTrue(new AllianceAwareGyroReset());
         driver.rightTrigger().whileTrue(new TargetCentricDrive(Tag_Pose.ID4, Tag_Pose.ID7));
+        driver.leftBumper().whileTrue(new VelShootCommand(Shooter.shortMediumVelocity));
+        driver.rightBumper().whileTrue(new VelShootCommand(Shooter.longVelocity));
         
         /*driver.b().whileTrue(new IntakeCommand(IntakeMode.ExpellCargo));
 
