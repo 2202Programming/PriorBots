@@ -62,7 +62,7 @@ public class CapstanDrive extends SubsystemBase {
 
     // parameters
     
-    double maxVel = 60.0;   // [deg/s]
+    double maxVel = 180.0;   // [deg/s]
     double maxAccel = 60.0; // [deg/s^2]
 
     public CapstanDrive(final int CANID) {
