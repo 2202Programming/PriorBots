@@ -53,7 +53,9 @@ public class RobotSpec_ChadBot implements IRobotSpec {
   boolean swerve = true;
 
   // Robot Speed Limits
-  RobotLimits robotLimits = new RobotLimits(FeetPerSecond.of(15.0), DegreesPerSecond.of(180.0));
+  RobotLimits robotLimits = new RobotLimits(
+    FeetPerSecond.of(15.0), 
+    DegreesPerSecond.of(360.0));
 
   // Chassis
   double kWheelCorrectionFactor = .995;

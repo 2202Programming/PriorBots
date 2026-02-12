@@ -13,7 +13,6 @@ import frc.chadbot.subsystems.shooter.FlyWheel.FlyWheelConfig;
 import frc.chadbot.subsystems.shooter.Shooter_Subsystem.ShooterSettings;
 import frc.lib2202.util.PIDFController;
 import static frc.lib2202.Constants.MperFT;
-import static frc.lib2202.Constants.FTperM;;
 
 
 /**
@@ -206,29 +205,6 @@ public final class Constants {
         public static final double kMaxSpeed = 12.0*MperFT; // [m/s]
         public static final double kMaxAngularSpeed = 2*Math.PI; // [rad/s] 
 
-        /****
-         * ### REMINDER - enable these once we have basics working
-        // Other constraints
-        public static final int smartCurrentMax = 60;  //amps in SparkMax, max setting
-        public static final int smartCurrentLimit = 35; //amps in SparkMax, inital setting
-        */
-        // Acceleration limits
-        ///public static final double slewRateMax = 2;      //sec limits adjusting slewrate 
-        //public static final boolean safetyEnabled = false; 
-
-        // SmartMax PID values [kp, ki, kd, kff] - these get sent to hardware controller
-        // DEBUG - SET FF first for drive, then add KP
-        
-        //public static final PIDFController drivePIDF = new PIDFController(0.09*MperFT, 0.0, 0.0, 0.08076*MperFT);  
-        public static final PIDFController drivePIDF = new PIDFController(0.09*FTperM, 0.0, 0.0, 0.08076*FTperM);  
-        public static final PIDFController anglePIDF = new PIDFController(0.01, 0.0, 0.0, 0.0); //maybe 1.0,0.0,0.1 from SDS sample code?
-        
-        
-        
-      
-        
-
-       
     } 
     
     public final static class NTStrings {
