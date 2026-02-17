@@ -27,7 +27,7 @@ public final class Constants {
         public static final int FLYWHEEL_TALON2 = 11;
         
         // TODO - verify this is a sparkmax and chan
-        public static final int ACTUATOR = 12;  // 18??
+        public static final int ACTUATOR = 18;  
 
         public static final int PIGEON_IMU_CAN = 60;
     }

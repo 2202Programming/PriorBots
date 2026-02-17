@@ -13,7 +13,7 @@ import frc.lib2202.builder.RobotLimits;
 import frc.lib2202.builder.SubsystemConfig;
 import frc.lib2202.command.swerve.FieldCentricDrive;
 import frc.lib2202.command.swerve.RobotCentricDrive;
-import frc.lib2202.command.swerve.calibrate.TestRotateVelocity;
+//import frc.lib2202.command.swerve.calibrate.TestRotateVelocity;
 import frc.lib2202.subsystem.Limelight;
 import frc.lib2202.subsystem.Sensors;
 import frc.lib2202.subsystem.hid.HID_Subsystem;
@@ -129,7 +129,7 @@ public class RobotSpec_TimBot implements IRobotSpec {
         Command FCD = new FieldCentricDrive();
         Command RCD = new RobotCentricDrive();
         @SuppressWarnings("unused")
-        Command testRotateCMD =  new TestRotateVelocity(60.0, 4.0);
+        //Command testRotateCMD =  new TestRotateVelocity(60.0, 4.0);
         
         var cmd = RCD;
         SwerveDrivetrain drivetrain = RobotContainer.getSubsystem(SwerveDrivetrain.class);
