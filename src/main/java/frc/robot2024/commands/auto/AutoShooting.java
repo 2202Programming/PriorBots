@@ -13,7 +13,7 @@ import frc.robot2024.Constants.Tag_Pose;
 import frc.robot2024.commands.Shooter.ShooterServoSequence;
 import frc.robot2024.commands.Shooter.SpeakerShooter;
 import frc.lib2202.subsystem.Limelight;
-import frc.lib2202.subsystem.LimelightHelpers.LimelightTarget_Fiducial;
+import frc.lib2202.subsystem.LimelightHelpers.RawFiducial;
 import frc.lib2202.subsystem.swerve.SwerveDrivetrain;
 
 public class AutoShooting extends SequentialCommandGroup {
@@ -40,7 +40,7 @@ public class AutoShooting extends SequentialCommandGroup {
     int tagID = determineTag(target);
 
     addCommands(new RotateUntilSeeTags(Tag_Pose.ID4, Tag_Pose.ID7) );
-    addCommands(new FaceToTag(tagID));
+    addCommands(new FaceToTag(tagID, 3.0));
     if (target == ShootingTarget.Speaker) {
       addCommands(new SpeakerShooter());
     } else if (target == ShootingTarget.Amp) {
@@ -60,7 +60,7 @@ public class AutoShooting extends SequentialCommandGroup {
     int tagID = determineTag(target);
 
     addCommands(new RotateUntilSeeTags(Tag_Pose.ID4, Tag_Pose.ID7));
-    addCommands(new FaceToTag(tagID));
+    addCommands(new FaceToTag(tagID, 3.0));
     if (target == ShootingTarget.Speaker) {
       addCommands(new SpeakerShooter(rpm));
     } else if (target == ShootingTarget.Amp) {
@@ -79,7 +79,7 @@ public class AutoShooting extends SequentialCommandGroup {
     int tagID = determineTag(target);
 
     addCommands(new RotateUntilSeeTags(Tag_Pose.ID4, Tag_Pose.ID7));
-    addCommands(new FaceToTag(tagID));
+    addCommands(new FaceToTag(tagID, 3.0));
     if (target == ShootingTarget.Speaker) {
       addCommands(new ShooterServoSequence(angle, rpm));
     } else if (target == ShootingTarget.Amp) {
@@ -115,13 +115,13 @@ public class AutoShooting extends SequentialCommandGroup {
         return 6;
       } else {
 
-        LimelightTarget_Fiducial[] tags = limelight.getAprilTagsFromHelper();
-        for (LimelightTarget_Fiducial tag : tags) {
-          if (tag.fiducialID == 14) {
+        RawFiducial[] tags = limelight.getAprilTagsFromHelper();
+        for (RawFiducial tag : tags) {
+          if (tag.id == 14) {
             return 14;
-          } else if (tag.fiducialID == 15) {
+          } else if (tag.id == 15) {
             return 15;
-          } else if (tag.fiducialID == 16) {
+          } else if (tag.id == 16) {
             return 16;
           }
         }
@@ -133,13 +133,13 @@ public class AutoShooting extends SequentialCommandGroup {
       } else if (target == ShootingTarget.Amp) {
         return 5;
       } else {
-        LimelightTarget_Fiducial[] tags = limelight.getAprilTagsFromHelper();
-        for (LimelightTarget_Fiducial tag : tags) {
-          if (tag.fiducialID == 11) {
+        RawFiducial[] tags = limelight.getAprilTagsFromHelper();
+        for (RawFiducial tag : tags) {
+          if (tag.id == 11) {
             return 11;
-          } else if (tag.fiducialID == 12) {
+          } else if (tag.id == 12) {
             return 12;
-          } else if (tag.fiducialID == 13) {
+          } else if (tag.id == 13) {
             return 13;
           }
         }
@@ -158,9 +158,9 @@ public class AutoShooting extends SequentialCommandGroup {
    */
   @SuppressWarnings("unused")
   private boolean checkForTarget(double tagID) {
-    LimelightTarget_Fiducial[] tags = limelight.getAprilTagsFromHelper();
-    for (LimelightTarget_Fiducial tag : tags) {
-      if (tag.fiducialID == tagID) {
+    RawFiducial[] tags = limelight.getAprilTagsFromHelper();
+    for (RawFiducial tag : tags) {
+      if (tag.id == tagID) {
         return true;
       }
     }

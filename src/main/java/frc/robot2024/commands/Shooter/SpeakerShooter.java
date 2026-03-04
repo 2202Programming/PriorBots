@@ -82,11 +82,11 @@ public class SpeakerShooter extends InstantCommand {
     Translation2d pos = pose.getTranslation();
 
     if (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) {
-      dX = Math.abs(pos.getX() - Tag_Pose.ID7.location.getX());
-      dY = Math.abs(pos.getY() - Tag_Pose.ID7.location.getY());
+      dX = Math.abs(pos.getX() - Tag_Pose.ID7.pose.getX());
+      dY = Math.abs(pos.getY() - Tag_Pose.ID7.pose.getY());
     } else {
-      dX = Math.abs(pos.getX() - Tag_Pose.ID4.location.getX());
-      dY = Math.abs(pos.getY() - Tag_Pose.ID4.location.getY());
+      dX = Math.abs(pos.getX() - Tag_Pose.ID4.pose.getX());
+      dY = Math.abs(pos.getY() - Tag_Pose.ID4.pose.getY());
     }
     radius = Math.sqrt(Math.pow(dX, 2) + Math.pow(dY, 2));
     rot = Math.abs(Math.atan2(dY, dX)) * 180 / Math.PI;
