@@ -13,8 +13,6 @@ import frc.lib2202.builder.RobotLimits;
 import frc.lib2202.builder.SubsystemConfig;
 import frc.lib2202.command.swerve.FieldCentricDrive;
 import frc.lib2202.command.swerve.RobotCentricDrive;
-//import frc.lib2202.command.swerve.calibrate.TestRotateVelocity;
-import frc.lib2202.subsystem.Limelight;
 import frc.lib2202.subsystem.Sensors;
 import frc.lib2202.subsystem.hid.HID_Subsystem;
 import frc.lib2202.subsystem.swerve.IHeadingProvider;
@@ -22,7 +20,7 @@ import frc.lib2202.subsystem.swerve.SwerveDrivetrain;
 import frc.lib2202.subsystem.swerve.config.ChassisConfig;
 import frc.lib2202.subsystem.swerve.config.ModuleConfig;
 import frc.lib2202.subsystem.swerve.config.ModuleConfig.CornerID;
-
+import frc.robot2025.subsystems.LimelightV2;
 import frc.timbot.commands.Shoot;
 import frc.timbot.subsystem.ShooterLifter;
 import frc.timbot.subsystem.FlywheelSubsystem;
@@ -30,11 +28,6 @@ import frc.timbot.subsystem.FlywheelSubsystem;
 
 //Swerve bot aka Tim specs
 public class RobotSpec_TimBot implements IRobotSpec {
-    // set this true at least once after robot hw stabilizes
-    boolean burnFlash = false;
-
-    boolean swerve = true;
-
     // Robot Speed Limits
     RobotLimits robotLimits = new RobotLimits(FeetPerSecond.of(15.0), DegreesPerSecond.of(180.0));
     // Chassis
@@ -54,7 +47,7 @@ public class RobotSpec_TimBot implements IRobotSpec {
     // Subsystems and hardware on Tim 2.0
     SubsystemConfig ssConfig = new SubsystemConfig("SwerveBot - aka Tim", "031b7511")
             .addAlias(Sensors.class, "sensors")
-            .add(Limelight.class)
+            .add(LimelightV2.class)
             .addAlias(SwerveDrivetrain.class,"drivetrain")
             //.add(VisionPoseEstimator.class)  //TODO - restore when VPE added to 2202 lib, part of 2025 robot now.
             .add(HID_Subsystem.class, "DC", () -> {
