@@ -1,19 +1,23 @@
 package frc.timbot.commands;
 
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib2202.builder.RobotContainer;
 import frc.timbot.subsystem.FlywheelSubsystem;
+import frc.timbot.subsystem.ShooterLifter;
 
 public class Shoot extends Command {
 
     FlywheelSubsystem flywheel;
     double rpm;
     Timer timer = new Timer();
+    ShooterLifter trigger;
 
     public Shoot(double rpm) {
         this.flywheel = RobotContainer.getSubsystem(FlywheelSubsystem.class);
         this.rpm = rpm;
+        this.trigger = RobotContainer.getSubsystem(ShooterLifter.class);
     }
 
     @Override
@@ -28,6 +32,7 @@ public class Shoot extends Command {
     public void execute() {
         if(flywheel.isAtSpeed(0.01)) {
             timer.start();
+            trigger.trigger_fire();
         }
     }
 
@@ -35,6 +40,7 @@ public class Shoot extends Command {
     @Override
     public void end(boolean interrupted) {
         flywheel.setSpeed(0.0);
+        trigger.trigger_reset();
         //fire the solenoid
     }
 

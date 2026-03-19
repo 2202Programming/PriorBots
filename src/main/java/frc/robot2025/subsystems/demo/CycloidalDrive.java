@@ -170,7 +170,7 @@ public class CycloidalDrive extends SubsystemBase {
     // it is handy because bot-on-board spec files change frequently
     // as they are used during the season.
     public void setDemoBindings(CommandXboxController xbox) {
-        //bindings for Cycloid demo - use POV buttons with new ss cmd pattern        
+        //bindings for Cycloid demo - use POV buttons with new ss cmd pattern
         //velocity cmds while held it should spin
         xbox.povLeft().whileTrue(this.cmdVelocity(300.0))
                       .onFalse(this.cmdVelocity(0.0));

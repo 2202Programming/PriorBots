@@ -6,6 +6,7 @@ import static frc.lib2202.Constants.MperFT;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.lib2202.builder.IRobotSpec;
 import frc.lib2202.builder.RobotContainer;
@@ -113,7 +114,9 @@ public class RobotSpec_TimBot implements IRobotSpec {
         var driver = dc.Driver();
         if (driver instanceof  CommandXboxController) {
             CommandXboxController xbox_driver = (CommandXboxController)driver;
-            xbox_driver.a().onTrue(new Shoot(1000.0));
+            xbox_driver.a().whileTrue(new Shoot(1000.0));
+            xbox_driver.a().onTrue(new PrintCommand("A has been pressed"));
+            
         }
         else {
             DriverStation.reportError("Timbot expects xbox controller, no driver bindings set, check controllers.", false);

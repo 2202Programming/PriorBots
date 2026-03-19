@@ -52,7 +52,7 @@ public class ShooterLifter extends SubsystemBase {
 
   public ShooterLifter() {
     actuator = new SparkMax(CAN.ACTUATOR, SparkMax.MotorType.kBrushed);
-    trigger = new DoubleSolenoid(PneumaticsModuleType.REVPH, PCM.TRIGGER_BACK, PCM.TRIGGER_FORWARD);
+    trigger = new DoubleSolenoid(2, PneumaticsModuleType.CTREPCM, PCM.TRIGGER_BACK, PCM.TRIGGER_FORWARD);
     pos_volts = new AnalogInput(AnalogIn.LifterFeedback);
     // configure A/D behavior on Rio
     pos_volts.setAverageBits(4);
