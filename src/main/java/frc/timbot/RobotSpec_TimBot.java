@@ -15,6 +15,8 @@ import frc.lib2202.builder.RobotLimits;
 import frc.lib2202.builder.SubsystemConfig;
 import frc.lib2202.command.swerve.FieldCentricDrive;
 import frc.lib2202.command.swerve.RobotCentricDrive;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 //import frc.lib2202.command.swerve.calibrate.TestRotateVelocity;
 import frc.lib2202.subsystem.Limelight;
 import frc.lib2202.subsystem.Sensors;
@@ -25,6 +27,8 @@ import frc.lib2202.subsystem.swerve.config.ChassisConfig;
 import frc.lib2202.subsystem.swerve.config.ModuleConfig;
 import frc.lib2202.subsystem.swerve.config.ModuleConfig.CornerID;
 import frc.timbot.commands.FrisbeeSeq;
+import frc.timbot.commands.LifterMove;
+import frc.timbot.commands.LifterToggle;
 import frc.timbot.commands.Shoot;
 import frc.timbot.subsystem.ShooterLifter;
 import frc.timbot.subsystem.Trigger;
@@ -37,7 +41,6 @@ public class RobotSpec_TimBot implements IRobotSpec {
     boolean burnFlash = false;
 
     boolean swerve = true;
-
     // Robot Speed Limits
     RobotLimits robotLimits = new RobotLimits(FeetPerSecond.of(15.0), DegreesPerSecond.of(180.0));
     // Chassis
@@ -113,20 +116,25 @@ public class RobotSpec_TimBot implements IRobotSpec {
     @Override
     public void setBindings() {
         HID_Subsystem dc = RobotContainer.getSubsystem("DC");
-        
+        //LifterMove upPos;
         var driver = dc.Driver();
         if (driver instanceof  CommandXboxController) {
             CommandXboxController xbox_driver = (CommandXboxController)driver;
             xbox_driver.a().whileTrue(new Shoot(1000.0));
             xbox_driver.a().onTrue(new PrintCommand("A has been pressed"));
             xbox_driver.rightBumper().onTrue(new FrisbeeSeq());
-            
+            xbox_driver.povUp().onTrue(new LifterMove(-5.0));
+            xbox_driver.povDown().onTrue(new LifterMove(5.0));
+
+        //SmartDashboard.putNumber("Position", upPos.get_height());
         }
         else {
             DriverStation.reportError("Timbot expects xbox controller, no driver bindings set, check controllers.", false);
         }
     }
 
+
+    
     
     @Override
     public void setDefaultCommands() {
