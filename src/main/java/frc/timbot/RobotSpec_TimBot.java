@@ -6,6 +6,7 @@ import static frc.lib2202.Constants.MperFT;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.lib2202.builder.IRobotSpec;
@@ -23,9 +24,10 @@ import frc.lib2202.subsystem.swerve.SwerveDrivetrain;
 import frc.lib2202.subsystem.swerve.config.ChassisConfig;
 import frc.lib2202.subsystem.swerve.config.ModuleConfig;
 import frc.lib2202.subsystem.swerve.config.ModuleConfig.CornerID;
-
+import frc.timbot.commands.FrisbeeSeq;
 import frc.timbot.commands.Shoot;
 import frc.timbot.subsystem.ShooterLifter;
+import frc.timbot.subsystem.Trigger;
 import frc.timbot.subsystem.FlywheelSubsystem;
 
 
@@ -58,11 +60,12 @@ public class RobotSpec_TimBot implements IRobotSpec {
             .add(Limelight.class)
             .addAlias(SwerveDrivetrain.class,"drivetrain")
             //.add(VisionPoseEstimator.class)  //TODO - restore when VPE added to 2202 lib, part of 2025 robot now.
+            .add(ShooterLifter.class)
+            .add(FlywheelSubsystem.class)
+            .add(Trigger.class)
             .add(HID_Subsystem.class, "DC", () -> {
                 return new HID_Subsystem(0.3, 0.9, 0.05);
-            })
-            .add(ShooterLifter.class)
-            .add(FlywheelSubsystem.class);
+            });
 
     public RobotSpec_TimBot() {
         ssConfig.setRobotSpec(this);
@@ -116,6 +119,7 @@ public class RobotSpec_TimBot implements IRobotSpec {
             CommandXboxController xbox_driver = (CommandXboxController)driver;
             xbox_driver.a().whileTrue(new Shoot(1000.0));
             xbox_driver.a().onTrue(new PrintCommand("A has been pressed"));
+            xbox_driver.rightBumper().onTrue(new FrisbeeSeq());
             
         }
         else {

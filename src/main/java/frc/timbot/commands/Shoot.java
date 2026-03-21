@@ -1,6 +1,5 @@
 package frc.timbot.commands;
 
-import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib2202.builder.RobotContainer;
@@ -32,7 +31,6 @@ public class Shoot extends Command {
     public void execute() {
         if(flywheel.isAtSpeed(0.01)) {
             timer.start();
-            trigger.trigger_fire();
         }
     }
 
@@ -40,7 +38,6 @@ public class Shoot extends Command {
     @Override
     public void end(boolean interrupted) {
         flywheel.setSpeed(0.0);
-        trigger.trigger_reset();
         //fire the solenoid
     }
 

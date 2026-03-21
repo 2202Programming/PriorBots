@@ -45,14 +45,12 @@ public class ShooterLifter extends SubsystemBase {
   //devices used
   final SparkMax actuator;
   final AnalogInput pos_volts; 
-  final DoubleSolenoid trigger;
 
   // Lifter state vars
   double height_meas = 0.0;  //updated in periodic
 
   public ShooterLifter() {
     actuator = new SparkMax(CAN.ACTUATOR, SparkMax.MotorType.kBrushed);
-    trigger = new DoubleSolenoid(2, PneumaticsModuleType.CTREPCM, PCM.TRIGGER_BACK, PCM.TRIGGER_FORWARD);
     pos_volts = new AnalogInput(AnalogIn.LifterFeedback);
     // configure A/D behavior on Rio
     pos_volts.setAverageBits(4);
@@ -94,15 +92,6 @@ public class ShooterLifter extends SubsystemBase {
   // are we there yet?
   public boolean isAtPosition() {
     return controller.atSetpoint();
-  }
-
-  
-  //Trigger API
-  public void trigger_fire(){
-    trigger.set(DoubleSolenoid.Value.kForward);
-  }
-  public void trigger_reset(){
-    trigger.set(DoubleSolenoid.Value.kReverse);
   }
 
 }
