@@ -63,8 +63,8 @@ public class FlywheelSubsystem extends SubsystemBase {
     public void setSpeed(double speed) { // [RPM]
         velCmd_m1 = speed;
         velCmd_m2 = speed;
-        motor1.setControl(m_request.withVelocity(speed).withFeedForward(0.5));
-        motor2.setControl(m_request.withVelocity(speed).withFeedForward(0.5));
+        motor1.setControl(m_request.withVelocity(speed).withFeedForward(0.1));
+        motor2.setControl(m_request.withVelocity(speed).withFeedForward(0.1));
     }
 
     public boolean isAtSpeed(double tolerancePercent) {
@@ -74,6 +74,15 @@ public class FlywheelSubsystem extends SubsystemBase {
         
         return ((Math.abs(vel_m2 - velCmd_m2) / velCmd_m2) <= tolerancePercent); // 1% = 0.01
 
+    }
+    public boolean isAtSpeed () {
+        return isAtSpeed(1.0);
+    }
+    public double getCmdSpeed () {
+        return velCmd_m1;
+    }
+    public boolean isAtShootSpeed () {
+        return isAtSpeed() && getCmdSpeed() > MIN_SHOOTER_SPEED;
     }
 
     public void log() {

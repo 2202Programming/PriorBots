@@ -6,8 +6,10 @@ import static frc.lib2202.Constants.MperFT;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.lib2202.builder.IRobotSpec;
 import frc.lib2202.builder.RobotContainer;
@@ -116,13 +118,15 @@ public class RobotSpec_TimBot implements IRobotSpec {
     @Override
     public void setBindings() {
         HID_Subsystem dc = RobotContainer.getSubsystem("DC");
+        FlywheelSubsystem shooter = RobotContainer.getSubsystem(FlywheelSubsystem.class);
         //LifterMove upPos;
         var driver = dc.Driver();
         if (driver instanceof  CommandXboxController) {
             CommandXboxController xbox_driver = (CommandXboxController)driver;
-            xbox_driver.a().whileTrue(new Shoot(1000.0));
-            xbox_driver.a().onTrue(new PrintCommand("A has been pressed"));
-            xbox_driver.rightBumper().onTrue(new FrisbeeSeq());
+            xbox_driver.rightBumper().whileTrue(new Shoot(1000.0));
+            xbox_driver.rightBumper().onTrue(new PrintCommand("right bumper has been pressed"));
+            //xbox_driver.rightTrigger().onTrue(new FrisbeeSeq());
+            xbox_driver.rightTrigger().onTrue(new ConditionalCommand(new FrisbeeSeq(), new WaitCommand(1.0), shooter::isAtShootSpeed));
             xbox_driver.povUp().onTrue(new LifterMove(-5.0));
             xbox_driver.povDown().onTrue(new LifterMove(5.0));
 

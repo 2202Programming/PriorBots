@@ -22,7 +22,7 @@ public class FrisbeeSeq extends SequentialCommandGroup {
     // addCommands(new FooCommand(), new BarCommand());
     trigger = RobotContainer.getSubsystem(Trigger.class);
 
-    addCommands(trigger.trigger_fire(), new WaitCommand(1), trigger.trigger_reset());
+    addCommands(trigger.trigger_fire(), new WaitCommand(0.07), trigger.trigger_reset());
 
     
   }

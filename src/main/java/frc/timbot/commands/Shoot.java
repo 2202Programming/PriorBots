@@ -16,7 +16,6 @@ public class Shoot extends Command {
     public Shoot(double rpm) {
         this.flywheel = RobotContainer.getSubsystem(FlywheelSubsystem.class);
         this.rpm = rpm;
-        this.trigger = RobotContainer.getSubsystem(ShooterLifter.class);
     }
 
     @Override
