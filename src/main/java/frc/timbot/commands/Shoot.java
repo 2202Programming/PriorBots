@@ -11,7 +11,7 @@ public class Shoot extends Command {
     FlywheelSubsystem flywheel;
     double rpm;
     Timer timer = new Timer();
-    ShooterLifter trigger;
+    ShooterLifter feeder;
 
     public Shoot(double rpm) {
         this.flywheel = RobotContainer.getSubsystem(FlywheelSubsystem.class);

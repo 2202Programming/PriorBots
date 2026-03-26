@@ -7,23 +7,21 @@ package frc.timbot.commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.lib2202.builder.RobotContainer;
-import frc.timbot.subsystem.Trigger;
+import frc.timbot.subsystem.Feeder;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class FrisbeeSeq extends SequentialCommandGroup {
+public class FrisbeeShoot extends SequentialCommandGroup {
   /** Creates a new FrisbeeSeq. */
 
-  final Trigger trigger;
+  final Feeder feeder;
 
-  public FrisbeeSeq() {
+  public FrisbeeShoot() {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
-    trigger = RobotContainer.getSubsystem(Trigger.class);
+    feeder = RobotContainer.getSubsystem(Feeder.class);
 
-    addCommands(trigger.trigger_fire(), new WaitCommand(0.07), trigger.trigger_reset());
-
-    
+    addCommands(feeder.feeder_fire(), new WaitCommand(0.07), feeder.feeder_reset());
   }
 }

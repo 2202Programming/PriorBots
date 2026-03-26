@@ -7,8 +7,16 @@ import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.timbot.Constants;
+
+// TODO: 
+// - Implement conversion factor C2026 Flywheel CTRE
+// - Add PID Values to Elastic as modifiable
+// - Tune motor
 
 public class FlywheelSubsystem extends SubsystemBase {
     
@@ -20,11 +28,12 @@ public class FlywheelSubsystem extends SubsystemBase {
 
     VelocityVoltage m_request;
 
-    double kP = 0.1;
+    // TODO: Tune 
+    double kP = 0.75;
     double kI = 0.0;
     double kD = 0.0;
 
-    // commande velocities
+    // command velocities
     double velCmd_m1;
     double velCmd_m2;
 
@@ -60,24 +69,31 @@ public class FlywheelSubsystem extends SubsystemBase {
         log();
     }
 
+    // Speed is RPS of Motor
+    public void setSpeed(double speed1, double speed2) {
+        velCmd_m1 = speed1;
+        velCmd_m2 = speed2;
+        motor1.setControl(m_request.withVelocity(speed1).withFeedForward(0.1));
+        motor2.setControl(m_request.withVelocity(speed2).withFeedForward(0.1));
+    }
+
     public void setSpeed(double speed) { // [RPM]
-        velCmd_m1 = speed;
-        velCmd_m2 = speed;
-        motor1.setControl(m_request.withVelocity(speed).withFeedForward(0.1));
-        motor2.setControl(m_request.withVelocity(speed).withFeedForward(0.1));
+        this.setSpeed(speed, speed);
     }
 
     public boolean isAtSpeed(double tolerancePercent) {
-        if(velCmd_m1 == 0.0) {
+        if(velCmd_m1 == 0.0 && velCmd_m2 == 0.0) {
             return true;
         }
         
         return ((Math.abs(vel_m2 - velCmd_m2) / velCmd_m2) <= tolerancePercent); // 1% = 0.01
 
     }
+
     public boolean isAtSpeed () {
-        return isAtSpeed(1.0);
+        return isAtSpeed(0.01);
     }
+
     public double getCmdSpeed () {
         return velCmd_m1;
     }
@@ -89,7 +105,29 @@ public class FlywheelSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Mtr_1 Speed", vel_m1);
         SmartDashboard.putNumber("Mtr_2 Speed", vel_m2);
 
+        SmartDashboard.putBoolean(getName() + "At speed", isAtShootSpeed());
+
         SmartDashboard.putNumber("Mtr_1 Cmd Speed", velCmd_m1);
         SmartDashboard.putNumber("Mtr_2 Cmd Speed", velCmd_m2);
+    }
+
+    public Command cmdVelocity(double cmd_vel1, double cmd_vel2) {
+        return runOnce(() -> {
+            this.setSpeed(cmd_vel1, cmd_vel2);
+        });
+    }
+
+    public Command cmdVelocity(double cmd_vel) {
+        return runOnce(() -> {
+            this.setSpeed(cmd_vel);
+        });
+    }
+
+    public Command cmdVelocityWait(double cmd_vel1, double cmd_vel2) {
+        return Commands.sequence(
+                cmdVelocity(cmd_vel1, cmd_vel2),
+                Commands.waitUntil(this::isAtShootSpeed),
+                Commands.print(getName() + "is at Setpoint" + cmd_vel1 + ", " + cmd_vel2))
+                .withName(getName() + ":cmdVelocityWait=" + cmd_vel1 + cmd_vel2);
     }
 }

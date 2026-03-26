@@ -13,13 +13,13 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.timbot.Constants.PCM;
 
-public class Trigger extends SubsystemBase {
+public class Feeder extends SubsystemBase {
 
-  final DoubleSolenoid trigger;
+  final DoubleSolenoid feeder;
 
-  public Trigger() {
-    trigger = new DoubleSolenoid(2, PneumaticsModuleType.REVPH, PCM.TRIGGER_BACK, PCM.TRIGGER_FORWARD);
-    trigger.set(DoubleSolenoid.Value.kReverse);
+  public Feeder() {
+    feeder = new DoubleSolenoid(2, PneumaticsModuleType.REVPH, PCM.FEEDER_BACK, PCM.FEEDER_FORWARD);
+    feeder.set(DoubleSolenoid.Value.kReverse);
   }
 
   @Override
@@ -27,15 +27,15 @@ public class Trigger extends SubsystemBase {
    
   }
 
-  //Trigger API
-  public Command trigger_fire(){
+  //Feeder API
+  public Command feeder_fire(){
     return runOnce(() -> {
-        trigger.set(DoubleSolenoid.Value.kForward);
+        feeder.set(DoubleSolenoid.Value.kForward);
     });
   }
-  public Command trigger_reset(){
+  public Command feeder_reset(){
     return runOnce(() -> {
-        trigger.set(DoubleSolenoid.Value.kReverse);
+        feeder.set(DoubleSolenoid.Value.kReverse);
     });
   }
 

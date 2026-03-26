@@ -8,9 +8,12 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.chadbot.subsystems.shooter.FlyWheel;
 import frc.lib2202.builder.IRobotSpec;
 import frc.lib2202.builder.RobotContainer;
 import frc.lib2202.builder.RobotLimits;
@@ -28,12 +31,12 @@ import frc.lib2202.subsystem.swerve.SwerveDrivetrain;
 import frc.lib2202.subsystem.swerve.config.ChassisConfig;
 import frc.lib2202.subsystem.swerve.config.ModuleConfig;
 import frc.lib2202.subsystem.swerve.config.ModuleConfig.CornerID;
-import frc.timbot.commands.FrisbeeSeq;
+import frc.timbot.commands.FrisbeeShoot;
 import frc.timbot.commands.LifterMove;
 import frc.timbot.commands.LifterToggle;
 import frc.timbot.commands.Shoot;
 import frc.timbot.subsystem.ShooterLifter;
-import frc.timbot.subsystem.Trigger;
+import frc.timbot.subsystem.Feeder;
 import frc.timbot.subsystem.FlywheelSubsystem;
 
 
@@ -67,7 +70,7 @@ public class RobotSpec_TimBot implements IRobotSpec {
             //.add(VisionPoseEstimator.class)  //TODO - restore when VPE added to 2202 lib, part of 2025 robot now.
             .add(ShooterLifter.class)
             .add(FlywheelSubsystem.class)
-            .add(Trigger.class)
+            .add(Feeder.class)
             .add(HID_Subsystem.class, "DC", () -> {
                 return new HID_Subsystem(0.3, 0.9, 0.05);
             });
@@ -119,15 +122,34 @@ public class RobotSpec_TimBot implements IRobotSpec {
     public void setBindings() {
         HID_Subsystem dc = RobotContainer.getSubsystem("DC");
         FlywheelSubsystem shooter = RobotContainer.getSubsystem(FlywheelSubsystem.class);
+        Feeder feeder = RobotContainer.getSubsystem(Feeder.class);
         //LifterMove upPos;
         var driver = dc.Driver();
         if (driver instanceof  CommandXboxController) {
             CommandXboxController xbox_driver = (CommandXboxController)driver;
             xbox_driver.rightBumper().whileTrue(new Shoot(1000.0));
             xbox_driver.rightBumper().onTrue(new PrintCommand("right bumper has been pressed"));
-            //xbox_driver.rightTrigger().onTrue(new FrisbeeSeq());
-            xbox_driver.rightTrigger().onTrue(new ConditionalCommand(new FrisbeeSeq(), new WaitCommand(1.0), shooter::isAtShootSpeed));
-            xbox_driver.povUp().onTrue(new LifterMove(-5.0));
+            // Manual clear for Feeder
+            xbox_driver.leftTrigger().onTrue(feeder.feeder_fire());
+            xbox_driver.leftTrigger().onFalse(feeder.feeder_reset());
+            // Command for shooting when flywheel is at speed
+            xbox_driver.a().onTrue(new ConditionalCommand(new FrisbeeShoot(), new WaitCommand(1.0), shooter::isAtShootSpeed));
+            /*Command for spinning up, wait until it is spun up
+            Repeat: shoot, and then check if it is spun up again,
+            At the end: make the shooter reset, and stop the motor
+            */ 
+            xbox_driver.rightTrigger().whileTrue(
+                new SequentialCommandGroup(
+                    shooter.cmdVelocityWait(53.12, 53.12 * 1.2),
+                    new FrisbeeShoot() 
+                    ).repeatedly());
+            xbox_driver.rightTrigger().onFalse(
+                new ParallelCommandGroup(
+                    feeder.feeder_reset(),
+                    shooter.cmdVelocity(0)
+                ));
+
+            xbox_driver.povUp().onTrue(new LifterMove(-5.0)); //TODO fix this and line 133
             xbox_driver.povDown().onTrue(new LifterMove(5.0));
 
         //SmartDashboard.putNumber("Position", upPos.get_height());

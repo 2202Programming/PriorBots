@@ -127,4 +127,11 @@ public class ShooterLifter extends SubsystemBase {
       height.setDouble(fmt2(getHeight()));
     }
   }
+
+  public Command cmdHeight(double height) {
+    return runOnce(() -> {
+      this.setHeight(height);
+    });
+    
+  }
 }

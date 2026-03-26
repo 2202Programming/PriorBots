@@ -7,19 +7,19 @@ package frc.timbot.commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib2202.builder.RobotContainer;
 import frc.timbot.subsystem.ShooterLifter;
-import frc.timbot.subsystem.Trigger;
+import frc.timbot.subsystem.Feeder;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class FeedFrisbee extends Command {
   /** Creates a new FeedFrisbee. */
   
-  final Trigger trigger;
+  final Feeder feeder;
 
   public FeedFrisbee() {
     // Use addRequirements() here to declare subsystem dependencies.
 
   
-    trigger = RobotContainer.getSubsystem(Trigger.class);
+    feeder = RobotContainer.getSubsystem(Feeder.class);
   }
 
   // Called when the command is initially scheduled.
@@ -32,7 +32,7 @@ public class FeedFrisbee extends Command {
 
   // Called once the command ends or is interrupted.
 
-  trigger.trigger_fire();
+  feeder.feeder_fire();
   }
   
   @Override

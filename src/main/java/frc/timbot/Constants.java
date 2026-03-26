@@ -45,8 +45,8 @@ public final class Constants {
 
     // pneumatics control
     public static final class PCM {
-        public static final int TRIGGER_FORWARD = 0;
-        public static final int TRIGGER_BACK = 1;
+        public static final int FEEDER_FORWARD = 0;
+        public static final int FEEDER_BACK = 1;
     }
 
 }
