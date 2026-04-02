@@ -9,25 +9,20 @@ package frc.timbot.subsystem;
 
 import static frc.lib2202.Constants.DEGperRAD;
 
+import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.util.sendable.Sendable;
-import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.AnalogInput;
-import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.PneumaticsModuleType;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib2202.command.WatcherCmd;
 import frc.lib2202.util.PIDFController;
-import frc.robot2025.subsystems.Elevator_Subsystem;
-import frc.timbot.Constants.CAN;
-import frc.timbot.Constants.PCM;
 import frc.timbot.Constants.AnalogIn;
+import frc.timbot.Constants.CAN;
 
 public class ShooterLifter extends SubsystemBase {
   /**
@@ -35,14 +30,17 @@ public class ShooterLifter extends SubsystemBase {
    * 
    * actuator - SparkMax to control a linear actuator to lift platform
    * pos_volts - voltage from actuator read via analogInput
-   * trigger - double solenoid
    * 
    */
+
+  // Analog Sensor:
+  // 8.490 kOhm, 0.706v at max stroke of 14.5cm
+  // 0.839 kOhm, 4.692v at min stroke of 0cm. Functional min should be 0.25cm or so
 
   // physical consts
   final double K_h = 32.0; // [cm] tbd lengh of platform piviot (hypotenuse)
   final double K_h_offset = 0.0; // offset at zero deg
-  final double K_VperCM = 1.2 * 2.54; // basiclly Vin[Volts * 6.0 inches)/5.0Volts] * 2.54 cm/in
+  final double K_VperCM = 14.5/(4.692 - 0.706);//1.2 * 2.54; // basiclly Vin[Volts * 6.0 inches)/5.0Volts] * 2.54 cm/in
 
   // pid gains for motor controller
   double kp = 20.0; // [%pwr/cm]
@@ -59,28 +57,37 @@ public class ShooterLifter extends SubsystemBase {
 
   public ShooterLifter() {
     actuator = new SparkMax(CAN.ACTUATOR, SparkMax.MotorType.kBrushed);
+    SparkMaxConfig smc = new SparkMaxConfig(); // used to set inverted, could use for other tings
+    smc.inverted(true);
+    actuator.configure(smc, ResetMode.kNoResetSafeParameters, null);
     pos_volts = new AnalogInput(AnalogIn.LifterFeedback);
     // configure A/D behavior on Rio
     pos_volts.setAverageBits(4);
     var measured = getHeight();
     controller.reset();
+    controller.setTolerance(0.5);
     controller.calculate(measured, measured);
+    this.getWatcher();
   }
 
   @Override
   public void periodic() {
-    height_meas = getHeight(); // measures feedback
-    // run our pid around the h_cmd, speed is on [-1, 1.0], controlled by pidf
-    // gains, kp
-    double actuator_speed = controller.calculate(height_meas);
-    actuator_speed = MathUtil.clamp(actuator_speed, -1.0, 1.0); // min/max % power
-    actuator.set(actuator_speed); // using simple %power mode
+    if (controller.atSetpoint()){
+      actuator.set(0);
+    }else{
+      height_meas = getHeight(); // measures feedback
+      // run our pid around the h_cmd, speed is on [-1, 1.0], controlled by pidf
+      // gains, kp
+      double actuator_speed = controller.calculate(height_meas);
+      actuator_speed = MathUtil.clamp(actuator_speed, -1.0, 1.0); // min/max % power
+      actuator.set(actuator_speed); // using simple %power mode
+    }
   }
 
   // Platform API
   public double getHeight() { // in cm
     // System.out.println(volts.getVoltage());
-    return K_VperCM * pos_volts.getVoltage();
+    return 14.5 - (K_VperCM * pos_volts.getVoltage());
   }
 
   // height in [cm]
@@ -111,7 +118,10 @@ public class ShooterLifter extends SubsystemBase {
   }
 
   class LifterWatcherCmd extends WatcherCmd {
-    NetworkTableEntry height;
+    NetworkTableEntry actual_height;
+    NetworkTableEntry desired_height;
+    NetworkTableEntry voltage;
+    NetworkTableEntry angle;
 
     @Override
     public String getTableName() {
@@ -120,11 +130,17 @@ public class ShooterLifter extends SubsystemBase {
 
     public void ntcreate() {
       NetworkTable table = getTable();
-      height = table.getEntry("height");
+      actual_height = table.getEntry("actual_height");
+      desired_height = table.getEntry("desired_height");
+      voltage = table.getEntry("voltage");
+      angle = table.getEntry("angle");
     }
 
     public void ntupdate() {
-      height.setDouble(fmt2(getHeight()));
+      actual_height.setDouble(fmt2(getHeight()));
+      desired_height.setDouble(fmt2(controller.getSetpoint()));
+      voltage.setDouble(pos_volts.getVoltage());
+      angle.setDouble(fmt2(getAngle()));
     }
   }
 

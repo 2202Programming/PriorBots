@@ -123,6 +123,7 @@ public class RobotSpec_TimBot implements IRobotSpec {
         HID_Subsystem dc = RobotContainer.getSubsystem("DC");
         FlywheelSubsystem shooter = RobotContainer.getSubsystem(FlywheelSubsystem.class);
         Feeder feeder = RobotContainer.getSubsystem(Feeder.class);
+        ShooterLifter sl = RobotContainer.getSubsystem(ShooterLifter.class);
         //LifterMove upPos;
         var driver = dc.Driver();
         if (driver instanceof  CommandXboxController) {
@@ -149,8 +150,9 @@ public class RobotSpec_TimBot implements IRobotSpec {
                     shooter.cmdVelocity(0)
                 ));
 
-            xbox_driver.povUp().onTrue(new LifterMove(-5.0)); //TODO fix this and line 133
-            xbox_driver.povDown().onTrue(new LifterMove(5.0));
+            xbox_driver.povUp().onTrue(sl.cmdHeight(14));
+            xbox_driver.povDown().onTrue(sl.cmdHeight(5));
+            xbox_driver.povLeft().onTrue(sl.cmdHeight(0.5));
 
         //SmartDashboard.putNumber("Position", upPos.get_height());
         }
