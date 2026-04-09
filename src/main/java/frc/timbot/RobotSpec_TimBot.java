@@ -116,54 +116,13 @@ public class RobotSpec_TimBot implements IRobotSpec {
                 .setInversions(true, false, false);
 
         return modules;
-    }
-
+    }    
+    
     @Override
     public void setBindings() {
-        HID_Subsystem dc = RobotContainer.getSubsystem("DC");
-        FlywheelSubsystem shooter = RobotContainer.getSubsystem(FlywheelSubsystem.class);
-        Feeder feeder = RobotContainer.getSubsystem(Feeder.class);
-        ShooterLifter sl = RobotContainer.getSubsystem(ShooterLifter.class);
-        //LifterMove upPos;
-        var driver = dc.Driver();
-        if (driver instanceof  CommandXboxController) {
-            CommandXboxController xbox_driver = (CommandXboxController)driver;
-            xbox_driver.rightBumper().whileTrue(new Shoot(1000.0));
-            xbox_driver.rightBumper().onTrue(new PrintCommand("right bumper has been pressed"));
-            // Manual clear for Feeder
-            xbox_driver.leftTrigger().onTrue(feeder.feeder_fire());
-            xbox_driver.leftTrigger().onFalse(feeder.feeder_reset());
-            // Command for shooting when flywheel is at speed
-            xbox_driver.a().onTrue(new ConditionalCommand(new FrisbeeShoot(), new WaitCommand(1.0), shooter::isAtShootSpeed));
-            /*Command for spinning up, wait until it is spun up
-            Repeat: shoot, and then check if it is spun up again,
-            At the end: make the shooter reset, and stop the motor
-            */ 
-            xbox_driver.rightTrigger().whileTrue(
-                new SequentialCommandGroup(
-                    shooter.cmdVelocityWait(53.12, 53.12 * 1.2),
-                    new FrisbeeShoot() 
-                    ).repeatedly());
-            xbox_driver.rightTrigger().onFalse(
-                new ParallelCommandGroup(
-                    feeder.feeder_reset(),
-                    shooter.cmdVelocity(0)
-                ));
-
-            xbox_driver.povUp().onTrue(sl.cmdHeight(14));
-            xbox_driver.povDown().onTrue(sl.cmdHeight(5));
-            xbox_driver.povLeft().onTrue(sl.cmdHeight(0.5));
-
-        //SmartDashboard.putNumber("Position", upPos.get_height());
-        }
-        else {
-            DriverStation.reportError("Timbot expects xbox controller, no driver bindings set, check controllers.", false);
-        }
+        Tim_Bindings.setBindings();
     }
 
-
-    
-    
     @Override
     public void setDefaultCommands() {
         //Either mode is good for default, debugging easier with RCD.
