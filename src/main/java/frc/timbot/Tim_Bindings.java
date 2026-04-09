@@ -9,36 +9,35 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.lib2202.builder.RobotContainer;
 import frc.lib2202.subsystem.hid.HID_Subsystem;
 import frc.timbot.commands.FrisbeeShoot;
-import frc.timbot.commands.Shoot;
 import frc.timbot.subsystem.ShooterLifter;
 import frc.timbot.subsystem.Feeder;
-import frc.timbot.subsystem.FlywheelSubsystem;
+import frc.timbot.subsystem.Shooter.Shooter;
 
 public final class Tim_Bindings {
 
     public static void setBindings(){
         HID_Subsystem dc = RobotContainer.getSubsystem("DC");
-        FlywheelSubsystem shooter = RobotContainer.getSubsystem(FlywheelSubsystem.class);
+        Shooter shooter = RobotContainer.getSubsystem(Shooter.class);
         Feeder feeder = RobotContainer.getSubsystem(Feeder.class);
         ShooterLifter sl = RobotContainer.getSubsystem(ShooterLifter.class);
         //LifterMove upPos;
         var driver = dc.Driver();
         if (driver instanceof  CommandXboxController) {
             CommandXboxController xbox_driver = (CommandXboxController)driver;
-            xbox_driver.rightBumper().whileTrue(new Shoot(1000.0));
+            xbox_driver.rightBumper().whileTrue(shooter.cmdVelocity(10));
             xbox_driver.rightBumper().onTrue(new PrintCommand("right bumper has been pressed"));
             // Manual clear for Feeder
             xbox_driver.leftTrigger().onTrue(feeder.feeder_fire());
             xbox_driver.leftTrigger().onFalse(feeder.feeder_reset());
             // Command for shooting when flywheel is at speed
-            xbox_driver.a().onTrue(new ConditionalCommand(new FrisbeeShoot(), new WaitCommand(1.0), shooter::isAtShootSpeed));
+            //xbox_driver.a().onTrue(new ConditionalCommand(new FrisbeeShoot(), new WaitCommand(1.0), shooter::isAtShootSpeed));
             /*Command for spinning up, wait until it is spun up
             Repeat: shoot, and then check if it is spun up again,
             At the end: make the shooter reset, and stop the motor
             */ 
             xbox_driver.rightTrigger().whileTrue( 
                 new SequentialCommandGroup(
-                    shooter.cmdVelocityWait(53.12, 53.12 * 1.2),
+                    shooter.cmdVelocityWait(53.12),
                     new FrisbeeShoot() 
                     ).repeatedly());
             xbox_driver.rightTrigger().onFalse(

@@ -34,10 +34,10 @@ import frc.lib2202.subsystem.swerve.config.ModuleConfig.CornerID;
 import frc.timbot.commands.FrisbeeShoot;
 import frc.timbot.commands.LifterMove;
 import frc.timbot.commands.LifterToggle;
-import frc.timbot.commands.Shoot;
 import frc.timbot.subsystem.ShooterLifter;
+import frc.timbot.subsystem.Shooter.FlyWheelCtre;
+import frc.timbot.subsystem.Shooter.Shooter;
 import frc.timbot.subsystem.Feeder;
-import frc.timbot.subsystem.FlywheelSubsystem;
 
 
 //Swerve bot aka Tim specs
@@ -69,8 +69,10 @@ public class RobotSpec_TimBot implements IRobotSpec {
             .addAlias(SwerveDrivetrain.class,"drivetrain")
             //.add(VisionPoseEstimator.class)  //TODO - restore when VPE added to 2202 lib, part of 2025 robot now.
             .add(ShooterLifter.class)
-            .add(FlywheelSubsystem.class)
             .add(Feeder.class)
+            .add(Shooter.class, "shooter", () -> {
+                return new Shooter("ctre", Constants.CAN.FLYWHEEL_FRONT, Constants.CAN.FLYWHEEL_BACK);
+            })
             .add(HID_Subsystem.class, "DC", () -> {
                 return new HID_Subsystem(0.3, 0.9, 0.05);
             });

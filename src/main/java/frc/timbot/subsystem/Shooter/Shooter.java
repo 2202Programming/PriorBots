@@ -14,40 +14,41 @@ import frc.lib2202.util.PIDFController;
 import frc.timbot.Constants.CAN;
 
 public class Shooter extends SubsystemBase {
-    final public IFlyWheel flywheel;
+    final public IFlyWheel flywheelFront;
+    final public IFlyWheel flywheelBack;
     final FlyWheelConfig cfg;
     final boolean inverted;
-    final String side; 
-    int shots_taken=0;
-    double speed_factor = 1.0;  // simple factor to apply to requested speed, may be set in elastic
 
     public Shooter() {
-        this("ctre", 0, true);
+        this("ctre", 0, 0, true);
     }
 
-    public Shooter(String controllerType, int ShooterID) {
-        this(controllerType, ShooterID, true);
+    public Shooter(String controllerType, int flywheelFrontID, int flywheelBackID) {
+        this(controllerType, flywheelFrontID, flywheelBackID, true);
     }
 
-    public Shooter(String controllerType, int ShooterID, boolean inverted) {
+    public Shooter(String controllerType, int flywheelFrontID, int flywheelBackID, boolean inverted) {
         this.inverted = inverted;
-        side = (ShooterID == CAN.FLYWHEEL_FRONT) ? "front" : "back";
-        setName("Shooter_" + side);
         
         // pick which controller we are using
         if (controllerType.equalsIgnoreCase("ctre")) {
             cfg = initFlyWheelConfigCTRE();
 
-            flywheel = new FlyWheelCtre(ShooterID, cfg);
+            flywheelFront = new FlyWheelCtre(flywheelFrontID, cfg);
+            flywheelBack = new FlyWheelCtre(flywheelBackID, cfg);
+
         } else if (controllerType.equalsIgnoreCase("multi")) {
             cfg = initMultiFlyWheelConfigREV();
-            flywheel = new FlyWheelRev(ShooterID, cfg);
+            flywheelFront = new FlyWheelRev(flywheelFrontID, cfg);
+            flywheelBack = new FlyWheelRev(flywheelBackID, cfg);
         } else if (controllerType.equalsIgnoreCase("flex")) {
             cfg = initFlyWheelConfigREVFlex();
-            flywheel = new FlyWheelRevFlex(ShooterID, cfg);
+            flywheelFront = new FlyWheelRevFlex(flywheelFrontID, cfg);
+            flywheelBack = new FlyWheelRevFlex(flywheelBackID, cfg);
         } else {
             cfg = initFlyWheelConfigREV();
-            flywheel = new FlyWheelRev(ShooterID, cfg);
+            flywheelFront = new FlyWheelRev(flywheelFrontID, cfg);
+            flywheelBack = new FlyWheelRev(flywheelBackID, cfg);
         }
         this.getWatcherCmd();
     }
@@ -149,20 +150,22 @@ public class Shooter extends SubsystemBase {
     @Override
     public void initSendable(SendableBuilder builder) {
         super.initSendable(builder);
-        builder.addDoubleProperty("SPEED_FACTOR", this::getSpeedFactor, this::setSpeedFactor);
         builder.addBooleanProperty("atVelocity", this::atSetpoint, null);
-        builder.addDoubleProperty("vel_cmd", flywheel::getSetpoint, flywheel::setSetpoint);
-        builder.addDoubleProperty("vel_measured", flywheel::getVelocity, null);
-        builder.addDoubleProperty("vel_tolerance", flywheel::getTolerance, flywheel::setVelocityTolerance);
+        builder.addDoubleProperty("vel_cmd_front", flywheelFront::getSetpoint, flywheelFront::setSetpoint);
+        builder.addDoubleProperty("vel_cmd_back", flywheelBack::getSetpoint, flywheelBack::setSetpoint);
+        builder.addDoubleProperty("vel_measured_front", flywheelFront::getVelocity, null);
+        builder.addDoubleProperty("vel_measured_back", flywheelBack::getVelocity, null);
+        builder.addDoubleProperty("vel_tolerance_front", flywheelFront::getTolerance, flywheelFront::setVelocityTolerance);
+        builder.addDoubleProperty("vel_tolerance_back", flywheelBack::getTolerance, flywheelBack::setVelocityTolerance);
 
         // Rev Only
-        if (flywheel instanceof FlyWheelRev) {
+        /*if (flywheel instanceof FlyWheelRev) {
             var revfw = (FlyWheelRev) flywheel;
             builder.addDoubleProperty("iMaxAccum", revfw::getIMaxAccum, revfw::setIMaxAccum);
             builder.addDoubleProperty("iAccum", revfw::getIAccum, null);
             builder.addDoubleProperty("iZone", cfg.hw_pid::getIZone, cfg.hw_pid::setIZone);
             builder.addDoubleProperty("ramp_rate", revfw::getRampRate, revfw::setRampRate);
-        }
+        } */
 
         // hook in the PID
         cfg.hw_pid.initSendable(builder);
@@ -171,7 +174,8 @@ public class Shooter extends SubsystemBase {
     @Override
     public void periodic() {
         // update hw, only needed if changes to HW_PID - TODO test mode?
-        flywheel.update_hardware();
+        flywheelFront.update_hardware();
+        flywheelBack.update_hardware();
     }
 
     // Add a watcher so we can see stuff on network tables
@@ -179,32 +183,20 @@ public class Shooter extends SubsystemBase {
         return this.new ShooterWatcher();
     }
 
-    public void setSpeedFactor(double value) {
-        this.speed_factor = value;
-    }
-
-    public double getSpeedFactor() {
-        return this.speed_factor;
-    }
-
-    public int getShotsTaken() {
-        return shots_taken;
-    }
-
-    public void addShots(int shots) {
-        shots_taken += shots;
-    }
-
     // Shooter API
     public boolean atSetpoint() {
-        boolean off = flywheel.getSetpoint() == 0.0;
-        return flywheel.atSetpoint() && !off;
+        /* The other flywheel runs at 80% of the front flywheel's speed,
+        therefore when one flywheel's setpoint is 0, the other is aswell
+        */
+        boolean shooterAtRest = flywheelFront.getSetpoint() == 0.0;
+        return flywheelFront.atSetpoint() && flywheelBack.atSetpoint() && !shooterAtRest;
     }
 
     // Basic Commands
     public Command cmdVelocity(double cmd_vel) {
         return runOnce(() -> {
-            this.flywheel.setSetpoint(cmd_vel);
+            this.flywheelFront.setSetpoint(cmd_vel);
+            this.flywheelBack.setSetpoint(cmd_vel * 0.8);
         });
     }
 
@@ -241,27 +233,24 @@ public class Shooter extends SubsystemBase {
                 .onFalse(this.cmdVelocity(0.0));
 
         xbox.b().onTrue(this.cmdVelocity(0.0)); // [m/s]
-        xbox.y().onTrue(new InstantCommand(() -> {
-            this.flywheel.setPosition(0.0);
-        }));
     }
 
     // watcher will put values on the network tables for viewing elastic
     class ShooterWatcher extends WatcherCmd {
         ShooterWatcher() {
-            addEntry("_shots_", Shooter.this::getShotsTaken);
-            addEntry("velocity", Shooter.this.flywheel::getVelocity, 2);
+            addEntry("velocity_front", Shooter.this.flywheelFront::getVelocity, 2);
             addEntry("at_setpoint", Shooter.this::atSetpoint);
-            addEntry("position", Shooter.this.flywheel::getPosition);
-            addEntry("get_pos_rot", Shooter.this.flywheel::getPosRot);
-
             // other info about flywheel's motor
-            addEntry("mtr_appliedOutput", Shooter.this.flywheel::getAppliedOutput, 2);
-            addEntry("mtr_OutputAmps", Shooter.this.flywheel::getOutputCurrent, 2);
-            addEntry("mtr_RPM", Shooter.this.flywheel::getMotorRPM, 1);
-            addEntry("mtr_Temperature", Shooter.this.flywheel::getMotorTemperature, 2);
+            addEntry("mtr_appliedOutput_front", Shooter.this.flywheelFront::getAppliedOutput, 2);
+            addEntry("mtr_appliedOutput_back", Shooter.this.flywheelBack::getAppliedOutput, 2);
+            addEntry("mtr_OutputAmps_front", Shooter.this.flywheelFront::getOutputCurrent, 2);
+            addEntry("mtr_OutputAmps_front", Shooter.this.flywheelBack::getOutputCurrent, 2);
+            addEntry("mtr_RPM_front", Shooter.this.flywheelFront::getMotorRPM, 1);
+            addEntry("mtr_RPM_back", Shooter.this.flywheelBack::getMotorRPM, 1);
+            addEntry("mtr_Temperature_front", Shooter.this.flywheelFront::getMotorTemperature, 2);
+            addEntry("mtr_Temperature_back", Shooter.this.flywheelBack::getMotorTemperature, 2);
         }
     }
-
-    
 }
+    
+
