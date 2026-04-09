@@ -23,8 +23,8 @@ public final class Constants {
         public static final int PDP = 1;  // for rev
         public static final int PCM1 = 2; // for rev
 
-        public static final int FLYWHEEL_TALON1 = 10;
-        public static final int FLYWHEEL_TALON2 = 11;
+        public static final int FLYWHEEL_BACK = 10;
+        public static final int FLYWHEEL_FRONT = 11;
         
         // TODO - verify this is a sparkmax and chan
         public static final int ACTUATOR = 18;  

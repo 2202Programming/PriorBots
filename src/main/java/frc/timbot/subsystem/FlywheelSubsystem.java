@@ -23,8 +23,8 @@ public class FlywheelSubsystem extends SubsystemBase {
     // was in constants
     final double MIN_SHOOTER_SPEED = 200; // One unit represents one position unit per 100ms
     
-    final TalonFX motor1;
-    final TalonFX motor2;
+    final TalonFX motorback;
+    final TalonFX motorfront;
 
     VelocityVoltage m_request;
 
@@ -45,19 +45,19 @@ public class FlywheelSubsystem extends SubsystemBase {
     final StatusSignal<AngularVelocity> ss_velocity_m2;
     
     public FlywheelSubsystem() {
-        motor1 = new TalonFX(Constants.CAN.FLYWHEEL_TALON1);
-        motor2 = new TalonFX(Constants.CAN.FLYWHEEL_TALON2);
+        motorback = new TalonFX(Constants.CAN.FLYWHEEL_BACK);
+        motorfront = new TalonFX(Constants.CAN.FLYWHEEL_FRONT);
 
-        ss_velocity_m1 = motor1.getVelocity();
-        ss_velocity_m2 = motor2.getVelocity();
+        ss_velocity_m1 = motorback.getVelocity();
+        ss_velocity_m2 = motorfront.getVelocity();
 
         var slot0Configs = new Slot0Configs();
         slot0Configs.kP = kP;
         slot0Configs.kI = kI;
         slot0Configs.kD = kD;
 
-        motor1.getConfigurator().apply(slot0Configs);
-        motor2.getConfigurator().apply(slot0Configs);
+        motorback.getConfigurator().apply(slot0Configs);
+        motorfront.getConfigurator().apply(slot0Configs);
 
         m_request = new VelocityVoltage(0).withSlot(0);
     }
@@ -73,8 +73,8 @@ public class FlywheelSubsystem extends SubsystemBase {
     public void setSpeed(double speed1, double speed2) {
         velCmd_m1 = speed1;
         velCmd_m2 = speed2;
-        motor1.setControl(m_request.withVelocity(speed1).withFeedForward(0.1));
-        motor2.setControl(m_request.withVelocity(speed2).withFeedForward(0.1));
+        motorback.setControl(m_request.withVelocity(speed1).withFeedForward(0.1));
+        motorfront.setControl(m_request.withVelocity(speed2).withFeedForward(0.1));
     }
 
     public void setSpeed(double speed) { // [RPM]
