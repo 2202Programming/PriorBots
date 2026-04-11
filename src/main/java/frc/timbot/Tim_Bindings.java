@@ -17,15 +17,22 @@ public final class Tim_Bindings {
 
     public static void setBindings(){
         HID_Subsystem dc = RobotContainer.getSubsystem("DC");
-        Shooter shooter = RobotContainer.getSubsystem(Shooter.class);
+        Shooter shooter = RobotContainer.getSubsystem("shooter");
         Feeder feeder = RobotContainer.getSubsystem(Feeder.class);
         ShooterLifter sl = RobotContainer.getSubsystem(ShooterLifter.class);
         //LifterMove upPos;
         var driver = dc.Driver();
         if (driver instanceof  CommandXboxController) {
             CommandXboxController xbox_driver = (CommandXboxController)driver;
-            xbox_driver.rightBumper().whileTrue(shooter.cmdVelocity(10));
+            //shooter.setTestBindings(xbox_driver);
+            xbox_driver.rightBumper().whileTrue(shooter.cmdVelocity(20));
             xbox_driver.rightBumper().onTrue(new PrintCommand("right bumper has been pressed"));
+            xbox_driver.rightBumper().onFalse(shooter.cmdVelocity(0));
+
+            // xbox_driver.leftBumper().whileTrue(shooter.cmdVelocityBack(10));
+            // xbox_driver.leftBumper().onTrue(new PrintCommand("left bumper has been pressed"));
+            // xbox_driver.leftBumper().onFalse(shooter.cmdVelocityBack(0));
+
             // Manual clear for Feeder
             xbox_driver.leftTrigger().onTrue(feeder.feeder_fire());
             xbox_driver.leftTrigger().onFalse(feeder.feeder_reset());

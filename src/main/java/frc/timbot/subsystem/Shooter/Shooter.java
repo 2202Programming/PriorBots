@@ -125,10 +125,10 @@ public class Shooter extends SubsystemBase {
 
     // for testing Kraken
     private FlyWheelConfig initFlyWheelConfigCTRE() {
-        double kP = 0.7; //
-        double kI = 4.0; // feels kind of bs
-        double kD = 0.01; // Seems innsensitive until you add an extremely large value
-        double kF = 0.12; // Kraken X60 is a 500 kV motor, 500 rpm per V = 8.333 rps per V,
+        double kP = 0.5; //
+        double kI = 0.001; // feels kind of bs
+        double kD = 0.0; // Seems innsensitive until you add an extremely large value
+        double kF = 0.115; // Kraken X60 is a 500 kV motor, 500 rpm per V = 8.333 rps per V,
                           // 1/8.33 =// 0.12 volts / rotation per second
         double iZone = 0.0; // unused in Talon CTRE controller
 
@@ -144,6 +144,7 @@ public class Shooter extends SubsystemBase {
         // PIDF constant holder for hw
         cfg.hw_pid = new PIDFController(kP, kI, kD, kF, "flywheelPIDF");
         cfg.hw_pid.setIZone(iZone);
+        
         return cfg;
     }
 
@@ -197,6 +198,19 @@ public class Shooter extends SubsystemBase {
         return runOnce(() -> {
             this.flywheelFront.setSetpoint(cmd_vel);
             this.flywheelBack.setSetpoint(cmd_vel * 0.8);
+            //this.flywheelBack.setSetpoint(cmd_vel);
+        });
+    }
+
+    public Command cmdVelocityFront(double cmd_vel) {
+        return runOnce(() -> {
+            this.flywheelFront.setSetpoint(cmd_vel);
+        });
+    }
+
+    public Command cmdVelocityBack(double cmd_vel) {
+        return runOnce(() -> {
+            this.flywheelBack.setSetpoint(cmd_vel);
         });
     }
 
@@ -239,6 +253,7 @@ public class Shooter extends SubsystemBase {
     class ShooterWatcher extends WatcherCmd {
         ShooterWatcher() {
             addEntry("velocity_front", Shooter.this.flywheelFront::getVelocity, 2);
+            addEntry("velocity_back", Shooter.this.flywheelBack::getVelocity, 2);
             addEntry("at_setpoint", Shooter.this::atSetpoint);
             // other info about flywheel's motor
             addEntry("mtr_appliedOutput_front", Shooter.this.flywheelFront::getAppliedOutput, 2);
