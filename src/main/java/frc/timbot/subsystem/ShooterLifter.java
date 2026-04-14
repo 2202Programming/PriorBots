@@ -118,29 +118,11 @@ public class ShooterLifter extends SubsystemBase {
   }
 
   class LifterWatcherCmd extends WatcherCmd {
-    NetworkTableEntry actual_height;
-    NetworkTableEntry desired_height;
-    NetworkTableEntry voltage;
-    NetworkTableEntry angle;
-
-    @Override
-    public String getTableName() {
-      return LifterWatcherCmd.this.getName();
-    }
-
-    public void ntcreate() {
-      NetworkTable table = getTable();
-      actual_height = table.getEntry("actual_height");
-      desired_height = table.getEntry("desired_height");
-      voltage = table.getEntry("voltage");
-      angle = table.getEntry("angle");
-    }
-
-    public void ntupdate() {
-      actual_height.setDouble(fmt2(getHeight()));
-      desired_height.setDouble(fmt2(controller.getSetpoint()));
-      voltage.setDouble(pos_volts.getVoltage());
-      angle.setDouble(fmt2(getAngle()));
+    LifterWatcherCmd() {
+      addEntry("actual_height", ShooterLifter.this::getHeight, 2);
+      addEntry("desired_height", ShooterLifter.this.controller::getSetpoint, 2);
+      addEntry("voltage", ShooterLifter.this.pos_volts::getVoltage, 2);
+      addEntry("angle", ShooterLifter.this::getAngle, 2);
     }
   }
 
