@@ -18,7 +18,7 @@ public class FlyWheelCtre implements IFlyWheel {
 
     final TalonFXConfiguration configs;
     final FlyWheelConfig cfg;
-    final double converionFactor;
+    final double conversionFactor;
 
     double vel_setpoint_rps;    // [rps]
     double vel_tolerance_rps = 0.1; // [rps]
@@ -32,7 +32,7 @@ public class FlyWheelCtre implements IFlyWheel {
         configs = new TalonFXConfiguration();
 
         // ctre uses rot or rot-per-sec
-        converionFactor = 2.0 * Math.PI * cfg.flywheelRadius * cfg.gearRatio; // [m/mtr-rot]
+        conversionFactor = 2.0 * Math.PI * cfg.flywheelRadius * cfg.gearRatio; // [m/mtr-rot]
 
         // configure the talonFX with our cfg
         /*
@@ -89,7 +89,7 @@ public class FlyWheelCtre implements IFlyWheel {
 
     @Override
     public IFlyWheel setSetpoint(double vel) {
-        vel_setpoint_rps = vel / converionFactor;
+        vel_setpoint_rps = vel / conversionFactor;
         if (vel == 0.0) {
             m_fx.setControl(m_brake);
         } else {
@@ -100,12 +100,12 @@ public class FlyWheelCtre implements IFlyWheel {
 
     @Override
     public double getSetpoint() {
-        return vel_setpoint_rps * converionFactor;
+        return vel_setpoint_rps * conversionFactor;
     }
 
     @Override
     public double getVelocity() {
-        return m_fx.getVelocity().getValueAsDouble() * converionFactor;
+        return m_fx.getVelocity().getValueAsDouble() * conversionFactor;
     }
 
     @Override
@@ -115,12 +115,12 @@ public class FlyWheelCtre implements IFlyWheel {
 
     @Override
     public double getTolerance() {
-        return vel_tolerance_rps * converionFactor;
+        return vel_tolerance_rps * conversionFactor;
     }
 
     @Override
     public IFlyWheel setVelocityTolerance(double vel_tolerance) {
-        this.vel_tolerance_rps = vel_tolerance / converionFactor;
+        this.vel_tolerance_rps = vel_tolerance / conversionFactor;
         return this;
     }
 
@@ -131,12 +131,12 @@ public class FlyWheelCtre implements IFlyWheel {
 
     @Override
     public double getPosition() {
-        return m_fx.getPosition().getValueAsDouble() * converionFactor;
+        return m_fx.getPosition().getValueAsDouble() * conversionFactor;
     }
 
     @Override
     public IFlyWheel setPosition(double pos) {
-        m_fx.setPosition(pos / converionFactor); // convert to rot
+        m_fx.setPosition(pos / conversionFactor); // convert to rot
         return this;
     }
 

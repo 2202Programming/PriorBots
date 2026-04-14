@@ -28,12 +28,12 @@ public class Feeder extends SubsystemBase {
   }
 
   //Feeder API
-  public Command feeder_fire(){
+  public Command fire(){
     return runOnce(() -> {
         feeder.set(DoubleSolenoid.Value.kForward);
     });
   }
-  public Command feeder_reset(){
+  public Command reset(){
     return runOnce(() -> {
         feeder.set(DoubleSolenoid.Value.kReverse);
     });

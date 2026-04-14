@@ -4,24 +4,13 @@ import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.FeetPerSecond;
 import static frc.lib2202.Constants.MperFT;
 
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.ConditionalCommand;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.PrintCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.chadbot.subsystems.shooter.FlyWheel;
 import frc.lib2202.builder.IRobotSpec;
 import frc.lib2202.builder.RobotContainer;
 import frc.lib2202.builder.RobotLimits;
 import frc.lib2202.builder.SubsystemConfig;
 import frc.lib2202.command.swerve.FieldCentricDrive;
 import frc.lib2202.command.swerve.RobotCentricDrive;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 //import frc.lib2202.command.swerve.calibrate.TestRotateVelocity;
 import frc.lib2202.subsystem.Limelight;
 import frc.lib2202.subsystem.Sensors;
@@ -31,13 +20,9 @@ import frc.lib2202.subsystem.swerve.SwerveDrivetrain;
 import frc.lib2202.subsystem.swerve.config.ChassisConfig;
 import frc.lib2202.subsystem.swerve.config.ModuleConfig;
 import frc.lib2202.subsystem.swerve.config.ModuleConfig.CornerID;
-import frc.timbot.commands.FrisbeeShoot;
-import frc.timbot.commands.LifterMove;
-import frc.timbot.commands.LifterToggle;
-import frc.timbot.subsystem.ShooterLifter;
-import frc.timbot.subsystem.Shooter.FlyWheelCtre;
-import frc.timbot.subsystem.Shooter.Shooter;
 import frc.timbot.subsystem.Feeder;
+import frc.timbot.subsystem.ShooterLifter;
+import frc.timbot.subsystem.Shooter.Shooter;
 
 
 //Swerve bot aka Tim specs
@@ -71,7 +56,7 @@ public class RobotSpec_TimBot implements IRobotSpec {
             .add(ShooterLifter.class)
             .add(Feeder.class)
             .add(Shooter.class, "shooter", () -> {
-                return new Shooter("ctre", Constants.CAN.FLYWHEEL_FRONT, Constants.CAN.FLYWHEEL_BACK);
+                return new Shooter(Constants.CAN.FLYWHEEL_FRONT, Constants.CAN.FLYWHEEL_BACK);
             })
             .add(HID_Subsystem.class, "DC", () -> {
                 return new HID_Subsystem(0.3, 0.9, 0.05);

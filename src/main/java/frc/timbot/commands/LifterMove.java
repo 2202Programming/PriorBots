@@ -1,10 +1,7 @@
 package frc.timbot.commands;
 
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib2202.builder.RobotContainer;
-import frc.lib2202.command.WatcherCmd;
-import frc.robot2025.subsystems.Elevator_Subsystem.Levels;
 import frc.timbot.subsystem.ShooterLifter;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more

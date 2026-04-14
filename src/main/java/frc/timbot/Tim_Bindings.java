@@ -1,6 +1,5 @@
 package frc.timbot;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -8,9 +7,8 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.lib2202.builder.RobotContainer;
 import frc.lib2202.subsystem.hid.HID_Subsystem;
-import frc.timbot.commands.FrisbeeShoot;
-import frc.timbot.subsystem.ShooterLifter;
 import frc.timbot.subsystem.Feeder;
+import frc.timbot.subsystem.ShooterLifter;
 import frc.timbot.subsystem.Shooter.Shooter;
 
 public final class Tim_Bindings {
@@ -34,8 +32,8 @@ public final class Tim_Bindings {
             // xbox_driver.leftBumper().onFalse(shooter.cmdVelocityBack(0));
 
             // Manual clear for Feeder
-            xbox_driver.leftTrigger().onTrue(feeder.feeder_fire());
-            xbox_driver.leftTrigger().onFalse(feeder.feeder_reset());
+            xbox_driver.leftTrigger().onTrue(feeder.fire());
+            xbox_driver.leftTrigger().onFalse(feeder.reset());
             // Command for shooting when flywheel is at speed
             //xbox_driver.a().onTrue(new ConditionalCommand(new FrisbeeShoot(), new WaitCommand(1.0), shooter::isAtShootSpeed));
             /*Command for spinning up, wait until it is spun up
@@ -44,12 +42,14 @@ public final class Tim_Bindings {
             */ 
             xbox_driver.rightTrigger().whileTrue( 
                 new SequentialCommandGroup(
-                    shooter.cmdVelocityWait(53.12),
-                    new FrisbeeShoot() 
-                    ).repeatedly());
+                    shooter.cmdVelocityWait(shooter.maxVelocity),
+                    feeder.fire(),
+                    new WaitCommand (.07),
+                    feeder.reset()
+            ));
             xbox_driver.rightTrigger().onFalse(
                 new ParallelCommandGroup(
-                    feeder.feeder_reset(),
+                    feeder.reset(),
                     shooter.cmdVelocity(0)
                 ));
 

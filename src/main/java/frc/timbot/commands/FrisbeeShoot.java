@@ -22,6 +22,9 @@ public class FrisbeeShoot extends SequentialCommandGroup {
     // addCommands(new FooCommand(), new BarCommand());
     feeder = RobotContainer.getSubsystem(Feeder.class);
 
-    addCommands(feeder.feeder_fire(), new WaitCommand(0.07), feeder.feeder_reset());
+    addCommands(
+      feeder.fire(), 
+      new WaitCommand(0.07), 
+      feeder.reset());
   }
 }

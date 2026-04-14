@@ -6,7 +6,6 @@ package frc.timbot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib2202.builder.RobotContainer;
-import frc.timbot.subsystem.ShooterLifter;
 import frc.timbot.subsystem.Feeder;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
@@ -32,7 +31,7 @@ public class FeedFrisbee extends Command {
 
   // Called once the command ends or is interrupted.
 
-  feeder.feeder_fire();
+  feeder.fire();
   }
   
   @Override
