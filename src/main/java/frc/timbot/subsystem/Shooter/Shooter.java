@@ -28,7 +28,7 @@ public class Shooter extends SubsystemBase {
     private FlyWheelConfig initFlyWheelConfigCTRE() {
         double kP = 0.5; //
         double kI = 0.001; // feels kind of bs
-        double kD = 0.0; // Seems innsensitive until you add an extremely large value
+        double kD = 0.001; // Seems innsensitive until you add an extremely large value
         double kF = 0.115 *(42.0/30.0); // Kraken X60 is a 500 kV motor, 500 rpm per V = 8.333 rps per V,
                           // 1/8.33 =// 0.12 volts / rotation per second
         double iZone = 0.0; // unused in Talon CTRE controller
@@ -36,11 +36,11 @@ public class Shooter extends SubsystemBase {
         FlyWheelConfig cfg = new FlyWheelConfig();
         cfg.inverted = false;
         cfg.rampRate = 0.0; // not implemented in ctre, but could be
-        cfg.gearRatio = 30 / 42; // new kraken pulleys
+        cfg.gearRatio = 30.0 / 42.0; // new kraken pulleys
         cfg.stallAmp = 80; // [amp] Use as stator amps
         cfg.freeAmp = 10; // [amp] //unused
-        cfg.maxOpenLoopRPM = 5800.0; // measure at full power or motor spec
-        cfg.flywheelRadius = (3.0 / 12.0) * MperFT; // [m] 2 [inch] converted [m]
+        cfg.maxOpenLoopRPM = 6380.0; // measure at full power or motor spec
+        cfg.flywheelRadius = (3.0 / 12.0) * MperFT; // [m] 3 [inch] converted [m]
         cfg.iMaxAccum = 0.0; // unused in ctre
         // PIDF constant holder for hw
         cfg.hw_pid = new PIDFController(kP, kI, kD, kF, "flywheelPIDF");

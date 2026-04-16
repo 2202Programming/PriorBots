@@ -10,6 +10,7 @@ import frc.lib2202.subsystem.hid.HID_Subsystem;
 import frc.timbot.subsystem.Feeder;
 import frc.timbot.subsystem.ShooterLifter;
 import frc.timbot.subsystem.Shooter.Shooter;
+import pabeles.concurrency.IntOperatorTask.Min;
 
 public final class Tim_Bindings {
 
@@ -53,9 +54,11 @@ public final class Tim_Bindings {
                     shooter.cmdVelocity(0)
                 ));
 
-            xbox_driver.povUp().onTrue(sl.cmdHeight(14));
-            xbox_driver.povDown().onTrue(sl.cmdHeight(5));
-            xbox_driver.povLeft().onTrue(sl.cmdHeight(0.5));
+            xbox_driver.povUp().whileTrue(sl.relativeHeight(0.5));
+            xbox_driver.povUp().onFalse(sl.cmdHeight(sl.getHeight()));
+            xbox_driver.povDown().whileTrue(sl.relativeHeight(-0.5));
+            xbox_driver.povDown().onFalse(sl.cmdHeight(sl.getHeight()));
+            xbox_driver.povLeft().onTrue(sl.cmdHeight(7));
 
         //SmartDashboard.putNumber("Position", upPos.get_height());
         }

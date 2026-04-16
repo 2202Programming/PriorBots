@@ -95,6 +95,10 @@ public class ShooterLifter extends SubsystemBase {
     controller.setSetpoint(height_cm);
   }
 
+  public Command relativeHeight(double relativeMove) {
+    return this.cmdHeight(this.getHeight() + relativeMove);
+  }
+
   // alternative way to set postion
   public void setAngle(double angle_deg) {
     // convert angle to cm
