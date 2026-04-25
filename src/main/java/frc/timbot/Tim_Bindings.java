@@ -10,7 +10,6 @@ import frc.lib2202.subsystem.hid.HID_Subsystem;
 import frc.timbot.subsystem.Feeder;
 import frc.timbot.subsystem.ShooterLifter;
 import frc.timbot.subsystem.Shooter.Shooter;
-import pabeles.concurrency.IntOperatorTask.Min;
 
 public final class Tim_Bindings {
 
