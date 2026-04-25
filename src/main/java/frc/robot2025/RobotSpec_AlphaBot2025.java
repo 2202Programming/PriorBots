@@ -5,7 +5,7 @@ import static edu.wpi.first.units.Units.FeetPerSecond;
 import static frc.lib2202.Constants.DEGperRAD;
 import static frc.lib2202.Constants.MperFT;
 
-import com.pathplanner.lib.auto.AutoBuilder;
+//import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathfindingCommand;
 import com.revrobotics.spark.SparkFlex;
 
@@ -203,8 +203,9 @@ public class RobotSpec_AlphaBot2025 implements IRobotSpec {
     RegisteredCommandsTest.RegisterCommands(); 
 
     //enable chooser - builds autochooser list
-    autoChooser = AutoBuilder.buildAutoChooser();
-    SmartDashboard.putData("Auto Chooser", autoChooser);   
+    //autoChooser = AutoBuilder.buildAutoChooser();
+    //SmartDashboard.putData("Auto Chooser", autoChooser);
+    
   }
   
   @Override
