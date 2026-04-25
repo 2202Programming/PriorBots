@@ -11,7 +11,7 @@ import frc.lib2202.builder.RobotContainer;
 import frc.lib2202.command.swerve.FaceToTag;
 import frc.lib2202.command.swerve.RotateUntilSeeTags;
 import frc.lib2202.subsystem.Limelight;
-import frc.lib2202.subsystem.LimelightHelpers.LimelightTarget_Fiducial;
+import frc.lib2202.subsystem.LimelightHelpers.RawFiducial;
 import frc.robot2024.Constants.Tag_Pose;
 import frc.robot2024.commands.Shooter.ShooterSequence;
 
@@ -30,14 +30,14 @@ public class TurnFaceShootAuto extends Command {
   public void initialize() {
       if(checkForTarget()) { //target tag is visible
         var cmd = new SequentialCommandGroup(
-          new FaceToTag(tagID),
+          new FaceToTag(tagID, 3.0),
           new ShooterSequence(3000) );
         CommandScheduler.getInstance().schedule(cmd);
       } 
       else{ //target tag is not *yet* visible
         var cmd = new SequentialCommandGroup(
           new RotateUntilSeeTags(Tag_Pose.ID4, Tag_Pose.ID7),
-          new FaceToTag(tagID),
+          new FaceToTag(tagID, 3.0),
           new ShooterSequence(3000) );
         CommandScheduler.getInstance().schedule(cmd);
       }
@@ -66,9 +66,9 @@ public class TurnFaceShootAuto extends Command {
    *         not.
    */
   private boolean checkForTarget() {
-    LimelightTarget_Fiducial[] tags = limelight.getAprilTagsFromHelper();
-    for (LimelightTarget_Fiducial tag : tags) {
-      if ((int)tag.fiducialID == tagID) {
+    RawFiducial[] tags = limelight.getAprilTagsFromHelper();
+    for (RawFiducial tag : tags) {
+      if ((int)tag.id == tagID) {
         return true;
       }
     }

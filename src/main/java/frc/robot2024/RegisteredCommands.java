@@ -50,7 +50,8 @@ public class RegisteredCommands {
             
             NamedCommands.registerCommand("angle_shoot",
                 new SequentialCommandGroup(
-                    new RotateTo(Tag_Pose.ID4, Tag_Pose.ID7), 
+                    new RotateTo(Tag_Pose.ID4.pose.getTranslation().toTranslation2d(),
+                                 Tag_Pose.ID7.pose.getTranslation().toTranslation2d()  ), 
                     new ShooterSequence(3200.0)).withTimeout(ShooterTimeOut));
         } else {
             NamedCommands.registerCommand("shoot",  
@@ -59,7 +60,7 @@ public class RegisteredCommands {
             NamedCommands.registerCommand("angle_shoot",
                 new SequentialCommandGroup(
                     new RotateUntilSeeTags(Tag_Pose.ID4, Tag_Pose.ID7), 
-                    new FaceToTag(100),//HACK Does not matter
+                    new FaceToTag(100, 3.0),//HACK Does not matter
                     new ShooterServoSequence(true).withTimeout(ShooterTimeOut)));
         
             NamedCommands.registerCommand("RotateTo", 

@@ -4,7 +4,9 @@
 
 package frc.robot2024;
 
-import frc.lib2202.util.AprilTag2d;
+import edu.wpi.first.apriltag.AprilTag;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
  * numerical or boolean
@@ -280,37 +282,40 @@ public final class Constants {
   }
 
   public static final class Tag_Pose {
-    public static final AprilTag2d ID0 = new AprilTag2d(0, 0.0,0.0); //dont use tag ID 0, placeholder for array
+    static Rotation3d dummyRot = new Rotation3d();
+    // Converted to AprilTag from our deprecated AprilTag2D, z axis and Rotation are fake
+    // For a better way to do this look at 2025 or 2026 TheField structure in constants for those years.
+    public static final AprilTag ID0 = new AprilTag(0, new Pose3d( 0.0, 0.0, 0.0, dummyRot)); //dont use tag ID 0, placeholder for array
     /**Blue source right */
-    public static final AprilTag2d ID1 = new AprilTag2d(1, 15.079472, 0.245872);
+    public static final AprilTag ID1 = new AprilTag(1, new Pose3d(15.079472, 0.245872, 0.0, dummyRot));
     /**Blue source left */
-    public static final AprilTag2d ID2 = new AprilTag2d(2, 16.185134, 0.883666);
+    public static final AprilTag ID2 = new AprilTag(2, new Pose3d(16.185134, 0.883666, 0.0, dummyRot));
     /**Red speaker right */
-    public static final AprilTag2d ID3 = new AprilTag2d(3, 16.579342, 4.982718);
+    public static final AprilTag ID3 = new AprilTag(3, new Pose3d(16.579342, 4.982718, 0.0, dummyRot));
     /**Red speaker left */
-    public static final AprilTag2d ID4 = new AprilTag2d(4, 16.579342, 5.547868);
+    public static final AprilTag ID4 = new AprilTag(4, new Pose3d(16.579342, 5.547868, 0.0, dummyRot));
     /**Red amp */
-    public static final AprilTag2d ID5 = new AprilTag2d(5, 14.700758, 8.2042);
+    public static final AprilTag ID5 = new AprilTag(5, new Pose3d(14.700758, 8.2042, 0.0, dummyRot));
     /**Blue amp */
-    public static final AprilTag2d ID6 = new AprilTag2d(6, 1.8415, 8.2042);
+    public static final AprilTag ID6 = new AprilTag(6, new Pose3d(1.8415, 8.2042, 0.0, dummyRot));
     /**Blue speaker right */
-    public static final AprilTag2d ID7 = new AprilTag2d(7, 0.0381, 5.547868);
+    public static final AprilTag ID7 = new AprilTag(7, new Pose3d(0.0381, 5.547868, 0.0, dummyRot));
     /**Blue speaker left */
-    public static final AprilTag2d ID8 = new AprilTag2d(8, 0.0381, 4.982718);
+    public static final AprilTag ID8 = new AprilTag(8, new Pose3d(0.0381, 4.982718, 0.0, dummyRot));
     /**Red source right */
-    public static final AprilTag2d ID9 = new AprilTag2d(9, 0.356108, 0.883666);
+    public static final AprilTag ID9 = new AprilTag(9, new Pose3d(0.356108, 0.883666, 0.0, dummyRot));
     /**Red source left */
-    public static final AprilTag2d ID10 = new AprilTag2d(10, 1.461516, 0.245872);
+    public static final AprilTag ID10 = new AprilTag(10,new Pose3d(1.461516, 0.245872, 0.0, dummyRot));
     /**Red stage (counter-clockwse starting at Stage Left) */
-    public static final AprilTag2d ID11 = new AprilTag2d(11, 11.904726, 3.713226);
-    public static final AprilTag2d ID12 = new AprilTag2d(12, 11.904726, 4.49834);
-    public static final AprilTag2d ID13 = new AprilTag2d(13, 11.220196, 4.105148);
+    public static final AprilTag ID11 = new AprilTag(11, new Pose3d(11.904726, 3.713226, 0.0, dummyRot));
+    public static final AprilTag ID12 = new AprilTag(12, new Pose3d(11.904726, 4.49834, 0.0, dummyRot));
+    public static final AprilTag ID13 = new AprilTag(13, new Pose3d(11.220196, 4.105148, 0.0, dummyRot));
     /**Blue state (counter-clockwise starting at Center Stage) */
-    public static final AprilTag2d ID14 = new AprilTag2d(14, 5.320792, 4.105148);
-    public static final AprilTag2d ID15 = new AprilTag2d(15, 4.641342, 4.49834);
-    public static final AprilTag2d ID16 = new AprilTag2d(16, 4.641342, 3.713226);
+    public static final AprilTag ID14 = new AprilTag(14, new Pose3d(5.320792, 4.105148, 0.0, dummyRot));
+    public static final AprilTag ID15 = new AprilTag(15, new Pose3d(4.641342, 4.49834, 0.0, dummyRot));
+    public static final AprilTag ID16 = new AprilTag(16, new Pose3d(4.641342, 3.713226, 0.0, dummyRot));
 
-    public static AprilTag2d[] tagLocations = {ID0, ID1, ID2, ID3, ID4, ID5, ID6, ID7, ID8, ID9, ID10, ID11, ID12,
+    public static AprilTag[] tagLocations = {ID0, ID1, ID2, ID3, ID4, ID5, ID6, ID7, ID8, ID9, ID10, ID11, ID12,
                                       ID13, ID14, ID15, ID16};     
   }
 

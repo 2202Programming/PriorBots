@@ -20,7 +20,7 @@ import frc.lib2202.subsystem.LimelightHelpers.PoseEstimate;
 import frc.lib2202.subsystem.swerve.IHeadingProvider;
 import frc.robot2025.Constants.TheField;
 
-//@Deprecated   //most ILimelight methods not supported, ILimelight intended for v2
+@Deprecated   //most ILimelight methods not supported, ILimelight intended for v2
 public class LimelightV1 extends BaseLimelight implements ILimelight{
  
   //access to mt2 complete object
