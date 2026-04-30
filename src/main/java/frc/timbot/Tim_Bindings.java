@@ -53,10 +53,10 @@ public final class Tim_Bindings {
                     shooter.cmdVelocity(0)
                 ));
 
-            xbox_driver.povUp().whileTrue(sl.relativeHeight(0.5));
-            xbox_driver.povUp().onFalse(sl.cmdHeight(sl.getHeight()));
-            xbox_driver.povDown().whileTrue(sl.relativeHeight(-0.5));
-            xbox_driver.povDown().onFalse(sl.cmdHeight(sl.getHeight()));
+            xbox_driver.povUp().whileTrue(sl.cmdHeight(sl.maxHeight));
+            xbox_driver.povUp().onFalse(sl.cmdStop());
+            xbox_driver.povDown().whileTrue(sl.cmdHeight(sl.minHeight));
+            xbox_driver.povDown().onFalse(sl.cmdStop());
             xbox_driver.povLeft().onTrue(sl.cmdHeight(7));
 
         //SmartDashboard.putNumber("Position", upPos.get_height());

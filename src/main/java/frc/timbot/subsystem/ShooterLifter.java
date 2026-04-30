@@ -34,6 +34,8 @@ public class ShooterLifter extends SubsystemBase {
   // Analog Sensor:
   // 8.490 kOhm, 0.706v at max stroke of 14.5cm
   // 0.839 kOhm, 4.692v at min stroke of 0cm. Functional min should be 0.25cm or so
+  final public double maxHeight = 14.5;
+  final public double minHeight = 0.25;
 
   // physical consts
   final double K_h = 32.0; // [cm] tbd lengh of platform piviot (hypotenuse)
@@ -133,5 +135,11 @@ public class ShooterLifter extends SubsystemBase {
       this.setHeight(height);
     });
     
+  }
+
+  public Command cmdStop(){
+    return runOnce(() -> {
+      this.setHeight(getHeight());
+    });
   }
 }
