@@ -132,8 +132,8 @@ public class VelShootCommand extends Command implements SolutionProvider{
         this(shooterSettings, backupFrameCount, null);
     }
 
-    public VelShootCommand(double requestedVelocity){  //velocity only overload
-        this(new ShooterSettings(requestedVelocity, 0.0, 0.0, 0.1), 20, null);
+    public VelShootCommand(double dustinvelocity){  //velocity only overload
+        this(new ShooterSettings(dustinvelocity, 0.0, 0.0, 0.1), 20, null);
     }
 
     //overload constructor to allow for shooting with autovelocity RPM adjustment off (defaults to true in other constructors)

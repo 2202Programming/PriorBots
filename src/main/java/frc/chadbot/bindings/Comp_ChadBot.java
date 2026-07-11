@@ -10,6 +10,8 @@ import frc.chadbot.commands.MoveIntake;
 import frc.chadbot.commands.MoveIntake.DeployMode;
 import frc.chadbot.commands.MovePositioner;
 import frc.chadbot.commands.MovePositioner.PositionerMode;
+import frc.chadbot.commands.Shoot.BasicShootCommand;
+import frc.chadbot.commands.Shoot.RPMShootCommand;
 import frc.chadbot.commands.Shoot.VelShootCommand;
 import frc.chadbot.subsystems.Magazine_Subsystem;
 import frc.lib2202.builder.RobotContainer;
@@ -19,6 +21,8 @@ import frc.lib2202.command.swerve.TargetCentricDrive;
 import frc.lib2202.subsystem.hid.HID_Subsystem;
 import frc.lib2202.subsystem.swerve.SwerveDrivetrain;
 import frc.robot2024.Constants.Tag_Pose;
+import frc.robot2024.commands.Shooter.RPMShooter;
+import frc.robot2024.commands.Shooter.ShooterSequence;
 
 /*
  * Please don't edit this without leads/mentor/driveteam review
@@ -48,7 +52,7 @@ public final class Comp_ChadBot {
         var drivetrain = RobotContainer.getSubsystem(SwerveDrivetrain.class);
 
         // Driver buttons
-        driver.leftTrigger().whileTrue(new RobotCentricDrive(drivetrain, dc));
+        driver.leftTrigger().whileTrue (new RPMShootCommand());//dustins 4th of july workaround;
         driver.y().onTrue(new AllianceAwareGyroReset());
         driver.rightTrigger().whileTrue(new TargetCentricDrive(Tag_Pose.ID4, Tag_Pose.ID7));
         driver.leftBumper().whileTrue(new VelShootCommand(Shooter.shortMediumVelocity));

@@ -219,7 +219,7 @@ public final class Constants {
 
     public static final class Shooter {
       public static final double DefaultRPMTolerance = .05;  // percent of RPM
-      public static final ShooterSettings DefaultSettings = new ShooterSettings(20.0, -20.0);  //ft/s, rot/s
+      public static final ShooterSettings DefaultSettings = new ShooterSettings(20, -20.0);  //ft/s, rot/s
 
       // Power Cell info
       // public static final double PowerCellMass = 3.0 / 16.0; // lbs
@@ -230,6 +230,7 @@ public final class Constants {
       public static final double shortMediumVelocity = 44;
       public static final double mediumVelocity = 50;
       public static final double longVelocity = 60;
+      public static final double dustinvelocity = -20;
       public static final double autoVelocity = 46;
 
       // limelight distance constants

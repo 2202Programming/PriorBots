@@ -29,7 +29,7 @@ public class RPMShootCommand extends Command{
 
     private boolean finished = false;
 
-    final static FlyWheelRPM defaultShooterRPMs = new FlyWheelRPM(1000,1000);
+    final static FlyWheelRPM defaultShooterRPMs = new FlyWheelRPM(3500,3500); //dustins 4th of july workaround
 
     public enum Stage{
         DoNothing("Do Nothing"),
@@ -50,11 +50,11 @@ public class RPMShootCommand extends Command{
     
     Stage stage;
 
-    public RPMShootCommand(FlyWheelRPM target){
-        this.intake = RobotContainer.getSubsystem(Intake_Subsystem.class);
-        this.shooter = RobotContainer.getSubsystem(Shooter_Subsystem.class);
-        this.magazine = RobotContainer.getSubsystem(Magazine_Subsystem.class);
-        this.cmdRPM = target;
+    public RPMShootCommand(FlyWheelRPM defaultshooterrpms){
+            this.intake = RobotContainer.getSubsystem(Intake_Subsystem.class);
+            this.shooter = RobotContainer.getSubsystem(Shooter_Subsystem.class);
+            this.magazine = RobotContainer.getSubsystem(Magazine_Subsystem.class);
+            this.cmdRPM = defaultshooterrpms;
     }
     
     public RPMShootCommand(){
