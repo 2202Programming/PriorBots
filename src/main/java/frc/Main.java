@@ -14,6 +14,7 @@ import frc.robot2025.RobotSpec_BetaBot2025;
 import frc.robot2025.RobotSpec_BotOnBoard;
 import frc.robot2025.RobotSpec_BotOnBoard2;
 import frc.robot2025.RobotSpec_BotOnBoard3;
+import frc.robot2025.RobotSpec_BotOnZeta;
 
 public final class Main {
   private Main() {
@@ -29,6 +30,7 @@ public final class Main {
     new RobotSpec_BotOnBoard();
     new RobotSpec_BotOnBoard2();
     new RobotSpec_BotOnBoard3();
+    new RobotSpec_BotOnZeta();
 
   }
   public static void main(String... args) {
