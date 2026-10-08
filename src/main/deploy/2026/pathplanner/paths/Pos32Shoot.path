@@ -1,0 +1,54 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 3.549318866787221,
+        "y": 0.6041802290536464
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 3.813836743396271,
+        "y": 0.6192440430415138
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 4.466034236804564,
+        "y": 0.6127246790299581
+      },
+      "prevControl": {
+        "x": 4.21628722089314,
+        "y": 0.6239687015903498
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Pos32ShootEnd"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 4.5,
+    "maxAcceleration": 5.0,
+    "maxAngularVelocity": 360.0,
+    "maxAngularAcceleration": 360.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 91.0809241866607
+  },
+  "reversed": false,
+  "folder": "Pos3ShootFuelBump",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 90.71615994547044
+  },
+  "useDefaultConstraints": true
+}

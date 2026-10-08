@@ -1,0 +1,48 @@
+{
+  "robotWidth": 0.813,
+  "robotLength": 0.863,
+  "holonomicMode": true,
+  "pathFolders": [
+    "ClockwiseRoundTheWorld",
+    "Pos1FuelShootFuel",
+    "Pos3FuelShootFuel",
+    "Pos3ShootFuelBump",
+    "Pos3ShootFuelClimb",
+    "RoundTheWorld",
+    "ShootOutpostShootClimb",
+    "_dpl"
+  ],
+  "autoFolders": [
+    "BuddyNeutralAutos",
+    "_dpl",
+    "NoNeutralAutos",
+    "SoloNeturalAutos"
+  ],
+  "defaultMaxVel": 4.5,
+  "defaultMaxAccel": 5.0,
+  "defaultMaxAngVel": 360.0,
+  "defaultMaxAngAccel": 360.0,
+  "defaultNominalVoltage": 12.0,
+  "robotMass": 55.0,
+  "robotMOI": 6.883,
+  "robotTrackwidth": 0.546,
+  "driveWheelRadius": 0.0508,
+  "driveGearing": 5.36,
+  "maxDriveSpeed": 6.0,
+  "driveMotorType": "vortex",
+  "driveCurrentLimit": 40.0,
+  "wheelCOF": 1.008,
+  "flModuleX": 0.33,
+  "flModuleY": 0.3575,
+  "frModuleX": 0.33,
+  "frModuleY": -0.3575,
+  "blModuleX": -0.33,
+  "blModuleY": 0.3575,
+  "brModuleX": -0.33,
+  "brModuleY": -0.3575,
+  "bumperOffsetX": 0.0,
+  "bumperOffsetY": 0.0,
+  "robotFeatures": [
+    "{\"name\":\"Line\",\"type\":\"line\",\"data\":{\"start\":{\"x\":0.0,\"y\":0.0},\"end\":{\"x\":3.5,\"y\":0.0},\"strokeWidth\":0.02}}"
+  ]
+}

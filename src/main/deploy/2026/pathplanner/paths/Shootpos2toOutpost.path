@@ -1,0 +1,59 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.001443181818182,
+        "y": 3.003528409090909
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 1.9416477272677444,
+        "y": 2.0468011363636376
+      },
+      "isLocked": false,
+      "linkedName": "Pos2ToShootEnd"
+    },
+    {
+      "anchor": {
+        "x": 0.4965909090909092,
+        "y": 0.6615397727272738
+      },
+      "prevControl": {
+        "x": 1.253999999995017,
+        "y": 1.6680965909090912
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Shoot2OutpostEnd"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.4999999999999999,
+      "rotationDegrees": -48.10410583696196
+    }
+  ],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 4.5,
+    "maxAcceleration": 5.0,
+    "maxAngularVelocity": 360.0,
+    "maxAngularAcceleration": 360.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 180.0
+  },
+  "reversed": false,
+  "folder": "ShootOutpostShootClimb",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 21.447736327105343
+  },
+  "useDefaultConstraints": true
+}

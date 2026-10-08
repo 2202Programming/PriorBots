@@ -32,6 +32,10 @@ public final class Main {
     new RobotSpec_BotOnBoard3();
     new RobotSpec_BotOnZeta();
 
+    // 2026 sub-tree
+    new frc.robot2026.RobotSpec_AlphaBot();
+    new frc.robot2026.RobotSpec_ChassisBot();
+
   }
   public static void main(String... args) {
     new Main();

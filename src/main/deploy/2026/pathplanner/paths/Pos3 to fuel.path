@@ -1,0 +1,99 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 4.466034236804564,
+        "y": 0.6127246790299581
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 4.727465617548054,
+        "y": 0.6147883188286087
+      },
+      "isLocked": false,
+      "linkedName": "Pos32ShootEnd"
+    },
+    {
+      "anchor": {
+        "x": 6.173968397109999,
+        "y": 0.7492182476092863
+      },
+      "prevControl": {
+        "x": 5.724215909092501,
+        "y": 0.6234431818226085
+      },
+      "nextControl": {
+        "x": 7.150166089380177,
+        "y": 1.022215801235511
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 7.574051719246194,
+        "y": 1.4369650515799548
+      },
+      "prevControl": {
+        "x": 7.428144740357324,
+        "y": 1.2339597474336765
+      },
+      "nextControl": {
+        "x": 7.817677359613481,
+        "y": 1.7759296274845946
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 7.687,
+        "y": 3.4103
+      },
+      "prevControl": {
+        "x": 7.610324726998209,
+        "y": 2.0895328893459753
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.55,
+      "rotationDegrees": 89.47621569926949
+    },
+    {
+      "waypointRelativePos": 1.0,
+      "rotationDegrees": 90.0
+    },
+    {
+      "waypointRelativePos": 1.939597315436259,
+      "rotationDegrees": 90.0
+    }
+  ],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.5,
+    "maxAcceleration": 1.5,
+    "maxAngularVelocity": 360.0,
+    "maxAngularAcceleration": 360.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 1.0,
+    "rotation": 91.219
+  },
+  "reversed": false,
+  "folder": "Pos3ShootFuelBump",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 91.0809241866607
+  },
+  "useDefaultConstraints": false
+}

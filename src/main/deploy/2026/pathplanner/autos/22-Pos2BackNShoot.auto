@@ -1,0 +1,31 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Pos2 to Climber"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "climb_left"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": "NoNeutralAutos",
+  "choreoAuto": false
+}

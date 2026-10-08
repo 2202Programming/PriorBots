@@ -1,0 +1,142 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 3.492816753926702,
+        "y": 7.4825497382198956
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 4.492816753926702,
+        "y": 7.4825497382198956
+      },
+      "isLocked": false,
+      "linkedName": "Pos1FuelShootEnd"
+    },
+    {
+      "anchor": {
+        "x": 5.264078534030175,
+        "y": 7.440284697508897
+      },
+      "prevControl": {
+        "x": 4.444710124866251,
+        "y": 7.499905583492622
+      },
+      "nextControl": {
+        "x": 6.380020942407137,
+        "y": 7.359083769635516
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 5.786434554972583,
+        "y": 6.2336439790596
+      },
+      "prevControl": {
+        "x": 5.852916230365253,
+        "y": 7.036172774871118
+      },
+      "nextControl": {
+        "x": 5.7031901876784685,
+        "y": 5.228765545294914
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 5.488188302425106,
+        "y": 2.669971469329529
+      },
+      "prevControl": {
+        "x": 6.044292517681292,
+        "y": 3.0155505173815875
+      },
+      "nextControl": {
+        "x": 4.823371548498406,
+        "y": 2.2568353436750783
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 3.4833193717265107,
+        "y": 2.4536858638763532
+      },
+      "prevControl": {
+        "x": 3.9172892569770674,
+        "y": 2.4086512531428035
+      },
+      "nextControl": {
+        "x": 2.9799581151820087,
+        "y": 2.5059214659705957
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.7377748691087094,
+        "y": 3.142246073300438
+      },
+      "prevControl": {
+        "x": 3.1604083769621125,
+        "y": 2.705366492148605
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "HubFuelEnd"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 2.0863221884498846,
+      "rotationDegrees": -89.3872860630067
+    },
+    {
+      "waypointRelativePos": 2.650455927051688,
+      "rotationDegrees": -89.4359694844081
+    },
+    {
+      "waypointRelativePos": 2.910638297872382,
+      "rotationDegrees": -125.92100449992046
+    },
+    {
+      "waypointRelativePos": 4.0104947526236705,
+      "rotationDegrees": -127.44410857111737
+    }
+  ],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "spinup",
+      "waypointRelativePos": 2.4315068493150465,
+      "endWaypointRelativePos": null,
+      "command": null
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 4.5,
+    "maxAcceleration": 5.0,
+    "maxAngularVelocity": 360.0,
+    "maxAngularAcceleration": 360.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 24.599790605157516
+  },
+  "reversed": false,
+  "folder": "Pos3ShootFuelBump",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": -71.748104162779
+  },
+  "useDefaultConstraints": true
+}

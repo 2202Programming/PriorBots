@@ -1,0 +1,107 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 7.687,
+        "y": 3.41
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 7.483920048770583,
+        "y": 3.5642097483697275
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 6.256886363636364,
+        "y": 2.6746534090909098
+      },
+      "prevControl": {
+        "x": 6.616392283438579,
+        "y": 2.872381664982128
+      },
+      "nextControl": {
+        "x": 5.658931818181818,
+        "y": 2.3457784090909093
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 3.5062954545454543,
+        "y": 2.4155397727272727
+      },
+      "prevControl": {
+        "x": 4.394235221894082,
+        "y": 2.2675498115024997
+      },
+      "nextControl": {
+        "x": 2.5495681818181817,
+        "y": 2.57499431818182
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.420011363636364,
+        "y": 2.6746534090909098
+      },
+      "prevControl": {
+        "x": 3.087727272727273,
+        "y": 2.515198863636365
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "ShootPoint1"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 1.497307001795332,
+      "maxWaypointRelativePos": 2.294434470377019,
+      "constraints": {
+        "maxVelocity": 1.5,
+        "maxAcceleration": 2.0,
+        "maxAngularVelocity": 360.0,
+        "maxAngularAcceleration": 360.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "spinup",
+      "waypointRelativePos": 0.3754669987546703,
+      "endWaypointRelativePos": null,
+      "command": null
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 4.5,
+    "maxAcceleration": 5.0,
+    "maxAngularVelocity": 360.0,
+    "maxAngularAcceleration": 360.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 32.27564431457761
+  },
+  "reversed": false,
+  "folder": "Pos3ShootFuelBump",
+  "idealStartingState": {
+    "velocity": 0.0,
+    "rotation": 92.219
+  },
+  "useDefaultConstraints": true
+}

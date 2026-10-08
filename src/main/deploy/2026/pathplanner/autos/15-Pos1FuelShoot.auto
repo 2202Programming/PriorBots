@@ -1,0 +1,57 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "race",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Pos1FuelTunnelShoot"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "intake_on"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "shoot"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": []
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Pos3toNZ"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": "BuddyNeutralAutos",
+  "choreoAuto": false
+}

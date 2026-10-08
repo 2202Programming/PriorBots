@@ -1,0 +1,134 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 4.401455555555555,
+        "y": 7.410869205298013
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 5.332278174053007,
+        "y": 7.399499834937737
+      },
+      "isLocked": false,
+      "linkedName": "Pos1ToShootEnd"
+    },
+    {
+      "anchor": {
+        "x": 6.600912981455064,
+        "y": 7.410869205298013
+      },
+      "prevControl": {
+        "x": 6.086153298586014,
+        "y": 7.4456898404178515
+      },
+      "nextControl": {
+        "x": 6.903687838958819,
+        "y": 7.390388166888326
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 8.425263908701854,
+        "y": 6.642139800285308
+      },
+      "prevControl": {
+        "x": 7.896289188061176,
+        "y": 7.4520802437429925
+      },
+      "nextControl": {
+        "x": 9.1810487062957,
+        "y": 5.484918764504374
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 7.687760342368046,
+        "y": 1.6478174037089879
+      },
+      "prevControl": {
+        "x": 8.745272850004373,
+        "y": 2.7459132428367536
+      },
+      "nextControl": {
+        "x": 6.613090734163036,
+        "y": 0.5319060393652824
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 4.867132667617689,
+        "y": 0.6809105960264901
+      },
+      "prevControl": {
+        "x": 5.6194958653730795,
+        "y": 0.6972690977859309
+      },
+      "nextControl": {
+        "x": 4.163297758797107,
+        "y": 0.6656072363876249
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 3.855960264900662,
+        "y": 0.6809105960264901
+      },
+      "prevControl": {
+        "x": 4.14460660490225,
+        "y": 0.7825710441499006
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "ShootToFuelEnd"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 2.0,
+      "rotationDegrees": -101.30993247402023
+    },
+    {
+      "waypointRelativePos": 3.0,
+      "rotationDegrees": -163.0446869479748
+    }
+  ],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "spinup",
+      "waypointRelativePos": 2.5684931506848723,
+      "endWaypointRelativePos": null,
+      "command": null
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 4.5,
+    "maxAcceleration": 5.0,
+    "maxAngularVelocity": 360.0,
+    "maxAngularAcceleration": 360.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 1.0,
+    "rotation": 77.47119229084848
+  },
+  "reversed": false,
+  "folder": "ClockwiseRoundTheWorld",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": -90.0
+  },
+  "useDefaultConstraints": true
+}

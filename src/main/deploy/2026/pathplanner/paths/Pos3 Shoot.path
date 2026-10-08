@@ -1,0 +1,54 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 3.6278790658954367,
+        "y": 0.6259436606365307
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 4.1910375851065265,
+        "y": 0.5737512433660787
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 4.427218259629101,
+        "y": 0.6903566333808839
+      },
+      "prevControl": {
+        "x": 4.024604317882233,
+        "y": 0.7760187871979347
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Pos3ShootEnd"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 1.0,
+    "maxAngularVelocity": 360.0,
+    "maxAngularAcceleration": 360.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 90.0
+  },
+  "reversed": false,
+  "folder": "RoundTheWorld",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 90.0
+  },
+  "useDefaultConstraints": false
+}

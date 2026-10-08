@@ -1,0 +1,128 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 3.221,
+        "y": 5.671
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 4.572456803455723,
+        "y": 5.484632829373649
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 5.835988120950324,
+        "y": 5.514017278617711
+      },
+      "prevControl": {
+        "x": 5.600912526997841,
+        "y": 5.837246220302377
+      },
+      "nextControl": {
+        "x": 6.095835151042841,
+        "y": 5.156727612240499
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 6.071063714902807,
+        "y": 3.212235421166306
+      },
+      "prevControl": {
+        "x": 6.3492043530668765,
+        "y": 3.734458660168233
+      },
+      "nextControl": {
+        "x": 5.591117710583153,
+        "y": 2.3111123110151177
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.420011363636364,
+        "y": 2.6746534090909098
+      },
+      "prevControl": {
+        "x": 2.9587262664441387,
+        "y": 2.4591674479677987
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "ShootPoint1"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.7620504973220863,
+      "rotationDegrees": -55.547544130650245
+    },
+    {
+      "waypointRelativePos": 1.14766641162967,
+      "rotationDegrees": -87.46457003756443
+    },
+    {
+      "waypointRelativePos": 1.8638102524866065,
+      "rotationDegrees": -88.65082468060825
+    },
+    {
+      "waypointRelativePos": 2.1,
+      "rotationDegrees": -110.30465072591136
+    },
+    {
+      "waypointRelativePos": 2.6878347360367294,
+      "rotationDegrees": -111.13460399147225
+    }
+  ],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 0.2728971962616863,
+      "maxWaypointRelativePos": 1.2747663551401882,
+      "constraints": {
+        "maxVelocity": 2.0,
+        "maxAcceleration": 1.5,
+        "maxAngularVelocity": 360.0,
+        "maxAngularAcceleration": 360.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "spinup",
+      "waypointRelativePos": 1.7951432129514313,
+      "endWaypointRelativePos": null,
+      "command": null
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 4.5,
+    "maxAcceleration": 5.0,
+    "maxAngularVelocity": 360.0,
+    "maxAngularAcceleration": 360.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 32.27564431457761
+  },
+  "reversed": false,
+  "folder": "Pos1FuelShootFuel",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": -50.246117401964625
+  },
+  "useDefaultConstraints": true
+}
